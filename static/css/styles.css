@@ -1243,3 +1243,128 @@ img {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   SERVICES SPECIFIC STYLES
+   ========================================================================== */
+:root {
+    --secondary: #2CB5A0;
+}
+
+/* Services Grid & Cards */
+.premium-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 40px;
+}
+
+.premium-service-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.premium-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+.service-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: rgba(31, 127, 133, 0.1);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: all var(--transition-normal);
+}
+
+.premium-service-card:hover .service-icon-wrapper {
+    background: var(--secondary);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+.service-card-content h3 {
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.service-card-content p {
+    margin-bottom: 25px;
+    font-size: 1rem;
+    color: var(--text);
+    flex-grow: 1;
+}
+
+/* Service Detail Page */
+.service-hero-flex {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    min-height: 400px;
+}
+
+.service-hero-content {
+    flex: 1;
+}
+
+.service-hero-icon {
+    width: 250px;
+    height: 250px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+}
+
+.faq-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.faq-item {
+    padding: 30px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary);
+}
+
+.faq-question {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.faq-answer {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .premium-services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-hero-flex {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+}

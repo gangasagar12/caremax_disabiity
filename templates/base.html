@@ -47,7 +47,7 @@
                     <li><a href="/" class="active">Home</a></li>
                     <li><a href="/about/">About Us</a></li>
                     <li class="has-dropdown">
-                        <a href="#">Services <i class="fas fa-chevron-down"></i></a>
+                        <a href="{% url 'services:service_list' %}">Services <i class="fas fa-chevron-down"></i></a>
                         <!-- Mega Menu -->
                         <div class="mega-menu">
                             <div class="mega-column">
@@ -104,7 +104,7 @@
                 <ul class="footer-links">
                     <li><a href="/">Home</a></li>
                     <li><a href="/about/">About</a></li>
-                    <li><a href="#">Services</a></li>
+                    <li><a href="{% url 'services:service_list' %}">Services</a></li>
                     <li><a href="#">Careers</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>

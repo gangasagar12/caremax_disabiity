@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Support Services | Premium NDIS Provider{% endblock %}
+
+{% block content %}
+<!-- SERVICES HERO SECTION -->
+<section class="services-hero text-center section-padding" style="background-color: var(--white); border-bottom: 1px solid var(--border-color);">
+    <div class="container">
+        <span class="badge-label" style="color: var(--primary); background: rgba(31, 127, 133, 0.1);">Our Services</span>
+        <h1 class="section-title">Support Services Designed Around Your Needs</h1>
+        <p class="section-subtitle mx-auto max-w-700">We provide tailored, compassionate support to help you live independently, build confidence, and actively engage with your community.</p>
+    </div>
+</section>
+
+<!-- SERVICES GRID -->
+<section class="services-list-section section-padding bg-light">
+    <div class="container">
+        <div class="premium-services-grid">
+            {% for service in services %}
+            <div class="premium-service-card shadow">
+                <div class="service-icon-wrapper">
+                    <i class="{{ service.icon }}"></i>
+                </div>
+                <div class="service-card-content">
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.short_description }}</p>
+                    <a href="{% url 'services:service_detail' slug=service.slug %}" class="btn-text">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center" style="grid-column: 1 / -1;">
+                <p>No services currently available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="contact-cta section-padding text-center" style="background-color: var(--primary); color: var(--white);">
+    <div class="container">
+        <h2>Not Sure Which Service is Right For You?</h2>
+        <p class="mt-3 mb-4 text-white-50 mx-auto max-w-700">Our friendly team is here to help you navigate your NDIS plan and find the perfect support mix.</p>
+        <a href="#" class="btn bg-white btn-large" style="color: var(--primary);">Speak to an Expert</a>
+    </div>
+</section>
+{% endblock content %}
