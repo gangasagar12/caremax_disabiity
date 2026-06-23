@@ -1,8 +1,12 @@
 from django.contrib import admin
-from .models import ServiceCategory, Service, ServiceFeature, ServiceFAQ
+from .models import ServiceCategory, Service, ServiceFeature, ServiceBenefit, ServiceFAQ
 
 class ServiceFeatureInline(admin.StackedInline):
     model = ServiceFeature
+    extra = 1
+
+class ServiceBenefitInline(admin.StackedInline):
+    model = ServiceBenefit
     extra = 1
 
 class ServiceFAQInline(admin.StackedInline):
@@ -15,7 +19,7 @@ class ServiceCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'status')
+    list_display = ('title', 'category', 'status', 'created_at')
     list_filter = ('category', 'status')
     prepopulated_fields = {'slug': ('title',)}
-    inlines = [ServiceFeatureInline, ServiceFAQInline]
+    inlines = [ServiceFeatureInline, ServiceBenefitInline, ServiceFAQInline]

@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block title %}NDIS Referral Form | Premium Support Provider{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/referral.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="page-hero">
+      <div class="page-hero-inner">
+        <div class="chip chip-dk" style="margin-bottom: 16px">
+          NDIS Referral
+        </div>
+        <h1>Submit a <em>Referral Form</em></h1>
+        <p>
+          Refer yourself or someone you support to CareMax Disability &mdash;
+          we&rsquo;ll be in touch within 24 hours.
+        </p>
+        <div class="breadcrumb">
+          <a href="/">Home</a><span>&rsaquo;</span><span class="cur">Referral Form</span>
+        </div>
+      </div>
+    </div>
+    <section class="sec">
+      <div class="wrap">
+        <div class="ref-grid">
+          <div class="reveal-l">
+            <div class="ref-form">
+              <h3>NDIS Referral Form</h3>
+              <div class="rf-sub">
+                Complete this form to refer yourself or someone you support to CareMax Disability.
+              </div>
+              <form action="{% url 'referrals:referral_create' %}" method="POST" id="cForm">
+                {% csrf_token %}
+                
+                <div class="sec-label">
+                  <i class="fas fa-user"></i> Participant Details
+                </div>
+                <div class="form-row">
+                  <div class="fld">
+                    <label>First Name *</label>
+                    {{ form.first_name }}
+                    {{ form.first_name.errors }}
+                  </div>
+                  <div class="fld">
+                    <label>Last Name *</label>
+                    {{ form.last_name }}
+                    {{ form.last_name.errors }}
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="fld">
+                    <label>Date of Birth</label>
+                    {{ form.date_of_birth }}
+                    {{ form.date_of_birth.errors }}
+                  </div>
+                  <div class="fld">
+                    <label>Gender</label>
+                    {{ form.gender }}
+                    {{ form.gender.errors }}
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="fld">
+                    <label>Phone *</label>
+                    {{ form.phone }}
+                    {{ form.phone.errors }}
+                  </div>
+                  <div class="fld">
+                    <label>Email</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                  </div>
+                </div>
+                <div class="fld">
+                  <label>Address / Suburb</label>
+                  {{ form.address }}
+                  {{ form.address.errors }}
+                </div>
+                <div class="form-row">
+                  <div class="fld">
+                    <label>NDIS Number</label>
+                    {{ form.ndis_number }}
+                    {{ form.ndis_number.errors }}
+                  </div>
+                  <div class="fld">
+                    <label>Plan Managed By</label>
+                    {{ form.plan_management }}
+                    {{ form.plan_management.errors }}
+                  </div>
+                </div>
+                <div class="sec-label">
+                  <i class="fas fa-hands-helping"></i> Support Needs
+                </div>
+                <div class="fld">
+                  <label>Support Services Required</label>
+                  <div class="chk-group" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    {% for checkbox in form.services_required %}
+                      <label class="chk-item">
+                        {{ checkbox.tag }}
+                        {{ checkbox.choice_label }}
+                      </label>
+                    {% endfor %}
+                  </div>
+                  {{ form.services_required.errors }}
+                </div>
+                <div class="fld">
+                  <label>Support Goals</label>
+                  {{ form.support_goals }}
+                  {{ form.support_goals.errors }}
+                </div>
+                <div class="fld">
+                  <label>Additional Notes</label>
+                  {{ form.additional_notes }}
+                  {{ form.additional_notes.errors }}
+                </div>
+                <div class="sec-label">
+                  <i class="fas fa-user-friends"></i> Referrer Details (if different)
+                </div>
+                <div class="form-row">
+                  <div class="fld">
+                    <label>Referrer Name</label>
+                    {{ form.referrer_name }}
+                    {{ form.referrer_name.errors }}
+                  </div>
+                  <div class="fld">
+                    <label>Relationship</label>
+                    {{ form.relationship }}
+                    {{ form.relationship.errors }}
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="fld">
+                    <label>Referrer Phone</label>
+                    {{ form.referrer_phone }}
+                    {{ form.referrer_phone.errors }}
+                  </div>
+                  <div class="fld">
+                    <label>Referrer Email</label>
+                    {{ form.referrer_email }}
+                    {{ form.referrer_email.errors }}
+                  </div>
+                </div>
+                <button type="submit" class="fsub">
+                  <i class="fas fa-paper-plane"></i> Submit Referral
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="ref-sidebar reveal-r">
+            <div class="rs-contact">
+              <h4>
+                <i class="fas fa-phone" style="margin-right: 6px"></i> Need Help?
+              </h4>
+              <a href="tel:0405102359" class="rci">
+                <i class="fas fa-phone"></i><span>0405 102 359</span>
+              </a>
+              <a href="mailto:info@caremaxdisability.com" class="rci">
+                <i class="fas fa-envelope"></i><span>info@caremaxdisability.com</span>
+              </a>
+              <p style="font-size: 12.5px; color: rgba(255, 255, 255, 0.7); margin-top: 8px;">
+                Available 24/7 &mdash; response within a few hours.
+              </p>
+            </div>
+            <div class="rs-card">
+              <h4><i class="fas fa-info-circle"></i> What Happens Next?</h4>
+              <ul>
+                <li><i class="fas fa-check-circle"></i> We confirm receipt within 24 hours</li>
+                <li><i class="fas fa-check-circle"></i> A coordinator contacts you to discuss needs</li>
+                <li><i class="fas fa-check-circle"></i> We match you with the right support worker</li>
+                <li><i class="fas fa-check-circle"></i> Support begins on your preferred date</li>
+              </ul>
+            </div>
+            <div class="rs-card">
+              <h4><i class="fas fa-file-alt"></i> What You&rsquo;ll Need</h4>
+              <ul>
+                <li><i class="fas fa-circle" style="font-size: 6px"></i> Your NDIS plan (if available)</li>
+                <li><i class="fas fa-circle" style="font-size: 6px"></i> NDIS participant number</li>
+                <li><i class="fas fa-circle" style="font-size: 6px"></i> Contact details</li>
+                <li><i class="fas fa-circle" style="font-size: 6px"></i> Support coordinator details (if applicable)</li>
+              </ul>
+            </div>
+            <div class="rs-card" style="background: var(--gl); border-color: rgba(91, 178, 134, 0.2);">
+              <h4 style="color: var(--gd)">
+                <i class="fas fa-shield-alt"></i> NDIS Registered
+              </h4>
+              <p>
+                CareMax Disability Pty Ltd is a fully registered NDIS provider. ABN: 24 691 459 220. We operate under the NDIS Quality &amp; Safeguards Framework.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+{% endblock %}

@@ -15,4 +15,9 @@ class ServiceDetailView(DetailView):
     context_object_name = 'service'
     
     def get_queryset(self):
-        return Service.objects.filter(status=True).prefetch_related('features', 'faqs')
+        return Service.objects.filter(status=True).prefetch_related('features', 'benefits', 'faqs')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['related_services'] = Service.objects.filter(status=True).exclude(id=self.object.id).order_by('?')[:3]
+        return context

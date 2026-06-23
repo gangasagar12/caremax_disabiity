@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Referral Submitted | CareMax Disability{% endblock %}
+
+{% block content %}
+<section class="success-hero section-padding text-center bg-light" style="min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+    <div class="container">
+        <div class="success-card shadow bg-white p-5 rounded-md mx-auto" style="max-width: 600px;">
+            <div class="icon-circle mb-4 mx-auto" style="width: 80px; height: 80px; background: rgba(44, 181, 160, 0.1); color: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h1 class="section-title mb-3">Thank You For Your Referral</h1>
+            <p class="mb-4" style="font-size: 1.1rem; color: var(--text);">
+                Your referral has been successfully submitted.<br>
+                A CareMax coordinator will contact you within 24 hours.
+            </p>
+            
+            <div class="d-flex justify-content-center gap-3 mt-4" style="gap: 15px;">
+                <a href="/" class="btn btn-outline btn-large">Back To Home</a>
+                <a href="{% url 'referrals:referral_create' %}" class="btn btn-primary btn-large">Submit Another Referral</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

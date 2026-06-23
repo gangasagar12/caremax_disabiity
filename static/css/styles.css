@@ -1368,3 +1368,450 @@ img {
         text-align: center;
     }
 }
+
+/* ==========================================================================
+   ADVANCED SERVICES MODULE STYLES
+   ========================================================================== */
+.card-image-top {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-radius: 16px 16px 0 0;
+    margin: -40px -30px 20px -30px;
+}
+
+.service-icon-wrapper-small {
+    width: 60px;
+    height: 60px;
+    background: var(--white);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: -30px;
+    left: 30px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.premium-service-card:hover .service-icon-wrapper-small {
+    background: var(--secondary);
+    color: var(--white);
+    transform: translateY(-5px);
+}
+
+.breadcrumbs {
+    font-size: 0.95rem;
+}
+
+.breadcrumbs a {
+    color: rgba(255, 255, 255, 0.8);
+    transition: var(--transition-fast);
+}
+
+.breadcrumbs a:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+.about-service-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+.about-service-image {
+    flex: 1;
+}
+
+.about-service-content {
+    flex: 1.2;
+}
+
+@media (max-width: 992px) {
+    .about-service-flex {
+        flex-direction: column;
+    }
+}
+
+.benefit-card i {
+    transition: transform var(--transition-normal);
+}
+
+.benefit-card:hover i {
+    transform: scale(1.1);
+    color: var(--secondary);
+}
+
+
+/* ==========================================================================
+   SIMPLE DROPDOWN OVERRIDE
+   ========================================================================== */
+.simple-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--white);
+    min-width: 250px;
+    border-radius: 12px;
+    padding: 15px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all var(--transition-fast);
+    z-index: 1000;
+    margin-top: 15px;
+}
+
+.has-dropdown:hover .simple-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.simple-dropdown li a {
+    display: flex;
+    align-items: center;
+    padding: 10px 25px;
+    color: var(--heading) !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.simple-dropdown li a i {
+    color: var(--secondary);
+    margin-right: 15px;
+    width: 20px;
+    text-align: center;
+}
+
+.simple-dropdown li a:hover {
+    background: var(--section-bg);
+    color: var(--primary) !important;
+}
+
+.btn-referral {
+    background-color: #D35400;
+    /* Coral/Orange matching screenshot */
+    color: var(--white) !important;
+    border-radius: 25px;
+    padding: 10px 25px !important;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.btn-referral:hover {
+    background-color: #E67E22;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   NEW NAVIGATION & FOOTER STYLES
+   ========================================================================== */
+
+/* Navbar */
+.nav-menu {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu li {
+    position: relative;
+}
+
+.nav-menu a {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    color: var(--primary);
+}
+
+.ch {
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+}
+
+.nav-menu li:hover .ch {
+    transform: rotate(180deg);
+}
+
+/* Dropdown */
+.nav-drop {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--white);
+    min-width: 280px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    padding: 15px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+    border-top: 3px solid var(--primary);
+}
+
+.nav-menu li:hover .nav-drop {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-drop a {
+    padding: 12px 20px;
+    color: var(--text);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.nav-drop a:last-child {
+    border-bottom: none;
+}
+
+.nav-drop a:hover {
+    background: rgba(31, 127, 133, 0.05);
+    color: var(--primary);
+    padding-left: 25px;
+}
+
+.nav-drop .di {
+    margin-right: 12px;
+    color: var(--primary);
+    width: 24px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.ham {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+@media (max-width: 992px) {
+    .nav-menu {
+        display: none;
+    }
+
+    .ham {
+        display: block;
+    }
+}
+
+/* Footer */
+footer {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.ft-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 40px;
+    padding: 60px 0 40px;
+}
+
+@media (max-width: 992px) {
+    .ft-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .ft-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ft-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.ft-brand-icon {
+    background: var(--primary);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.ft-brand-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--white);
+    font-family: var(--font-heading);
+}
+
+.ft-brand-tag {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.8;
+}
+
+.ft-desc {
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ft-soc {
+    display: flex;
+    gap: 10px;
+}
+
+.ft-soc a {
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.ft-soc a:hover {
+    background: var(--white);
+    color: var(--primary);
+    transform: translateY(-3px);
+}
+
+.ft-head {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: var(--white);
+    font-family: var(--font-heading);
+}
+
+.ft-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ft-list li {
+    margin-bottom: 12px;
+}
+
+.ft-list a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.ft-list a:hover {
+    color: var(--white);
+}
+
+.ftci {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ftci a {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ftci a:hover {
+    color: var(--white);
+}
+
+.ftci i {
+    color: var(--white);
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+.ft-abn {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ft-abn small {
+    display: block;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.ft-abn strong {
+    font-size: 1.1rem;
+    color: var(--white);
+}
+
+.ft-bot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ft-blinks {
+    display: flex;
+    gap: 20px;
+}
+
+.ft-blinks a {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ft-blinks a:hover {
+    color: var(--white);
+}
+
+.ft-strip {
+    background: #165b60;
+    /* Darker shade of primary for the bottom strip */
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    padding: 15px 20px;
+    font-size: 0.9rem;
+}
+
+.ft-strip a {
+    color: var(--white);
+    text-decoration: underline;
+}

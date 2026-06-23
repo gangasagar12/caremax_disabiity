@@ -4,34 +4,37 @@
 {% block title %}{{ service.title }} | Support Services{% endblock %}
 
 {% block content %}
-<!-- SERVICE DETAIL HERO -->
-<section class="service-detail-hero section-padding" style="background-color: var(--white); border-bottom: 1px solid var(--border-color);">
-    <div class="container service-hero-flex">
-        <div class="service-hero-content">
-            <span class="badge-label" style="color: var(--primary); background: rgba(31, 127, 133, 0.1);">{{ service.category.title }}</span>
-            <h1 class="section-title">{{ service.title }}</h1>
-            <p class="section-subtitle">{{ service.short_description }}</p>
-            <a href="#contact" class="btn btn-primary btn-large">Request Support</a>
+<!-- 1. SERVICE HERO SECTION -->
+<section class="service-detail-hero section-padding" style="background-image: linear-gradient(rgba(15, 74, 104, 0.85), rgba(15, 74, 104, 0.85)), url('{% if service.image %}{{ service.image.url }}{% else %}{% static "images/about_hero.png" %}{% endif %}'); background-size: cover; background-position: center; color: var(--white);">
+    <div class="container text-center">
+        <div class="breadcrumbs mb-3">
+            <a href="/">Home</a> &gt; <a href="{% url 'services:service_list' %}">Services</a> &gt; <span>{{ service.title }}</span>
         </div>
-        <div class="service-hero-icon shadow">
-            <i class="{{ service.icon }}"></i>
-        </div>
+        <h1 class="section-title text-white">{{ service.title }}</h1>
+        <p class="section-subtitle mx-auto max-w-700 text-white-50">{{ service.short_description }}</p>
     </div>
 </section>
 
-<!-- SERVICE OVERVIEW -->
+<!-- 2. ABOUT THE SERVICE -->
 <section class="service-overview section-padding bg-light">
-    <div class="container text-center max-w-700 mx-auto">
-        <h2 class="mb-4">Overview</h2>
-        <p style="font-size: 1.1rem; line-height: 1.8;">{{ service.full_description }}</p>
+    <div class="container">
+        <div class="about-service-flex">
+            <div class="about-service-image">
+                <img src="{% if service.image %}{{ service.image.url }}{% else %}{% static 'images/team.png' %}{% endif %}" alt="{{ service.title }}" class="rounded-image shadow">
+            </div>
+            <div class="about-service-content">
+                <h2 class="mb-4">About {{ service.title }}</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8;">{{ service.full_description|linebreaks }}</p>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- KEY FEATURES & BENEFITS -->
+<!-- 3. HOW WE HELP -->
 {% if service.features.exists %}
 <section class="service-features section-padding">
     <div class="container">
-        <h2 class="text-center section-title">Key Benefits</h2>
+        <h2 class="text-center section-title">How We Help</h2>
         <div class="features-grid mt-4">
             {% for feature in service.features.all %}
             <div class="feature-card shadow bg-white">
@@ -45,9 +48,27 @@
 </section>
 {% endif %}
 
-<!-- FAQS -->
+<!-- 4. KEY BENEFITS -->
+{% if service.benefits.exists %}
+<section class="service-benefits section-padding bg-light">
+    <div class="container">
+        <h2 class="text-center section-title">Key Benefits</h2>
+        <div class="benefits-grid mt-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+            {% for benefit in service.benefits.all %}
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="{{ benefit.icon }}" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>{{ benefit.title }}</h4>
+                <p>{{ benefit.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 5. FREQUENTLY ASKED QUESTIONS -->
 {% if service.faqs.exists %}
-<section class="service-faqs section-padding bg-light">
+<section class="service-faqs section-padding">
     <div class="container max-w-700 mx-auto">
         <h2 class="text-center section-title mb-4">Frequently Asked Questions</h2>
         <div class="faq-accordion">
@@ -62,12 +83,37 @@
 </section>
 {% endif %}
 
-<!-- CTA -->
-<section id="contact" class="contact-cta section-padding text-center" style="background-color: var(--text); color: var(--white);">
+<!-- 6. RELATED SERVICES -->
+{% if related_services %}
+<section class="related-services section-padding bg-light" style="border-top: 1px solid var(--border-color);">
     <div class="container">
-        <h2>Start Your {{ service.title }} Journey</h2>
+        <h2 class="text-center section-title mb-5">Related Services</h2>
+        <div class="premium-services-grid" style="grid-template-columns: repeat(3, 1fr);">
+            {% for rel_service in related_services %}
+            <div class="premium-service-card shadow" style="padding: 30px 20px;">
+                <div class="service-icon-wrapper-small mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.5rem; background: rgba(31, 127, 133, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="{{ rel_service.icon }}"></i>
+                </div>
+                <h3>{{ rel_service.title }}</h3>
+                <a href="{% url 'services:service_detail' slug=rel_service.slug %}" class="btn-text mt-auto d-inline-block pt-3">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 7. CONTACT CTA -->
+<section id="contact" class="contact-cta section-padding text-center" style="background-color: var(--primary); color: var(--white);">
+    <div class="container">
+        <h2>Ready to Discuss Your Support Needs?</h2>
         <p class="mt-3 mb-4 mx-auto max-w-700" style="color: rgba(255,255,255,0.7);">Contact our dedicated intake team today to discuss how we can tailor this service to your unique goals.</p>
-        <a href="#" class="btn btn-primary btn-large">Contact Us Now</a>
+        <div class="hero-buttons">
+            <a href="#" class="btn btn-outline-light btn-large mr-3">Contact Us</a>
+            <a href="#" class="btn bg-white btn-large" style="color: var(--primary);">Get Support Today</a>
+        </div>
     </div>
 </section>
 {% endblock content %}

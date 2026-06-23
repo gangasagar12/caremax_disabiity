@@ -17,6 +17,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
@@ -43,42 +44,25 @@
             </a>
             
             <nav class="main-nav">
-                <ul class="nav-links">
-                    <li><a href="/" class="active">Home</a></li>
-                    <li><a href="/about/">About Us</a></li>
-                    <li class="has-dropdown">
-                        <a href="{% url 'services:service_list' %}">Services <i class="fas fa-chevron-down"></i></a>
-                        <!-- Mega Menu -->
-                        <div class="mega-menu">
-                            <div class="mega-column">
-                                <a href="#"><i class="fas fa-hands-helping"></i> Personal Care</a>
-                                <a href="#"><i class="fas fa-home"></i> Household Tasks</a>
-                                <a href="#"><i class="fas fa-users"></i> Community Participation</a>
-                            </div>
-                            <div class="mega-column">
-                                <a href="#"><i class="fas fa-car"></i> Transport Assistance</a>
-                                <a href="#"><i class="fas fa-bed"></i> Supported Independent Living</a>
-                                <a href="#"><i class="fas fa-puzzle-piece"></i> Group Activities</a>
-                            </div>
-                            <div class="mega-column">
-                                <a href="#"><i class="fas fa-graduation-cap"></i> Skill Development</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Resources / Blog</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                <ul class="nav-menu">
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/about/">About Us</a></li>
+                  <li>
+                    <a href="{% url 'services:service_list' %}">Services <i class="fas fa-chevron-down ch"></i></a>
+                    <div class="nav-drop">
+                      {% for g_service in global_services %}
+                      <a href="{% url 'services:service_detail' slug=g_service.slug %}"><span class="di"><i class="{{ g_service.icon|default:'fas fa-hands-helping' }}"></i></span>{{ g_service.title }}</a>
+                      {% endfor %}
+                    </div>
+                  </li>
+                  <li><a href="{% url 'referrals:referral_create' %}" class="active">Referral Form</a></li>
+                  <li><a href="/blog/">Blog</a></li>
+                  <li><a href="/contact/">Contact</a></li>
                 </ul>
+                <button class="ham" onclick="openMnav()">
+                  <i class="fas fa-bars"></i>
+                </button>
             </nav>
-
-            <div class="nav-cta">
-                <a href="#" class="btn btn-outline">Refer a Participant</a>
-                <a href="#" class="btn btn-primary">Get Support Today</a>
-            </div>
-            
-            <div class="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
-            </div>
         </div>
     </header>
 
@@ -87,58 +71,96 @@
         {% endblock content %}
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-col">
-                <a href="/" class="footer-logo">Care<span>Max</span></a>
-                <p>Empowering individuals with disabilities to live their best lives through compassionate, high-quality support services.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                </div>
+    <footer>
+      <div class="wrap">
+        <div class="ft-grid">
+          <div>
+            <div class="ft-brand">
+              <div class="ft-brand-icon">CM</div>
+              <div>
+                <div class="ft-brand-name">CareMax Disability</div>
+                <div class="ft-brand-tag">NDIS Registered Provider</div>
+              </div>
             </div>
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about/">About</a></li>
-                    <li><a href="{% url 'services:service_list' %}">Services</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
+            <p class="ft-desc">
+              Locally-owned NDIS provider serving Canberra, Queanbeyan and the
+              ACT/NSW border. Compassionate, person-centred support with no
+              waiting lists. ABN: 24 691 459 220.
+            </p>
+            <div class="ft-soc">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
             </div>
-            <div class="footer-col">
-                <h3>Services</h3>
-                <ul class="footer-links">
-                    <li><a href="#">Personal Care</a></li>
-                    <li><a href="#">Community Participation</a></li>
-                    <li><a href="#">Household Tasks</a></li>
-                    <li><a href="#">Transport</a></li>
-                    <li><a href="#">SIL</a></li>
-                </ul>
+          </div>
+          <div>
+            <div class="ft-head">Services</div>
+            <ul class="ft-list">
+              {% for g_service in global_services %}
+              <li><a href="{% url 'services:service_detail' slug=g_service.slug %}">{{ g_service.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <div class="ft-head">Quick Links</div>
+            <ul class="ft-list">
+              <li><a href="/about/">About Us</a></li>
+              <li><a href="{% url 'referrals:referral_create' %}">Referral Form</a></li>
+              <li><a href="/feedback/">Feedback Form</a></li>
+              <li><a href="/blog/">Blog</a></li>
+              <li>
+                <a href="/careers/">
+                  <i class="fas fa-briefcase" style="color: var(--g)"></i> Careers
+                </a>
+              </li>
+              <li><a href="/contact/">Contact Us</a></li>
+              <li>
+                <a href="/portal/">
+                  <i class="fas fa-user-shield" style="color: var(--g)"></i> Staff Portal
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="ft-head">Get In Touch</div>
+            <div class="ftci">
+              <i class="fas fa-phone"></i>
+              <a href="tel:0405102359">0405 102 359</a>
             </div>
-            <div class="footer-col">
-                <h3>Contact Information</h3>
-                <ul class="footer-contact">
-                    <li><i class="fas fa-map-marker-alt"></i> 123 Healthcare Ave, Sydney NSW 2000</li>
-                    <li><i class="fas fa-phone-alt"></i> 1300 123 456</li>
-                    <li><i class="fas fa-envelope"></i> hello@caremax.com.au</li>
-                    <li><i class="far fa-clock"></i> Mon-Fri: 9am - 5pm</li>
-                </ul>
+            <div class="ftci">
+              <i class="fas fa-envelope"></i>
+              <a href="mailto:info@caremaxdisability.com">info@caremaxdisability.com</a>
             </div>
+            <div class="ftci">
+              <i class="fas fa-globe"></i>
+              <a href="http://www.caremaxdisability.com" target="_blank">www.caremaxdisability.com</a>
+            </div>
+            <div class="ftci">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Canberra, Queanbeyan &amp; Surroundings</span>
+            </div>
+            <div class="ft-abn">
+              <small>ABN</small><strong>24 691 459 220</strong>
+            </div>
+          </div>
         </div>
-        <div class="footer-bottom">
-            <div class="container bottom-flex">
-                <p>&copy; 2026 CareMax Disability Support. All rights reserved.</p>
-                <ul class="bottom-links">
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Accessibility Statement</a></li>
-                </ul>
-            </div>
+        <div class="ft-bot">
+          <p>
+            &copy; 2026 CareMax Disability Pty Ltd &mdash; All Rights Reserved
+          </p>
+          <div class="ft-blinks">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="/portal/">Staff Portal</a>
+          </div>
         </div>
+      </div>
+      <div class="ft-strip">
+        <p>
+          <strong>CareMax Disability Pty Ltd</strong> &middot; NDIS Registered Provider &middot; ABN 24 691 459 220 &middot; Canberra &amp; Queanbeyan ACT/NSW &middot;
+          <a href="tel:0405102359" style="color: var(--g)">0405 102 359</a>
+        </p>
+      </div>
     </footer>
 
     <script src="{% static 'js/main.js' %}"></script>
