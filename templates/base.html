@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Premium NDIS Disability Support Provider{% endblock %}</title>
+    <meta name="description" content="Providing compassionate, person-centred support services tailored to your individual needs.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <!-- Top Information Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone-alt"></i> 1300 123 456</span>
+                <span><i class="fas fa-envelope"></i> hello@caremax.com.au</span>
+                <span><i class="far fa-clock"></i> Mon-Fri: 9am - 5pm</span>
+            </div>
+            <div class="top-bar-right">
+                <span class="ndis-badge"><i class="fas fa-check-circle"></i> NDIS Registered Provider</span>
+                <a href="#" class="btn-emergency">Emergency Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <header class="header" id="main-header">
+        <div class="container header-inner">
+            <a href="/" class="logo">
+                Care<span>Max</span>
+            </a>
+            
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="/" class="active">Home</a></li>
+                    <li><a href="/about/">About Us</a></li>
+                    <li class="has-dropdown">
+                        <a href="#">Services <i class="fas fa-chevron-down"></i></a>
+                        <!-- Mega Menu -->
+                        <div class="mega-menu">
+                            <div class="mega-column">
+                                <a href="#"><i class="fas fa-hands-helping"></i> Personal Care</a>
+                                <a href="#"><i class="fas fa-home"></i> Household Tasks</a>
+                                <a href="#"><i class="fas fa-users"></i> Community Participation</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="#"><i class="fas fa-car"></i> Transport Assistance</a>
+                                <a href="#"><i class="fas fa-bed"></i> Supported Independent Living</a>
+                                <a href="#"><i class="fas fa-puzzle-piece"></i> Group Activities</a>
+                            </div>
+                            <div class="mega-column">
+                                <a href="#"><i class="fas fa-graduation-cap"></i> Skill Development</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Resources / Blog</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-cta">
+                <a href="#" class="btn btn-outline">Refer a Participant</a>
+                <a href="#" class="btn btn-primary">Get Support Today</a>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <a href="/" class="footer-logo">Care<span>Max</span></a>
+                <p>Empowering individuals with disabilities to live their best lives through compassionate, high-quality support services.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Services</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Personal Care</a></li>
+                    <li><a href="#">Community Participation</a></li>
+                    <li><a href="#">Household Tasks</a></li>
+                    <li><a href="#">Transport</a></li>
+                    <li><a href="#">SIL</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Information</h3>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Healthcare Ave, Sydney NSW 2000</li>
+                    <li><i class="fas fa-phone-alt"></i> 1300 123 456</li>
+                    <li><i class="fas fa-envelope"></i> hello@caremax.com.au</li>
+                    <li><i class="far fa-clock"></i> Mon-Fri: 9am - 5pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container bottom-flex">
+                <p>&copy; 2026 CareMax Disability Support. All rights reserved.</p>
+                <ul class="bottom-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Accessibility Statement</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

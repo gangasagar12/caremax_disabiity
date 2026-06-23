@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us | Premium NDIS Disability Support Provider{% endblock %}
+
+{% block content %}
+<!-- 1. ABOUT HERO SECTION -->
+<section class="about-hero" style="background-image: linear-gradient(rgba(15, 74, 104, 0.8), rgba(15, 74, 104, 0.8)), url('{% static "images/about_hero.png" %}');">
+    <div class="container hero-content text-center">
+        <span class="badge-label">About Us</span>
+        <h1>Dedicated to Quality Care</h1>
+        <p class="max-w-700 mx-auto">We are a passionate team of disability support professionals committed to making a real difference in the lives of those we support.</p>
+    </div>
+</section>
+
+<!-- 2. OUR STORY SECTION -->
+<section class="our-story section-padding">
+    <div class="container story-flex">
+        <div class="story-content">
+            <span class="subheading">Our Story</span>
+            <h2 class="section-title">Built on Compassion & Excellence</h2>
+            <p>CareMax was founded with a single, clear purpose: to provide the highest standard of personalised disability support. We understand that every individual's journey is unique, which is why we place you at the center of everything we do.</p>
+            <p>Over the years, we have grown into a trusted NDIS provider, known for our unwavering commitment to quality care, our person-centred approach, and our deeply compassionate philosophy. Our support goes beyond basic assistance; we strive to empower our participants to live fulfilling, independent, and joyful lives.</p>
+        </div>
+        <div class="story-image">
+            <img src="{% static 'images/team.png' %}" alt="CareMax Team Story" class="rounded-image shadow">
+        </div>
+    </div>
+</section>
+
+<!-- 3. MISSION & VISION -->
+<section class="mission-vision-section section-padding bg-light">
+    <div class="container">
+        <div class="mv-cards-grid">
+            <div class="mv-card shadow">
+                <div class="icon-wrapper"><i class="fas fa-bullseye"></i></div>
+                <h3>Our Mission</h3>
+                <p>To empower people with disabilities through personalised, high-quality care that respects their individual choices, promotes independence, and ensures safety.</p>
+            </div>
+            <div class="mv-card shadow">
+                <div class="icon-wrapper"><i class="fas fa-eye"></i></div>
+                <h3>Our Vision</h3>
+                <p>An inclusive, accessible society where every individual has equal opportunities to thrive, participate, and reach their fullest potential without barriers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. CORE VALUES -->
+<section class="core-values-section section-padding">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Our Core Values</h2>
+            <p class="section-subtitle">The principles that guide every decision and interaction.</p>
+        </div>
+        <div class="values-grid">
+            <div class="value-card">
+                <i class="fas fa-heart"></i>
+                <h4>Compassion</h4>
+                <p>We act with deep empathy and understanding.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-hands"></i>
+                <h4>Respect</h4>
+                <p>We honor the dignity of every individual.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-users"></i>
+                <h4>Inclusion</h4>
+                <p>We celebrate diversity and accessibility for all.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Integrity</h4>
+                <p>We are honest, transparent, and accountable.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-walking"></i>
+                <h4>Independence</h4>
+                <p>We empower autonomy and personal choice.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-star"></i>
+                <h4>Excellence</h4>
+                <p>We constantly strive for the highest standards.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. WHY CHOOSE US -->
+<section class="why-choose-us section-padding bg-light">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Why Choose Us</h2>
+            <p class="section-subtitle">We go above and beyond to ensure you receive the highest standard of care.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-user-md"></i></div>
+                <h4>Experienced Support Team</h4>
+                <p>Highly trained professionals dedicated to your wellbeing.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-clipboard-list"></i></div>
+                <h4>Personalised Care</h4>
+                <p>Support tailored to your unique goals and requirements.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-sync-alt"></i></div>
+                <h4>Flexible Support Services</h4>
+                <p>Services designed to adapt as your needs change over time.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-hands-helping"></i></div>
+                <h4>Community Focused Approach</h4>
+                <p>Deeply integrated within local networks and resources.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-check-circle"></i></div>
+                <h4>Reliable and Trusted Care</h4>
+                <p>Consistent, safe, and dependable support you can count on.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. TEAM SECTION -->
+<section class="team-section section-padding">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Meet Our Leadership</h2>
+            <p class="section-subtitle">The dedicated professionals driving our mission forward.</p>
+        </div>
+        <div class="team-grid mt-4">
+            <!-- Team Member 1 -->
+            <div class="team-card shadow">
+                <img src="{% static 'images/team_member_1.png' %}" alt="Jane Doe" class="team-image">
+                <div class="team-info">
+                    <h4>Jane Doe</h4>
+                    <span class="position">Chief Executive Officer</span>
+                    <p>With over 15 years in disability support, Jane leads our team with vision and compassion.</p>
+                </div>
+            </div>
+            <!-- Team Member 2 -->
+            <div class="team-card shadow">
+                <img src="{% static 'images/team_member_2.png' %}" alt="John Smith" class="team-image">
+                <div class="team-info">
+                    <h4>John Smith</h4>
+                    <span class="position">Operations Director</span>
+                    <p>John ensures our daily services are delivered smoothly, safely, and to the highest standard.</p>
+                </div>
+            </div>
+            <!-- Team Member 3 -->
+            <div class="team-card shadow">
+                <img src="{% static 'images/team_member_3.png' %}" alt="Emily Chen" class="team-image">
+                <div class="team-info">
+                    <h4>Emily Chen</h4>
+                    <span class="position">Client Relations Manager</span>
+                    <p>Emily is passionate about advocating for our participants and ensuring their voices are heard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. CERTIFICATIONS & COMPLIANCE -->
+<section class="certifications section-padding bg-light">
+    <div class="container text-center">
+        <h2 class="section-title">Certifications & Compliance</h2>
+        <p class="section-subtitle">We adhere to the highest industry standards to guarantee your safety and trust.</p>
+        
+        <div class="certification-grid mt-4">
+            <div class="cert-item bg-white shadow rounded-image">
+                <img src="{% static 'images/cert_ndis.png' %}" alt="NDIS Registered Provider">
+                <h5>NDIS Registered</h5>
+            </div>
+            <div class="cert-item bg-white shadow rounded-image">
+                <img src="{% static 'images/cert_iso.png' %}" alt="ISO Certified">
+                <h5>ISO 9001:2015</h5>
+            </div>
+            <div class="cert-item bg-white shadow rounded-image">
+                <img src="{% static 'images/cert_quality.png' %}" alt="Quality Assured">
+                <h5>Quality Assured</h5>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 8. FINAL CALL TO ACTION -->
+<section class="contact-cta section-padding" style="background-color: var(--primary); color: white;">
+    <div class="container text-center">
+        <h2>Ready to Get the Support You Deserve?</h2>
+        <p class="mt-3 mb-4 text-white-50 max-w-700 mx-auto">Take the first step towards a more independent and fulfilling life. Our team is ready to listen and help.</p>
+        <div class="cta-buttons">
+            <a href="#" class="btn btn-outline-light btn-large mr-3"><i class="fas fa-envelope"></i> Contact Us</a>
+            <a href="#" class="btn bg-white btn-large" style="color: var(--primary);"><i class="fas fa-arrow-right"></i> Get Started</a>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

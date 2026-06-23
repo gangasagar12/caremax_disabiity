@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- 1. HERO SECTION -->
+<section class="hero-section" style="background-image: linear-gradient(rgba(0, 92, 151, 0.7), rgba(0, 92, 151, 0.7)), url('{% static "images/hero.png" %}');">
+    <div class="container hero-content">
+        <h1>Empowering Independence Through Quality Disability Support</h1>
+        <p>Providing compassionate, person-centred support services tailored to your individual needs.</p>
+        <div class="hero-buttons">
+            <a href="#" class="btn btn-primary btn-large">Get Started</a>
+            <a href="#" class="btn btn-outline-light btn-large">Contact Our Team</a>
+        </div>
+        <div class="trust-indicators">
+            <span class="trust-item"><i class="fas fa-check-circle"></i> NDIS Registered Provider</span>
+            <span class="trust-item"><i class="fas fa-user-md"></i> Experienced Support Workers</span>
+            <span class="trust-item"><i class="fas fa-headset"></i> 24/7 Support Available</span>
+            <span class="trust-item"><i class="fas fa-heart"></i> Client-Centred Care</span>
+        </div>
+    </div>
+</section>
+
+<!-- 2. TRUST & CREDENTIALS SECTION -->
+<section class="trust-credentials section-padding bg-light">
+    <div class="container">
+        <div class="credentials-top">
+            <div class="credential-badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>Registered NDIS Provider</span>
+            </div>
+            <div class="credential-badge">
+                <i class="fas fa-award"></i>
+                <span>10+ Years of Experience</span>
+            </div>
+            <div class="credential-badge">
+                <i class="fas fa-user-graduate"></i>
+                <span>Qualified Support Workers</span>
+            </div>
+            <div class="credential-badge">
+                <i class="fas fa-star"></i>
+                <span>98% Client Satisfaction Rate</span>
+            </div>
+        </div>
+        <div class="statistics-grid">
+            <div class="stat-card">
+                <h3>500+</h3>
+                <p>Participants Supported</p>
+            </div>
+            <div class="stat-card">
+                <h3>120+</h3>
+                <p>Support Workers</p>
+            </div>
+            <div class="stat-card">
+                <h3>50k+</h3>
+                <p>Services Delivered</p>
+            </div>
+            <div class="stat-card">
+                <h3>10+</h3>
+                <p>Years Experience</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. SERVICES OVERVIEW -->
+<section class="services-overview section-padding">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Our Support Services</h2>
+            <p class="section-subtitle">Tailored disability support services designed to help you achieve your goals.</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-hands-helping"></i></div>
+                <h3>Personal Care</h3>
+                <p>Assistance with daily personal activities to maintain your health and wellbeing.</p>
+                <a href="#" class="btn-text">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-home"></i></div>
+                <h3>Household Tasks</h3>
+                <p>Support with cleaning, laundry, meal preparation and other home maintenance tasks.</p>
+                <a href="#" class="btn-text">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-users"></i></div>
+                <h3>Community Participation</h3>
+                <p>Engage in social activities, community events, and recreational pursuits.</p>
+                <a href="#" class="btn-text">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-car"></i></div>
+                <h3>Transport Support</h3>
+                <p>Safe and reliable transport for medical appointments, shopping, and social outings.</p>
+                <a href="#" class="btn-text">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-bed"></i></div>
+                <h3>Supported Independent Living</h3>
+                <p>Assistance to live independently in your own home or shared accommodation.</p>
+                <a href="#" class="btn-text">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="service-card">
+                <div class="service-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Skill Development</h3>
+                <p>Programs designed to build your capacity, independence, and life skills.</p>
+                <a href="#" class="btn-text">Learn More <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. ABOUT US SECTION -->
+<section class="about-us section-padding bg-light">
+    <div class="container about-flex">
+        <div class="about-image">
+            <img src="{% static 'images/team.png' %}" alt="Our Professional Team" class="rounded-image shadow">
+        </div>
+        <div class="about-content">
+            <span class="subheading">About Our Organization</span>
+            <h2 class="section-title">Committed to Enhancing Your Quality of Life</h2>
+            <p>At CareMax, we believe that every individual deserves to live a fulfilling and independent life. We are a registered NDIS provider committed to delivering exceptional disability support services.</p>
+            
+            <div class="mission-vision">
+                <div class="mv-item">
+                    <i class="fas fa-bullseye"></i>
+                    <div>
+                        <h4>Our Mission</h4>
+                        <p>To empower people with disabilities through personalised, high-quality care.</p>
+                    </div>
+                </div>
+                <div class="mv-item">
+                    <i class="fas fa-eye"></i>
+                    <div>
+                        <h4>Our Vision</h4>
+                        <p>An inclusive society where everyone has equal opportunities to thrive.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="core-values">
+                <h4>Core Values</h4>
+                <div class="value-tags">
+                    <span><i class="fas fa-check"></i> Compassion</span>
+                    <span><i class="fas fa-check"></i> Respect</span>
+                    <span><i class="fas fa-check"></i> Integrity</span>
+                    <span><i class="fas fa-check"></i> Excellence</span>
+                </div>
+            </div>
+            
+            <a href="#" class="btn btn-primary mt-4">Learn More About Us</a>
+        </div>
+    </div>
+</section>
+
+<!-- 5. WHY CHOOSE US -->
+<section class="why-choose-us section-padding">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Why Choose Us</h2>
+            <p class="section-subtitle">We go above and beyond to ensure you receive the highest standard of care.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-wrapper"><i class="fas fa-user-md"></i></div>
+                <h4>Experienced Team</h4>
+                <p>Highly trained professionals dedicated to your wellbeing.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper"><i class="fas fa-clipboard-list"></i></div>
+                <h4>Personalized Care Plans</h4>
+                <p>Support tailored to your unique goals and requirements.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper"><i class="fas fa-sync-alt"></i></div>
+                <h4>Flexible Support Options</h4>
+                <p>Services designed to adapt as your needs change over time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper"><i class="fas fa-comments"></i></div>
+                <h4>Transparent Communication</h4>
+                <p>Open, honest, and regular updates with you and your family.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper"><i class="fas fa-users"></i></div>
+                <h4>Community Focused</h4>
+                <p>Deeply integrated within local networks and resources.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-wrapper"><i class="fas fa-shield-alt"></i></div>
+                <h4>Safety & Compliance</h4>
+                <p>Strict adherence to NDIS quality and safeguards standards.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. PROCESS SECTION -->
+<section class="process-section section-padding bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="section-title text-white">Our Support Process</h2>
+        <p class="section-subtitle text-white-50">Getting started with us is simple and straightforward.</p>
+        
+        <div class="process-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Contact Us</h4>
+                <p>Reach out via phone or email to discuss your needs.</p>
+            </div>
+            <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Assessment & Consultation</h4>
+                <p>We'll meet to understand your goals and NDIS plan.</p>
+            </div>
+            <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Personalised Support Plan</h4>
+                <p>We create a tailored plan outlining your services.</p>
+            </div>
+            <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h4>Ongoing Support</h4>
+                <p>Services commence with regular reviews and adjustments.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. TESTIMONIALS -->
+<section class="testimonials section-padding bg-light">
+    <div class="container text-center">
+        <h2 class="section-title">What Our Participants Say</h2>
+        
+        <div class="testimonial-slider" id="testimonialSlider">
+            <div class="testimonial-slide active">
+                <div class="testimonial-content">
+                    <p>"The team has been incredibly supportive and understanding. They have helped me gain so much independence. Highly recommended!"</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Sarah Jenkins</h4>
+                        <span>NDIS Participant</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-slide">
+                <div class="testimonial-content">
+                    <p>"Professional, compassionate, and always reliable. The support workers really care about their clients' well-being and goals."</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Mark T.</h4>
+                        <span>Family Member</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slider-controls">
+                <button id="prevBtn"><i class="fas fa-arrow-left"></i></button>
+                <button id="nextBtn"><i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 8. CAREERS SECTION -->
+<section class="careers-section section-padding">
+    <div class="container text-center">
+        <h2 class="section-title">Join Our Caring Team</h2>
+        <p class="section-subtitle max-w-700 mx-auto">We are always looking for passionate, dedicated support workers to join our growing organization. Make a real difference in people's lives.</p>
+        <div class="mt-4">
+            <a href="#" class="btn btn-outline mr-3">View Open Positions</a>
+            <a href="#" class="btn btn-primary">Apply Now</a>
+        </div>
+    </div>
+</section>
+
+<!-- 9. LATEST BLOGS -->
+<section class="latest-blogs section-padding bg-light">
+    <div class="container">
+        <div class="section-header d-flex justify-content-between align-items-end">
+            <div>
+                <h2 class="section-title">Latest Resources & News</h2>
+                <p class="section-subtitle mb-0">Stay updated with our latest insights and NDIS news.</p>
+            </div>
+            <a href="#" class="btn btn-outline d-none d-md-inline-block">View All Articles</a>
+        </div>
+        
+        <div class="blog-grid mt-4">
+            <!-- Article 1 -->
+            <div class="blog-card">
+                <div class="blog-image placeholder-img bg-secondary"></div>
+                <div class="blog-content">
+                    <div class="blog-meta">Oct 12, 2026 • NDIS Guide</div>
+                    <h3>Understanding Your NDIS Plan Budgets</h3>
+                    <p>A comprehensive guide to help you navigate and maximize the funding in your current NDIS plan.</p>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <!-- Article 2 -->
+            <div class="blog-card">
+                <div class="blog-image placeholder-img bg-secondary"></div>
+                <div class="blog-content">
+                    <div class="blog-meta">Sep 28, 2026 • Wellness</div>
+                    <h3>5 Benefits of Community Participation</h3>
+                    <p>Discover how engaging with local community events can significantly improve mental health and wellbeing.</p>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <!-- Article 3 -->
+            <div class="blog-card">
+                <div class="blog-image placeholder-img bg-secondary"></div>
+                <div class="blog-content">
+                    <div class="blog-meta">Sep 15, 2026 • Organization News</div>
+                    <h3>CareMax Expands Transport Services</h3>
+                    <p>We are thrilled to announce the addition of new accessible vehicles to our transport fleet.</p>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 10. CONTACT CTA -->
+<section class="contact-cta section-padding" style="background-color: var(--secondary-color); color: white;">
+    <div class="container text-center">
+        <h2>Ready to Get the Support You Deserve?</h2>
+        <p class="mt-3 mb-4 text-white-50 max-w-700 mx-auto">Our friendly team is here to answer your questions and help you navigate your support journey.</p>
+        <div class="cta-buttons">
+            <a href="tel:1300123456" class="btn btn-primary btn-large mr-3"><i class="fas fa-phone-alt"></i> Call Now</a>
+            <a href="#" class="btn btn-outline-light btn-large"><i class="fas fa-envelope"></i> Contact Us</a>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
