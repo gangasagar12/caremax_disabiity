@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'blogs',
     'portal',
     'referrals',
+    'resources',
     'crispy_forms',
     'crispy_bootstrap5',
 ]

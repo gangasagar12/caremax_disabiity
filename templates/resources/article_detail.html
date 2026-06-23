@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ article.meta_title|default:article.title }} | CareMax Disability{% endblock %}
+
+{% block extra_css %}
+<meta name="description" content="{{ article.meta_description|default:article.excerpt }}">
+{% if article.featured_image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ article.featured_image.url }}">
+{% endif %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="resource-centre">
+    <!-- Article Hero -->
+    <section class="rc-article-hero">
+        <div class="container">
+            <div class="rc-breadcrumb">
+                <a href="/">Home</a> &gt; <a href="{% url 'resources:resource_list' %}">Resources</a> &gt; <a href="{% url 'resources:category_list' article.category.slug %}">{{ article.category.name }}</a> &gt; <span>{{ article.title }}</span>
+            </div>
+            
+            <div class="rc-article-header max-w-800 mx-auto text-center mt-4">
+                <span class="rc-badge mb-3">{{ article.category.name }}</span>
+                <h1 style="max-width: 800px; margin: 0 auto;">{{ article.title }}</h1>
+                
+                <div class="rc-article-meta-top justify-content-center mt-4">
+                    <span><i class="far fa-calendar-alt"></i> {{ article.created_at|date:"F j, Y" }}</span>
+                    <span><i class="far fa-clock"></i> {{ article.reading_time }} Min Read</span>
+                    <span><i class="far fa-user"></i> {{ article.author }}</span>
+                </div>
+            </div>
+            
+            {% if article.featured_image %}
+            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="rc-article-featured-img">
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Main Content Layout -->
+    <section class="container rc-article-layout">
+        
+        <!-- Main Article Content -->
+        <div class="rc-article-main">
+            <div class="rc-rich-content">
+                {{ article.content|safe }}
+            </div>
+            
+            <div class="rc-contact-cta mt-5">
+                <h3>Need Personalised Support?</h3>
+                <p class="mb-4">Our experienced team is here to help you navigate your NDIS journey.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/contact/" class="rc-btn" style="color: var(--rc-primary); background: #fff;">Contact Us</a>
+                    <a href="{% url 'referrals:referral_create' %}" class="rc-btn rc-btn-outline" style="color: #fff; background: transparent;">Submit Referral</a>
+                </div>
+            </div>
+            
+            <!-- Related Articles -->
+            {% if related_articles %}
+            <div class="mt-5 pt-4 border-top">
+                <h3 class="fw-bold mb-4" style="color: var(--rc-dark);">Related Resources</h3>
+                <div class="row g-4">
+                    {% for related in related_articles %}
+                    <div class="col-md-4">
+                        <div class="rc-article-card h-100">
+                            <div class="rc-article-img" style="background-image: url('{% if related.featured_image %}{{ related.featured_image.url }}{% else %}https://via.placeholder.com/600x400{% endif %}'); height: 160px;"></div>
+                            <div class="rc-article-content p-3">
+                                <a href="{% url 'resources:article_detail' related.slug %}" class="rc-article-title mt-0 mb-2" style="font-size: 1.1rem;">{{ related.title }}</a>
+                                <a href="{% url 'resources:article_detail' related.slug %}" class="read-more mt-auto pt-2">Read More <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Sidebar -->
+        <aside class="rc-article-sidebar">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success px-3 py-2 mb-4">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="rc-widget rc-widget-search">
+                <h3>Search Resources</h3>
+                <form action="{% url 'resources:resource_list' %}" method="get">
+                    <input type="text" name="q" placeholder="Type to search...">
+                </form>
+            </div>
+            
+            <div class="rc-widget rc-widget-cats">
+                <h3>Categories</h3>
+                <ul>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{% url 'resources:category_list' cat.slug %}">
+                            <span>{{ cat.name }}</span>
+                            <span>({{ cat.article_count }})</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="rc-widget">
+                <h3>Recent Articles</h3>
+                {% for recent in recent_articles %}
+                <div class="rc-widget-recent">
+                    <img src="{% if recent.featured_image %}{{ recent.featured_image.url }}{% else %}https://via.placeholder.com/150{% endif %}" alt="{{ recent.title }}">
+                    <div>
+                        <h4><a href="{% url 'resources:article_detail' recent.slug %}">{{ recent.title }}</a></h4>
+                        <span style="font-size: 0.8rem; color: var(--rc-text-muted);">{{ recent.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Newsletter CTA Sidebar -->
+            <div class="rc-widget" style="background: var(--rc-dark); color: #fff;">
+                <h3 style="color: #fff; border-bottom-color: rgba(255,255,255,0.1);">Newsletter</h3>
+                <p style="font-size: 0.95rem; opacity: 0.8; margin-bottom: 20px;">Get the latest insights and guides delivered to your inbox.</p>
+                <form action="{% url 'resources:article_detail' article.slug %}" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="newsletter_name" placeholder="Your Name" required class="form-control mb-2 border-0">
+                    <input type="email" name="newsletter_email" placeholder="Email Address" required class="form-control mb-3 border-0">
+                    <button type="submit" class="rc-btn w-100 text-center" style="background: var(--rc-teal); border: none;">Subscribe</button>
+                </form>
+            </div>
+        </aside>
+    </section>
+</div>
+{% endblock %}

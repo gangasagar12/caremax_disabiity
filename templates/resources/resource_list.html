@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resource Centre | Helpful Guides & Insights{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="resource-centre pb-5">
+    <!-- Hero Section -->
+    <section class="rc-hero">
+        <div class="container">
+            <span class="rc-hero-label">Resource Centre</span>
+            <h1>Helpful Guides, Insights & Support Information</h1>
+            <p>Explore practical resources, NDIS guidance, support information, and helpful articles designed to empower participants and families.</p>
+            
+            <form class="rc-search-bar" action="{% url 'resources:resource_list' %}" method="get">
+                <input type="text" name="q" placeholder="Search resources..." value="{{ search_query }}">
+                <button type="submit"><i class="fas fa-search"></i> Search</button>
+            </form>
+
+            <div class="rc-categories-filter">
+                <a href="{% url 'resources:resource_list' %}" class="rc-cat-pill {% if not current_category %}active{% endif %}">All</a>
+                {% for cat in categories %}
+                <a href="{% url 'resources:category_list' cat.slug %}" class="rc-cat-pill {% if current_category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container pt-5">
+        
+        <!-- Featured Article -->
+        {% if featured_article and not current_category and not search_query %}
+        <section class="rc-featured">
+            <div class="rc-featured-card">
+                <div class="rc-featured-img" style="background-image: url('{% if featured_article.featured_image %}{{ featured_article.featured_image.url }}{% else %}https://via.placeholder.com/800x600{% endif %}');"></div>
+                <div class="rc-featured-content">
+                    <span class="rc-badge">{{ featured_article.category.name }}</span>
+                    <h2>{{ featured_article.title }}</h2>
+                    <p>{{ featured_article.excerpt }}</p>
+                    <a href="{% url 'resources:article_detail' featured_article.slug %}" class="rc-btn">Read More</a>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Resource Categories -->
+        {% if not current_category and not search_query %}
+        <section class="mt-5">
+            <h3 class="mb-4 fw-bold" style="color: var(--rc-dark);">Explore Categories</h3>
+            <div class="rc-categories-grid">
+                {% for cat in categories %}
+                <a href="{% url 'resources:category_list' cat.slug %}" class="rc-cat-card">
+                    <div class="rc-cat-icon"><i class="fas fa-folder-open"></i></div>
+                    <h3>{{ cat.name }}</h3>
+                    <span>{{ cat.article_count }} Articles</span>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Latest Articles Grid -->
+        <section class="mt-4">
+            <h3 class="mb-4 fw-bold" style="color: var(--rc-dark);">
+                {% if search_query %}
+                Search Results for "{{ search_query }}"
+                {% elif current_category %}
+                {{ current_category.name }} Resources
+                {% else %}
+                Latest Articles
+                {% endif %}
+            </h3>
+            
+            {% if articles %}
+            <div class="rc-latest-grid">
+                {% for article in articles %}
+                <div class="rc-article-card">
+                    <div class="rc-article-img" style="background-image: url('{% if article.featured_image %}{{ article.featured_image.url }}{% else %}https://via.placeholder.com/600x400{% endif %}');">
+                        <span class="rc-badge">{{ article.category.name }}</span>
+                    </div>
+                    <div class="rc-article-content">
+                        <a href="{% url 'resources:article_detail' article.slug %}" class="rc-article-title">{{ article.title }}</a>
+                        <p class="rc-article-excerpt">{{ article.excerpt|truncatewords:20 }}</p>
+                        <div class="rc-article-meta">
+                            <span><i class="far fa-calendar-alt"></i> {{ article.created_at|date:"M d, Y" }}</span>
+                            <a href="{% url 'resources:article_detail' article.slug %}" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info py-4">
+                No resources found. Try another search or category.
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Newsletter CTA -->
+        <section class="rc-newsletter mt-5">
+            <h2>Stay Updated With Helpful Resources</h2>
+            <p>Join our newsletter to receive the latest NDIS guides and support information directly in your inbox.</p>
+            
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success d-inline-block px-4 py-2 mb-4">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            
+            <form class="rc-newsletter-form" method="post">
+                {% csrf_token %}
+                <input type="text" name="newsletter_name" placeholder="Your Name" required>
+                <input type="email" name="newsletter_email" placeholder="Your Email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
