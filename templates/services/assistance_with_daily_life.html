@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Assistance with Daily Life | Support Services{% endblock %}
+
+{% block content %}
+<!-- 1. SERVICE HERO SECTION -->
+<section class="service-detail-hero section-padding" style="background-image: linear-gradient(rgba(15, 74, 104, 0.85), rgba(15, 74, 104, 0.85)), url('{% static "images/about_hero.png" %}'); background-size: cover; background-position: center; color: var(--white);">
+    <div class="container text-center">
+        <div class="breadcrumbs mb-3">
+            <a href="/">Home</a> &gt; <a href="{% url 'services:service_list' %}">Services</a> &gt; <span>Assistance with Daily Life</span>
+        </div>
+        <h1 class="section-title text-white">Assistance with Daily Life</h1>
+        <p class="section-subtitle mx-auto max-w-700 text-white-50">Empowering Independence Through Everyday Support</p>
+    </div>
+</section>
+
+<!-- 2. ABOUT THE SERVICE -->
+<section class="service-overview section-padding bg-light">
+    <div class="container">
+        <div class="about-service-flex">
+            <div class="about-service-image">
+                <img src="{% static 'images/team.png' %}" alt="Assistance with Daily Life" class="rounded-image shadow">
+            </div>
+            <div class="about-service-content">
+                <h2 class="mb-4">About This Service</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">At CareMax Disability, we understand that daily tasks can sometimes be challenging. Our Assistance with Daily Life service is designed to provide personalized support that helps participants maintain independence, dignity, and confidence in their everyday routines.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Our experienced and compassionate support workers work alongside participants to deliver assistance tailored to their individual goals, preferences, and lifestyle. Whether you need support for a few hours a week or ongoing daily assistance, we are committed to helping you live comfortably and independently.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Assistance with Daily Life supports participants with essential day-to-day activities that enable them to live safely and independently at home and within their community. We focus on providing practical support while encouraging skill development and greater independence wherever possible. Every support plan is person-centred, flexible, and aligned with your NDIS goals.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8;">Our team works closely with participants, families, and support networks to ensure that the support provided meets individual needs and promotes overall wellbeing.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. HOW WE CAN HELP -->
+<section class="service-features section-padding">
+    <div class="container">
+        <h2 class="text-center section-title">How We Can Help</h2>
+        <div class="features-grid mt-4">
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-shower"></i></div>
+                <h4 class="text-center">Personal Care Support</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Assistance with bathing and showering</li>
+                    <li>Grooming and personal hygiene</li>
+                    <li>Dressing and clothing selection</li>
+                    <li>Toileting support</li>
+                    <li>Mobility assistance</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-home"></i></div>
+                <h4 class="text-center">Daily Household Activities</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Meal preparation and cooking</li>
+                    <li>Laundry assistance</li>
+                    <li>Light household cleaning</li>
+                    <li>Organizing living spaces</li>
+                    <li>Grocery shopping support</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-pills"></i></div>
+                <h4 class="text-center">Medication Assistance</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Medication reminders</li>
+                    <li>Support following healthcare routines</li>
+                    <li>Assistance with daily health management tasks</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-calendar-check"></i></div>
+                <h4 class="text-center">Daily Routine Support</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Morning and evening routines</li>
+                    <li>Appointment preparation</li>
+                    <li>Community participation preparation</li>
+                    <li>Daily planning and organisation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. BENEFITS -->
+<section class="service-benefits section-padding bg-light">
+    <div class="container">
+        <h2 class="text-center section-title">Benefits of Assistance with Daily Life</h2>
+        <div class="benefits-grid mt-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-walking" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Greater Independence</h4>
+                <p>Receive support that helps you develop confidence and maintain control over your daily life.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-smile" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Improved Quality of Life</h4>
+                <p>Enjoy a safer, more comfortable, and organized living environment.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-user-check" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Personalized Support</h4>
+                <p>Every support plan is tailored to your unique needs, goals, and preferences.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-star" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Increased Confidence</h4>
+                <p>Build skills and confidence to participate more actively in daily activities.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-hands-helping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Reliable Assistance</h4>
+                <p>Access dependable support from trained and compassionate professionals.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. WHY CHOOSE CAREMAX -->
+<section class="service-features section-padding">
+    <div class="container">
+        <h2 class="text-center section-title">Why Choose CareMax Disability?</h2>
+        <div class="features-grid mt-4">
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-heart"></i></div>
+                <h4>Person-Centred Approach</h4>
+                <p>We place participants at the heart of everything we do, ensuring services are tailored to individual goals and aspirations.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-user-md"></i></div>
+                <h4>Experienced Support Workers</h4>
+                <p>Our team is committed to delivering professional, respectful, and compassionate support.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-clock"></i></div>
+                <h4>Flexible Services</h4>
+                <p>Support schedules can be adjusted to suit changing needs and lifestyles.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-bullseye"></i></div>
+                <h4>Goal-Focused Support</h4>
+                <p>We help participants work towards greater independence and long-term wellbeing.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-shield-alt"></i></div>
+                <h4>Trusted Disability Provider</h4>
+                <p>CareMax Disability is dedicated to delivering high-quality support services that promote inclusion, dignity, and choice.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. FREQUENTLY ASKED QUESTIONS -->
+<section class="service-faqs section-padding bg-light">
+    <div class="container max-w-700 mx-auto">
+        <h2 class="text-center section-title mb-4">Frequently Asked Questions</h2>
+        <div class="faq-accordion">
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Who can access Assistance with Daily Life?</h4>
+                <p class="faq-answer">Participants with NDIS funding for daily living support may be eligible for this service. Our team can help determine the most suitable support options for your plan.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Can support be provided at home?</h4>
+                <p class="faq-answer">Yes. Most Assistance with Daily Life services are delivered in the participant's home environment.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Can support plans be customised?</h4>
+                <p class="faq-answer">Absolutely. Every participant receives a personalised support plan tailored to their individual goals and needs.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Is support available on weekends?</h4>
+                <p class="faq-answer">Yes. Support availability can be discussed with our team based on your requirements.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. CONTACT CTA -->
+<section class="section-padding mb-5">
+    <div class="container">
+        <div id="contact" class="contact-cta text-center shadow-lg" style="background-color: var(--primary); color: var(--white); padding: 60px 30px; border-radius: 24px;">
+            <h2>Ready to Get Started?</h2>
+            <p class="mt-3 mb-4 mx-auto max-w-700" style="color: rgba(255,255,255,0.7);">Our friendly team is here to help you achieve greater independence and confidence in your daily life. Contact CareMax Disability today to discuss your support needs and discover how our Assistance with Daily Life service can make a positive difference in your everyday life.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'contact:contact_us' %}" class="btn btn-outline-light btn-large mr-3">Contact Us</a>
+                <a href="{% url 'referrals:referral_create' %}?service=assistance-with-daily-life" class="btn bg-white btn-large" style="color: var(--primary);">Submit a Referral</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

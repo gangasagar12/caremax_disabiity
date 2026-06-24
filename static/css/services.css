@@ -1,0 +1,258 @@
+/* ==========================================================================
+   3. SERVICES OVERVIEW
+   ========================================================================== */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.service-card {
+    background: var(--white);
+    padding: 40px 30px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+    transform: translateY(-5px);
+}
+
+.service-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--white);
+    color: var(--primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    transition: var(--transition-normal);
+}
+
+.service-card:hover .service-icon {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.service-card h3 {
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.service-card p {
+    margin-bottom: 20px;
+    color: var(--text);
+}
+
+/* ==========================================================================
+   SERVICES SPECIFIC STYLES
+   ========================================================================== */
+:root {
+    --secondary: #2CB5A0;
+}
+
+/* Services Grid & Cards */
+.premium-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 40px;
+}
+
+.premium-service-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.premium-service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+.service-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background: rgba(31, 127, 133, 0.1);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: all var(--transition-normal);
+}
+
+.premium-service-card:hover .service-icon-wrapper {
+    background: var(--secondary);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+.service-card-content h3 {
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.service-card-content p {
+    margin-bottom: 25px;
+    font-size: 1rem;
+    color: var(--text);
+    flex-grow: 1;
+}
+
+/* Service Detail Page */
+.service-hero-flex {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    min-height: 400px;
+}
+
+.service-hero-content {
+    flex: 1;
+}
+
+.service-hero-icon {
+    width: 250px;
+    height: 250px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+}
+
+.faq-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.faq-item {
+    padding: 30px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary);
+}
+
+.faq-question {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.faq-answer {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .premium-services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-hero-flex {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   ADVANCED SERVICES MODULE STYLES
+   ========================================================================== */
+.card-image-top {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-radius: 16px 16px 0 0;
+    margin: -40px -30px 20px -30px;
+}
+
+.service-icon-wrapper-small {
+    width: 60px;
+    height: 60px;
+    background: var(--white);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: -30px;
+    left: 30px;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.premium-service-card:hover .service-icon-wrapper-small {
+    background: var(--secondary);
+    color: var(--white);
+    transform: translateY(-5px);
+}
+
+.breadcrumbs {
+    font-size: 0.95rem;
+}
+
+.breadcrumbs a {
+    color: rgba(255, 255, 255, 0.8);
+    transition: var(--transition-fast);
+}
+
+.breadcrumbs a:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+.about-service-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+.about-service-image {
+    flex: 1;
+}
+
+.about-service-content {
+    flex: 1.2;
+}
+
+@media (max-width: 992px) {
+    .about-service-flex {
+        flex-direction: column;
+    }
+}
+
+.benefit-card i {
+    transition: transform var(--transition-normal);
+}
+
+.benefit-card:hover i {
+    transform: scale(1.1);
+    color: var(--secondary);
+}
+
+

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shared Living & SIL | Support Services{% endblock %}
+
+{% block content %}
+<!-- 1. SERVICE HERO SECTION -->
+<section class="service-detail-hero section-padding" style="background-image: linear-gradient(rgba(15, 74, 104, 0.85), rgba(15, 74, 104, 0.85)), url('{% static "images/about_hero.png" %}'); background-size: cover; background-position: center; color: var(--white);">
+    <div class="container text-center">
+        <div class="breadcrumbs mb-3">
+            <a href="/">Home</a> &gt; <a href="{% url 'services:service_list' %}">Services</a> &gt; <span>Shared Living & SIL</span>
+        </div>
+        <h1 class="section-title text-white">Shared Living & SIL</h1>
+        <p class="section-subtitle mx-auto max-w-700 text-white-50">Dedicated assistance to live independently and comfortably in shared accommodation.</p>
+    </div>
+</section>
+
+<!-- 2. ABOUT THE SERVICE -->
+<section class="service-overview section-padding bg-light">
+    <div class="container">
+        <div class="about-service-flex">
+            <div class="about-service-image">
+                <img src="{% static 'images/team.png' %}" alt="Shared Living & SIL" class="rounded-image shadow">
+            </div>
+            <div class="about-service-content">
+                <h2 class="mb-4">About Shared Living & SIL</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8;">Supported Independent Living (SIL) provides you with the help you need to live independently, whether in your own home or in shared accommodation. Our dedicated team is available to assist with daily tasks, building your skills, and ensuring you have a supportive and empowering home environment.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. HOW WE HELP -->
+<section class="service-features section-padding">
+    <div class="container">
+        <h2 class="text-center section-title">How We Help</h2>
+        <div class="features-grid mt-4">
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-house-user"></i></div>
+                <h4>Accommodation Support</h4>
+                <p>Assistance living in shared housing with tailored support.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-tasks"></i></div>
+                <h4>Daily Routine Help</h4>
+                <p>Support with cooking, cleaning, and personal care.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-comments"></i></div>
+                <h4>Mediation & Harmony</h4>
+                <p>Helping build positive relationships with housemates.</p>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- 4. FREQUENTLY ASKED QUESTIONS -->
+<section class="service-faqs section-padding">
+    <div class="container max-w-700 mx-auto">
+        <h2 class="text-center section-title mb-4">Frequently Asked Questions</h2>
+        <div class="faq-accordion">
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">What is SIL?</h4>
+                <p class="faq-answer">Supported Independent Living refers to help with daily tasks in a shared living environment.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Can you help me find a SIL vacancy?</h4>
+                <p class="faq-answer">Yes, we can assist you in finding suitable accommodation that meets your needs.</p>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- 5. CONTACT CTA -->
+<section class="section-padding mb-5">
+    <div class="container">
+        <div id="contact" class="contact-cta text-center shadow-lg" style="background-color: var(--primary); color: var(--white); padding: 60px 30px; border-radius: 24px;">
+            <h2>Ready to Discuss Your Support Needs?</h2>
+            <p class="mt-3 mb-4 mx-auto max-w-700" style="color: rgba(255,255,255,0.7);">Contact our dedicated intake team today to discuss how we can tailor this service to your unique goals.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'contact:contact_us' %}" class="btn btn-outline-light btn-large mr-3">Contact Us</a>
+                <a href="{% url 'referrals:referral_create' %}" class="btn bg-white btn-large" style="color: var(--primary);">Get Support Today</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Household Tasks | Support Services{% endblock %}
+
+{% block content %}
+<!-- 1. SERVICE HERO SECTION -->
+<section class="service-detail-hero section-padding" style="background-image: linear-gradient(rgba(15, 74, 104, 0.85), rgba(15, 74, 104, 0.85)), url('{% static "images/about_hero.png" %}'); background-size: cover; background-position: center; color: var(--white);">
+    <div class="container text-center">
+        <div class="breadcrumbs mb-3">
+            <a href="/">Home</a> &gt; <a href="{% url 'services:service_list' %}">Services</a> &gt; <span>Household Tasks</span>
+        </div>
+        <h1 class="section-title text-white">Household Tasks</h1>
+        <p class="section-subtitle mx-auto max-w-700 text-white-50">Supporting a Safe, Comfortable, and Well-Maintained Home Environment</p>
+    </div>
+</section>
+
+<!-- 2. ABOUT THE SERVICE -->
+<section class="service-overview section-padding bg-light">
+    <div class="container">
+        <div class="about-service-flex">
+            <div class="about-service-image">
+                <img src="{% static 'images/team.png' %}" alt="Household Tasks" class="rounded-image shadow">
+            </div>
+            <div class="about-service-content">
+                <h2 class="mb-4">About This Service</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">At CareMax Disability, we understand that managing household responsibilities can sometimes become challenging. Our Household Tasks service is designed to help participants maintain a clean, safe, and comfortable living environment while promoting independence and wellbeing.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Our dedicated support workers provide practical assistance tailored to each participant's individual needs, preferences, and goals. Whether you require occasional support or ongoing assistance, we are committed to helping you live confidently and comfortably in your home.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Household Tasks support assists participants with everyday domestic activities that may be difficult to manage independently due to disability, health conditions, or other support needs.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8;">Our goal is not only to provide assistance but also to encourage skill development and independence wherever possible. We work collaboratively with participants to create a living environment that supports their health, safety, and quality of life.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. HOW WE CAN HELP -->
+<section class="service-features section-padding">
+    <div class="container">
+        <h2 class="text-center section-title">How We Can Help</h2>
+        <div class="features-grid mt-4">
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-broom"></i></div>
+                <h4 class="text-center">Home Cleaning</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Vacuuming and mopping floors</li>
+                    <li>Dusting and surface cleaning</li>
+                    <li>Kitchen cleaning</li>
+                    <li>Bathroom cleaning</li>
+                    <li>General household tidying</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-tshirt"></i></div>
+                <h4 class="text-center">Laundry Assistance</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Washing clothes and linens</li>
+                    <li>Drying and folding laundry</li>
+                    <li>Ironing and wardrobe organization</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-utensils"></i></div>
+                <h4 class="text-center">Meal Preparation Support</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Basic meal preparation</li>
+                    <li>Assistance with cooking</li>
+                    <li>Kitchen organization</li>
+                    <li>Cleaning after meal preparation</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-shopping-basket"></i></div>
+                <h4 class="text-center">Grocery Shopping Assistance</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Preparing shopping lists</li>
+                    <li>Grocery shopping support</li>
+                    <li>Unpacking and organizing groceries</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-boxes"></i></div>
+                <h4 class="text-center">Household Organisation</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Decluttering living spaces</li>
+                    <li>Organizing household items</li>
+                    <li>Maintaining a safe home environment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. BENEFITS -->
+<section class="service-benefits section-padding bg-light">
+    <div class="container">
+        <h2 class="text-center section-title">Benefits of Household Tasks Support</h2>
+        <div class="benefits-grid mt-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-sparkles" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Cleaner Living Environment</h4>
+                <p>Maintain a hygienic, comfortable, and organized home.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Improved Health and Safety</h4>
+                <p>Reduce risks associated with clutter, poor hygiene, and unsafe living conditions.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-spa" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Reduced Stress</h4>
+                <p>Receive practical assistance with everyday household responsibilities.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-walking" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Increased Independence</h4>
+                <p>Build confidence and develop skills for managing household activities.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-smile" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Better Quality of Life</h4>
+                <p>Enjoy more time and energy to focus on personal goals, wellbeing, and community participation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. WHY CHOOSE CAREMAX -->
+<section class="service-features section-padding">
+    <div class="container">
+        <h2 class="text-center section-title">Why Choose CareMax Disability?</h2>
+        <div class="features-grid mt-4">
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-user-check"></i></div>
+                <h4>Person-Centred Support</h4>
+                <p>Every participant receives support tailored to their individual needs and preferences.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-hands-helping"></i></div>
+                <h4>Reliable Support Workers</h4>
+                <p>Our team is committed to delivering professional, respectful, and dependable assistance.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-calendar-alt"></i></div>
+                <h4>Flexible Service Delivery</h4>
+                <p>Support can be arranged according to your schedule and changing requirements.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-bullseye"></i></div>
+                <h4>Goal-Oriented Approach</h4>
+                <p>We focus on helping participants build confidence, skills, and independence.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-award"></i></div>
+                <h4>Trusted Disability Provider</h4>
+                <p>CareMax Disability is dedicated to delivering high-quality support services that enhance everyday living.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. FREQUENTLY ASKED QUESTIONS -->
+<section class="service-faqs section-padding bg-light">
+    <div class="container max-w-700 mx-auto">
+        <h2 class="text-center section-title mb-4">Frequently Asked Questions</h2>
+        <div class="faq-accordion">
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">What household tasks can CareMax assist with?</h4>
+                <p class="faq-answer">We can support a wide range of domestic activities including cleaning, laundry, meal preparation, grocery shopping, and household organization.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Can support be provided regularly?</h4>
+                <p class="faq-answer">Yes. Services can be scheduled daily, weekly, fortnightly, or based on individual needs.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Will the support be personalised?</h4>
+                <p class="faq-answer">Absolutely. Every support plan is tailored to meet the participant's unique circumstances and goals.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Is this service funded through the NDIS?</h4>
+                <p class="faq-answer">Participants with appropriate NDIS funding may be able to access Household Tasks support. Our team can assist you in understanding your available supports.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. CONTACT CTA -->
+<section class="section-padding mb-5">
+    <div class="container">
+        <div id="contact" class="contact-cta text-center shadow-lg" style="background-color: var(--primary); color: var(--white); padding: 60px 30px; border-radius: 24px;">
+            <h2>Ready to Maintain a Comfortable Home?</h2>
+            <p class="mt-3 mb-4 mx-auto max-w-700" style="color: rgba(255,255,255,0.7);">A clean, organized, and safe home can make a significant difference to your wellbeing and independence. Contact CareMax Disability today to learn more about our Household Tasks service and how we can support you in maintaining a comfortable and stress-free home environment.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'contact:contact_us' %}" class="btn btn-outline-light btn-large mr-3">Contact Us</a>
+                <a href="{% url 'referrals:referral_create' %}?service=household-tasks" class="btn bg-white btn-large" style="color: var(--primary);">Submit a Referral</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
