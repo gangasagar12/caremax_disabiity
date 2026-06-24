@@ -9,6 +9,7 @@ urlpatterns = [
     path('services/', include('services.urls')),
     path('referral/', include('referrals.urls')),
     path('resources/', include('resources.urls')),
+    path('contact/', include('contact.urls')),
 ]
 
 if settings.DEBUG:

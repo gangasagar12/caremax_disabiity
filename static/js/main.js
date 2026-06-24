@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Sticky Navigation on Scroll
     const header = document.getElementById('main-header');
-    
+
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             header.classList.add('scrolled');
@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextBtn = document.getElementById('nextBtn');
     let currentSlide = 0;
 
-    if(slides.length > 0 && prevBtn && nextBtn) {
+    if (slides.length > 0 && prevBtn && nextBtn) {
         function showSlide(index) {
             slides.forEach((slide, i) => {
-                if(i === index) {
+                if (i === index) {
                     slide.classList.add('active');
                 } else {
                     slide.classList.remove('active');
@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         nextBtn.addEventListener('click', () => {
+
             currentSlide = (currentSlide + 1) % slides.length;
             showSlide(currentSlide);
         });

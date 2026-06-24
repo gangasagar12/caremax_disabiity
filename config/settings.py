@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'portal',
     'referrals',
     'resources',
+    'contact',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
