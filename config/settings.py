@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'dashboard.apps.CustomAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -143,3 +144,74 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Jazzmin Admin Theme Configuration
+JAZZMIN_SETTINGS = {
+    "site_title": "CareMax Admin",
+    "site_header": "CareMax Operations",
+    "site_brand": "CareMax Admin",
+    "site_logo": None,
+    "welcome_sign": "Welcome to CareMax Admin Dashboard",
+    "copyright": "CareMax Disability Services",
+    "search_model": ["auth.User", "referrals.Referral"],
+    "user_avatar": None,
+    
+    "topmenu_links": [
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Staff Portal", "url": "/portal/", "new_window": True},
+    ],
+    
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user-doctor",
+        "auth.Group": "fas fa-users-gear",
+        "portal.Participant": "fas fa-users",
+        "portal.SupportPlan": "fas fa-clipboard-list",
+        "portal.Document": "fas fa-folder-open",
+        "portal.LeaveRequest": "fas fa-calendar-minus",
+        "referrals.Referral": "fas fa-file-signature",
+        "resources.Blog": "fas fa-newspaper",
+        "services.Service": "fas fa-hand-holding-heart",
+        "contact.ContactMessage": "fas fa-envelope",
+    },
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+    
+    "custom_css": None,
+    "custom_js": None,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
+}
