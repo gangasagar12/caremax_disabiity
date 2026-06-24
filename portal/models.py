@@ -1,6 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Add a helper property to the User model so Jazzmin can easily get the avatar
+@property
+def get_avatar_url(self):
+    if hasattr(self, 'staff_profile') and self.staff_profile.profile_picture:
+        return self.staff_profile.profile_picture.url
+    return None
+
+User.add_to_class('avatar_url', get_avatar_url)
+
 class StaffProfile(models.Model):
     ROLE_CHOICES = (
         ('Admin', 'Admin'),

@@ -154,7 +154,7 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Welcome to CareMax Admin Dashboard",
     "copyright": "CareMax Disability Services",
     "search_model": ["auth.User", "referrals.Referral"],
-    "user_avatar": None,
+    "user_avatar": "avatar_url",
     
     "topmenu_links": [
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
@@ -180,8 +180,8 @@ JAZZMIN_SETTINGS = {
     "default_icon_parents": "fas fa-folder",
     "default_icon_children": "fas fa-circle",
     
-    "custom_css": None,
-    "custom_js": None,
+    "custom_css": "css/jazzmin_clean.css",
+    "custom_js": "js/force_clean_ui.js",
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -189,25 +189,25 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-dark",
-    "accent": "accent-primary",
-    "navbar": "navbar-dark",
+    "brand_colour": "navbar-white",
+    "accent": "accent-success",
+    "navbar": "navbar-white navbar-light",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-primary",
+    "sidebar": "sidebar-light-primary",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "darkly",
-    "dark_mode_theme": "darkly",
+    "theme": "default",
+    "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-primary",
+        "primary": "btn-success",
         "secondary": "btn-secondary",
         "info": "btn-info",
         "warning": "btn-warning",
