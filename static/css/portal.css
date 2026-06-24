@@ -1,0 +1,264 @@
+:root {
+    --primary-blue: #1E5AA8;
+    --dark-navy: #0F2D52;
+    --secondary-teal: #2CB5A0;
+    --background: #0F172A;
+    --card-bg: #111827;
+    --border-color: #1F2937;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar styling */
+.portal-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 20px 0;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.portal-brand {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.portal-brand h2 {
+    color: var(--text-main);
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.portal-nav-section {
+    padding: 0 20px;
+    margin-bottom: 20px;
+}
+
+.portal-nav-title {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.portal-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+}
+
+.portal-nav-link:hover, .portal-nav-link.active {
+    background-color: rgba(30, 90, 168, 0.1);
+    color: var(--primary-blue);
+}
+
+.portal-nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* Main Content styling */
+.portal-main {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-header {
+    height: 70px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.portal-content {
+    padding: 30px;
+    flex: 1;
+}
+
+/* Common Components */
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.glass-card-title {
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Metrics Cards */
+.metric-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.metric-icon.blue { background: rgba(30, 90, 168, 0.1); color: var(--primary-blue); }
+.metric-icon.teal { background: rgba(44, 181, 160, 0.1); color: var(--secondary-teal); }
+.metric-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.metric-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+.metric-info h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.metric-info p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Tables */
+.portal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.portal-table th {
+    text-align: left;
+    padding: 12px 16px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.portal-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.portal-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Badges */
+.portal-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.portal-badge.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.portal-badge.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+.portal-badge.danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.portal-badge.primary { background: rgba(30, 90, 168, 0.1); color: var(--primary-blue); }
+
+/* Forms */
+.portal-input {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 8px;
+    padding: 10px 14px;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.portal-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Buttons */
+.btn-portal-primary {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-portal-primary:hover {
+    background-color: #154585;
+    color: white;
+}
+
+.btn-portal-secondary {
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-portal-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+}

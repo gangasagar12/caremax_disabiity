@@ -1,0 +1,232 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}{{ participant.first_name }} {{ participant.last_name }} - CareMax Staff Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1" style="font-size: 0.85rem;">
+                <li class="breadcrumb-item"><a href="{% url 'portal:participant_list' %}" style="color: var(--text-muted); text-decoration: none;">Participants</a></li>
+                <li class="breadcrumb-item active" aria-current="page" style="color: var(--text-main);">{{ participant.first_name }} {{ participant.last_name }}</li>
+            </ol>
+        </nav>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 5px;">{{ participant.first_name }} {{ participant.last_name }}</h1>
+        <div class="d-flex align-items-center gap-3" style="color: var(--text-muted); font-size: 0.9rem;">
+            <span><i class="fa-solid fa-hashtag me-1"></i> {{ participant.ndis_number }}</span>
+            <span><i class="fa-solid fa-phone me-1"></i> {{ participant.phone }}</span>
+            {% if participant.status == 'Active' %}
+                <span class="portal-badge success" style="font-size: 0.7rem; padding: 2px 8px;">Active</span>
+            {% elif participant.status == 'Pending' %}
+                <span class="portal-badge warning" style="font-size: 0.7rem; padding: 2px 8px;">Pending</span>
+            {% else %}
+                <span class="portal-badge text-white bg-secondary border-0" style="font-size: 0.7rem; padding: 2px 8px;">Archived</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn-portal-secondary"><i class="fa-solid fa-pen me-2"></i> Edit</button>
+        <button class="btn-portal-primary"><i class="fa-solid fa-clipboard-list me-2"></i> Add Plan</button>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-4 border-secondary" id="participantTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active bg-transparent border-0 border-bottom border-primary text-white" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" style="border-width: 3px !important; border-radius: 0;">Overview</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link bg-transparent border-0 text-muted" id="plans-tab" data-bs-toggle="tab" data-bs-target="#plans" type="button" role="tab" style="border-radius: 0;">Support Plans</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link bg-transparent border-0 text-muted" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" style="border-radius: 0;">Case Notes</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link bg-transparent border-0 text-muted" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" style="border-radius: 0;">Documents</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="participantTabsContent">
+    <!-- Overview Tab -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="glass-card mb-4">
+                    <div class="glass-card-title">NDIS Information</div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        {{ participant.ndis_information|default:"No NDIS information recorded."|linebreaks }}
+                    </p>
+                </div>
+                <div class="glass-card mb-4">
+                    <div class="glass-card-title">Support Needs</div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        {{ participant.support_needs|default:"No support needs recorded."|linebreaks }}
+                    </p>
+                </div>
+                <div class="glass-card">
+                    <div class="glass-card-title">Goals & Outcomes</div>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                        {{ participant.goals_and_outcomes|default:"No goals recorded."|linebreaks }}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card mb-4">
+                    <div class="glass-card-title">Contact Information</div>
+                    <div class="d-flex flex-column gap-3" style="color: var(--text-main); font-size: 0.9rem;">
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Email</div>
+                            <div>{{ participant.email|default:"N/A" }}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Phone</div>
+                            <div>{{ participant.phone }}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Address</div>
+                            <div>{{ participant.address|default:"N/A" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card mb-4">
+                    <div class="glass-card-title">Emergency Contacts</div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                        {{ participant.emergency_contacts|default:"No emergency contacts recorded."|linebreaks }}
+                    </p>
+                </div>
+
+                <div class="glass-card mb-4">
+                    <div class="glass-card-title">Medical Notes</div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+                        {{ participant.medical_notes|default:"No medical notes recorded."|linebreaks }}
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div class="glass-card-title">Assigned Staff</div>
+                    <div class="d-flex flex-column gap-2">
+                        {% for staff in participant.assigned_staff.all %}
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="https://ui-avatars.com/api/?name={{ staff.first_name }}+{{ staff.last_name }}&background=1E5AA8&color=fff" alt="{{ staff.get_full_name }}" style="width: 32px; height: 32px; border-radius: 50%;">
+                            <span style="font-size: 0.9rem;">{{ staff.get_full_name }}</span>
+                        </div>
+                        {% empty %}
+                        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">No staff assigned.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plans Tab -->
+    <div class="tab-pane fade" id="plans" role="tabpanel">
+        <div class="glass-card">
+            <div class="table-responsive">
+                <table class="portal-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Frequency</th>
+                            <th>Review Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plan in participant.support_plans.all %}
+                        <tr>
+                            <td>{{ plan.support_categories }}</td>
+                            <td>{{ plan.service_frequency }}</td>
+                            <td>{{ plan.review_date|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center py-4" style="color: var(--text-muted);">No support plans found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Tab -->
+    <div class="tab-pane fade" id="notes" role="tabpanel">
+        <div class="glass-card">
+            <div class="table-responsive">
+                <table class="portal-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Staff Member</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in participant.case_notes.all %}
+                        <tr>
+                            <td style="white-space: nowrap;">{{ note.date|date:"M d, Y" }}</td>
+                            <td>{{ note.staff_member.get_full_name|default:"Unknown" }}</td>
+                            <td>{{ note.note_type }}</td>
+                            <td>{{ note.details|truncatechars:50 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4" style="color: var(--text-muted);">No case notes found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents Tab -->
+    <div class="tab-pane fade" id="documents" role="tabpanel">
+        <div class="glass-card">
+            <div class="table-responsive">
+                <table class="portal-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Uploaded By</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in participant.documents.all %}
+                        <tr>
+                            <td>{{ doc.title }}</td>
+                            <td>{{ doc.document_type }}</td>
+                            <td>{{ doc.uploaded_by.get_full_name|default:"Unknown" }}</td>
+                            <td>{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                            <td><a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-light text-muted border-secondary"><i class="fa-solid fa-download"></i></a></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4" style="color: var(--text-muted);">No documents found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple script to handle tab styling
+    document.querySelectorAll('#participantTabs .nav-link').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('#participantTabs .nav-link').forEach(btn => {
+                btn.classList.remove('active', 'border-bottom', 'border-primary', 'text-white');
+                btn.classList.add('text-muted');
+            });
+            button.classList.add('active', 'border-bottom', 'border-primary', 'text-white');
+            button.classList.remove('text-muted');
+        });
+    });
+</script>
+{% endblock %}

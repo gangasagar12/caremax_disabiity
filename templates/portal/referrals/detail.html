@@ -1,0 +1,149 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}Referral: {{ referral.first_name }} {{ referral.last_name }} - CareMax Staff Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1" style="font-size: 0.85rem;">
+                <li class="breadcrumb-item"><a href="{% url 'portal:referral_list' %}" style="color: var(--text-muted); text-decoration: none;">Referrals</a></li>
+                <li class="breadcrumb-item active" aria-current="page" style="color: var(--text-main);">{{ referral.first_name }} {{ referral.last_name }}</li>
+            </ol>
+        </nav>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 5px;">{{ referral.first_name }} {{ referral.last_name }}</h1>
+        <div class="d-flex align-items-center gap-3" style="color: var(--text-muted); font-size: 0.9rem;">
+            <span><i class="fa-solid fa-calendar me-1"></i> Received: {{ referral.created_at|date:"M d, Y" }}</span>
+            {% if referral.status == 'New' %}
+                <span class="portal-badge primary" style="font-size: 0.7rem; padding: 2px 8px;">New</span>
+            {% elif referral.status == 'Approved' %}
+                <span class="portal-badge success" style="font-size: 0.7rem; padding: 2px 8px;">Approved</span>
+            {% elif referral.status == 'Closed' %}
+                <span class="portal-badge danger" style="font-size: 0.7rem; padding: 2px 8px;">Closed</span>
+            {% else %}
+                <span class="portal-badge warning" style="font-size: 0.7rem; padding: 2px 8px;">{{ referral.status }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn-portal-secondary"><i class="fa-solid fa-pen me-2"></i> Edit</button>
+        {% if referral.status == 'Approved' %}
+        <button class="btn-portal-primary"><i class="fa-solid fa-user-plus me-2"></i> Convert to Participant</button>
+        {% else %}
+        <button class="btn-portal-primary"><i class="fa-solid fa-check me-2"></i> Approve</button>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="glass-card mb-4">
+            <div class="glass-card-title">Participant Details</div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2px;">Name</p>
+                    <p style="font-weight: 500;">{{ referral.first_name }} {{ referral.last_name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2px;">Date of Birth</p>
+                    <p style="font-weight: 500;">{{ referral.date_of_birth|date:"M d, Y"|default:"Not provided" }}</p>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2px;">Gender</p>
+                    <p style="font-weight: 500;">{{ referral.gender|default:"Not provided" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2px;">NDIS Number</p>
+                    <p style="font-weight: 500;">{{ referral.ndis_number|default:"Not provided" }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2px;">Plan Management</p>
+                    <p style="font-weight: 500;">{{ referral.plan_management|default:"Not provided" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2px;">Address / Suburb</p>
+                    <p style="font-weight: 500;">{{ referral.address|default:"Not provided" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card mb-4">
+            <div class="glass-card-title">Support Requirements</div>
+            <div class="mb-4">
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 5px;">Support Goals</p>
+                <p style="font-size: 0.95rem; line-height: 1.6;">{{ referral.support_goals|default:"None provided"|linebreaks }}</p>
+            </div>
+            <div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 5px;">Additional Notes</p>
+                <p style="font-size: 0.95rem; line-height: 1.6;">{{ referral.additional_notes|default:"None provided"|linebreaks }}</p>
+            </div>
+        </div>
+        
+        <div class="glass-card">
+            <div class="glass-card-title">Services Required</div>
+            <div class="d-flex flex-wrap gap-2">
+                {% for service in referral.services_required.all %}
+                <span class="portal-badge primary" style="font-size: 0.85rem; padding: 6px 12px; background-color: rgba(30, 90, 168, 0.2);">{{ service.service_name }}</span>
+                {% empty %}
+                <p style="color: var(--text-muted); font-style: italic;">No specific services requested.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="glass-card mb-4">
+            <div class="glass-card-title">Contact Information</div>
+            <div class="d-flex flex-column gap-3">
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Participant Phone</div>
+                    <div>{{ referral.phone }}</div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Participant Email</div>
+                    <div>{{ referral.email|default:"N/A" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card mb-4">
+            <div class="glass-card-title">Referrer Information</div>
+            <div class="d-flex flex-column gap-3">
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Name</div>
+                    <div>{{ referral.referrer_name|default:"Self Referral" }}</div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Relationship</div>
+                    <div>{{ referral.relationship|default:"N/A" }}</div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Phone</div>
+                    <div>{{ referral.referrer_phone|default:"N/A" }}</div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2px;">Email</div>
+                    <div>{{ referral.referrer_email|default:"N/A" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-card">
+            <div class="glass-card-title">Assigned Staff</div>
+            {% if referral.assigned_staff %}
+            <div class="d-flex align-items-center gap-2">
+                <img src="https://ui-avatars.com/api/?name={{ referral.assigned_staff.first_name }}+{{ referral.assigned_staff.last_name }}&background=1E5AA8&color=fff" alt="{{ referral.assigned_staff.get_full_name }}" style="width: 36px; height: 36px; border-radius: 50%;">
+                <span style="font-weight: 500;">{{ referral.assigned_staff.get_full_name }}</span>
+            </div>
+            {% else %}
+            <div style="color: var(--text-muted); font-style: italic; margin-bottom: 10px;">No staff assigned yet.</div>
+            <button class="btn-portal-secondary w-100" style="padding: 6px 12px; font-size: 0.9rem;">Assign to me</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

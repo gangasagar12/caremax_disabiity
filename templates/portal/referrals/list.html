@@ -1,0 +1,91 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}Referrals{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 5px;">Referrals</h1>
+        <p style="color: var(--text-muted); margin: 0;">Manage incoming and active referrals.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn-portal-primary"><i class="fa-solid fa-plus me-2"></i> Create Referral</button>
+    </div>
+</div>
+
+<div class="glass-card mb-4">
+    <form method="GET" class="row g-3 align-items-center">
+        <div class="col-md-5">
+            <input type="text" class="portal-input" name="q" value="{{ query }}" placeholder="Search by participant name...">
+        </div>
+        <div class="col-md-3">
+            <select class="portal-input" name="status">
+                <option value="">All Statuses</option>
+                <option value="New" {% if status_filter == 'New' %}selected{% endif %}>New</option>
+                <option value="Contacted" {% if status_filter == 'Contacted' %}selected{% endif %}>Contacted</option>
+                <option value="Assessment Scheduled" {% if status_filter == 'Assessment Scheduled' %}selected{% endif %}>Assessment Scheduled</option>
+                <option value="In Progress" {% if status_filter == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Approved" {% if status_filter == 'Approved' %}selected{% endif %}>Approved</option>
+                <option value="Closed" {% if status_filter == 'Closed' %}selected{% endif %}>Closed</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn-portal-secondary me-2">Filter</button>
+            <a href="{% url 'portal:referral_list' %}" class="btn-portal-secondary text-decoration-none">Clear</a>
+        </div>
+    </form>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="portal-table">
+            <thead>
+                <tr>
+                    <th>Participant Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Assigned Staff</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for referral in referrals %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 500;">{{ referral.first_name }} {{ referral.last_name }}</div>
+                    </td>
+                    <td>{{ referral.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        {% if referral.status == 'New' %}
+                            <span class="portal-badge primary">New</span>
+                        {% elif referral.status == 'Approved' %}
+                            <span class="portal-badge success">Approved</span>
+                        {% elif referral.status == 'Closed' %}
+                            <span class="portal-badge danger">Closed</span>
+                        {% else %}
+                            <span class="portal-badge warning">{{ referral.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if referral.assigned_staff %}
+                            {{ referral.assigned_staff.get_full_name }}
+                        {% else %}
+                            <span style="color: var(--text-muted); font-style: italic;">Unassigned</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'portal:referral_detail' referral.pk %}" class="btn btn-sm btn-outline-light text-muted border-secondary"><i class="fa-solid fa-eye"></i> View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4" style="color: var(--text-muted);">
+                        No referrals found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

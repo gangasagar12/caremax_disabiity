@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Referral(models.Model):
     GENDER_CHOICES = (
@@ -27,6 +28,7 @@ class Referral(models.Model):
     STATUS_CHOICES = (
         ('New', 'New'),
         ('Contacted', 'Contacted'),
+        ('Assessment Scheduled', 'Assessment Scheduled'),
         ('In Progress', 'In Progress'),
         ('Approved', 'Approved'),
         ('Closed', 'Closed'),
@@ -54,7 +56,8 @@ class Referral(models.Model):
     referrer_email = models.EmailField(blank=True)
 
     # System Fields
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='New')
+    assigned_staff = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_referrals')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
