@@ -31,12 +31,12 @@
 </section>
 
 <!-- 3. HOW WE HELP -->
-{% if service.features.exists %}
+{% if service.features %}
 <section class="service-features section-padding">
     <div class="container">
         <h2 class="text-center section-title">How We Help</h2>
         <div class="features-grid mt-4">
-            {% for feature in service.features.all %}
+            {% for feature in service.features %}
             <div class="feature-card shadow bg-white">
                 <div class="icon-wrapper"><i class="{{ feature.icon }}"></i></div>
                 <h4>{{ feature.title }}</h4>
@@ -49,12 +49,12 @@
 {% endif %}
 
 <!-- 4. KEY BENEFITS -->
-{% if service.benefits.exists %}
+{% if service.benefits %}
 <section class="service-benefits section-padding bg-light">
     <div class="container">
         <h2 class="text-center section-title">Key Benefits</h2>
         <div class="benefits-grid mt-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
-            {% for benefit in service.benefits.all %}
+            {% for benefit in service.benefits %}
             <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
                 <i class="{{ benefit.icon }}" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
                 <h4>{{ benefit.title }}</h4>
@@ -67,12 +67,12 @@
 {% endif %}
 
 <!-- 5. FREQUENTLY ASKED QUESTIONS -->
-{% if service.faqs.exists %}
+{% if service.faqs %}
 <section class="service-faqs section-padding">
     <div class="container max-w-700 mx-auto">
         <h2 class="text-center section-title mb-4">Frequently Asked Questions</h2>
         <div class="faq-accordion">
-            {% for faq in service.faqs.all %}
+            {% for faq in service.faqs %}
             <div class="faq-item shadow bg-white">
                 <h4 class="faq-question">{{ faq.question }}</h4>
                 <p class="faq-answer">{{ faq.answer }}</p>
@@ -95,7 +95,7 @@
                     <i class="{{ rel_service.icon }}"></i>
                 </div>
                 <h3>{{ rel_service.title }}</h3>
-                <a href="{% url 'services:service_detail' slug=rel_service.slug %}" class="btn-text mt-auto d-inline-block pt-3">
+                <a href="/services/{{ rel_service.slug }}/" class="btn-text mt-auto d-inline-block pt-3">
                     Learn More <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
