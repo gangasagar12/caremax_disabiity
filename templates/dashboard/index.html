@@ -1,0 +1,418 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* Top Section - Overview Cards */
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .stat-card {
+        background: var(--cards);
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        border: 1px solid #E2E8F0;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    }
+    
+    .stat-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    
+    .icon-blue { background: #EFF6FF; color: var(--primary-blue); }
+    .icon-teal { background: #F0FDFA; color: var(--secondary-teal); }
+    .icon-indigo { background: #EEF2FF; color: #4F46E5; }
+    .icon-rose { background: #FFF1F2; color: #E11D48; }
+    .icon-amber { background: #FFFBEB; color: #D97706; }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-navy);
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: #64748B;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    
+    .stat-action {
+        margin-top: auto;
+        padding-top: 15px;
+        font-size: 0.875rem;
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+    
+    .stat-action i {
+        margin-left: 5px;
+        font-size: 0.75rem;
+    }
+    
+    .stat-action:hover {
+        text-decoration: underline;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        background: var(--cards);
+        padding: 20px 24px;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-actions h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--dark-navy);
+        margin-right: 15px;
+    }
+    
+    .btn-action {
+        background: var(--background);
+        border: 1px solid #CBD5E1;
+        padding: 8px 16px;
+        border-radius: 6px;
+        color: #334155;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-action:hover {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+    
+    .btn-primary {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+
+    /* Tables / Lists */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+    
+    .dashboard-panel {
+        background: var(--cards);
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .panel-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid #E2E8F0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #F8FAFC;
+    }
+    
+    .panel-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--dark-navy);
+    }
+    
+    .panel-link {
+        font-size: 0.875rem;
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .data-table th, .data-table td {
+        padding: 12px 24px;
+        text-align: left;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: 0.875rem;
+    }
+    
+    .data-table th {
+        color: #64748B;
+        font-weight: 600;
+        background: #F8FAFC;
+    }
+    
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-new { background: #DBEAFE; color: #1E40AF; }
+    .status-progress { background: #FEF3C7; color: #92400E; }
+    .status-approved { background: #D1FAE5; color: #065F46; }
+    
+    .empty-state {
+        padding: 40px;
+        text-align: center;
+        color: #94A3B8;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3><i class="fa-solid fa-bolt text-amber-500 mr-2"></i> Quick Actions</h3>
+        <a href="{% url 'admin:referrals_referral_add' %}" class="btn-action btn-primary"><i class="fa-solid fa-plus"></i> Add Participant/Referral</a>
+        <a href="{% url 'admin:resources_blog_add' %}" class="btn-action"><i class="fa-solid fa-plus"></i> Add Blog</a>
+        <a href="{% url 'admin:services_service_add' %}" class="btn-action"><i class="fa-solid fa-plus"></i> Add Service</a>
+        <a href="#" class="btn-action"><i class="fa-solid fa-plus"></i> Add Job</a>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="overview-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon icon-teal">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="stat-value">{{ total_participants }}</div>
+            </div>
+            <div class="stat-label">Total Participants</div>
+            <a href="{% url 'admin:referrals_referral_changelist' %}" class="stat-action">View All <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+                <div class="stat-value">{{ new_referrals_count }}</div>
+            </div>
+            <div class="stat-label">New Referrals</div>
+            <a href="{% url 'admin:referrals_referral_changelist' %}?status__exact=New" class="stat-action">Review Referrals <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon icon-indigo">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div class="stat-value">{{ active_staff }}</div>
+            </div>
+            <div class="stat-label">Active Staff</div>
+            <a href="{% url 'admin:auth_user_changelist' %}" class="stat-action">Manage Staff <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon icon-rose">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div class="stat-value">{{ contact_messages_count }}</div>
+            </div>
+            <div class="stat-label">Unresolved Messages</div>
+            <a href="{% url 'admin:contact_contactmessage_changelist' %}" class="stat-action">Reply Now <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon icon-amber">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <div class="stat-value">{{ published_blogs_count }}</div>
+            </div>
+            <div class="stat-label">Published Blogs</div>
+            <a href="{% url 'admin:resources_blog_changelist' %}" class="stat-action">Manage Content <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-icon icon-teal">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div class="stat-value">{{ open_jobs_count }}</div>
+            </div>
+            <div class="stat-label">Open Job Positions</div>
+            <a href="#" class="stat-action">Manage Jobs <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+        
+        <!-- Recent Referrals -->
+        <div class="dashboard-panel">
+            <div class="panel-header">
+                <h3>Recent Referrals</h3>
+                <a href="{% url 'admin:referrals_referral_changelist' %}" class="panel-link">View All</a>
+            </div>
+            {% if recent_referrals %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Participant Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referral in recent_referrals %}
+                    <tr>
+                        <td>{{ referral.first_name }} {{ referral.last_name }}</td>
+                        <td>{{ referral.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="status-badge {% if referral.status == 'New' %}status-new{% elif referral.status == 'Approved' %}status-approved{% else %}status-progress{% endif %}">
+                                {{ referral.status }}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'admin:referrals_referral_change' referral.id %}" class="panel-link">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">No recent referrals found.</div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Contact Messages -->
+        <div class="dashboard-panel">
+            <div class="panel-header">
+                <h3>Recent Messages</h3>
+                <a href="{% url 'admin:contact_contactmessage_changelist' %}" class="panel-link">View All</a>
+            </div>
+            {% if recent_messages %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in recent_messages %}
+                    <tr>
+                        <td>{{ msg.name }}</td>
+                        <td>{{ msg.subject|truncatechars:30 }}</td>
+                        <td>{{ msg.created_at|date:"M d, Y" }}</td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'admin:contact_contactmessage_change' msg.id %}" class="panel-link">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">No recent messages found.</div>
+            {% endif %}
+        </div>
+        
+    </div>
+    
+    <!-- Fourth Section: Full width blogs -->
+    <div class="dashboard-panel" style="margin-top: -6px;">
+        <div class="panel-header">
+            <h3>Recent Blog Posts</h3>
+            <a href="{% url 'admin:resources_blog_changelist' %}" class="panel-link">View All</a>
+        </div>
+        {% if recent_blogs %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publish Date</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for blog in recent_blogs %}
+                <tr>
+                    <td><strong>{{ blog.title }}</strong></td>
+                    <td>{{ blog.author }}</td>
+                    <td>{{ blog.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <span class="status-badge {% if blog.is_published %}status-approved{% else %}status-progress{% endif %}">
+                            {% if blog.is_published %}Published{% else %}Draft{% endif %}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="{% url 'admin:resources_blog_change' blog.id %}" class="panel-link">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">No recent blog posts found.</div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

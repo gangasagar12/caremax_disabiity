@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Daily Living Skills | Support Services{% endblock %}
+{% block title %}Life Skill Development | Support Services{% endblock %}
 
 {% block content %}
 <!-- 1. SERVICE HERO SECTION -->
 <section class="service-detail-hero section-padding" style="background-image: linear-gradient(rgba(15, 74, 104, 0.85), rgba(15, 74, 104, 0.85)), url('{% static "images/about_hero.png" %}'); background-size: cover; background-position: center; color: var(--white);">
     <div class="container text-center">
         <div class="breadcrumbs mb-3">
-            <a href="/">Home</a> &gt; <a href="{% url 'services:service_list' %}">Services</a> &gt; <span>Daily Living Skills</span>
+            <a href="/">Home</a> &gt; <a href="{% url 'services:service_list' %}">Services</a> &gt; <span>Life Skill Development</span>
         </div>
-        <h1 class="section-title text-white">Daily Living Skills</h1>
-        <p class="section-subtitle mx-auto max-w-700 text-white-50">Developmental programs designed to build your capacity, confidence, and life skills.</p>
+        <h1 class="section-title text-white">Life Skill Development</h1>
+        <p class="section-subtitle mx-auto max-w-700 text-white-50">Building Confidence, Independence, and Essential Skills for Everyday Life</p>
     </div>
 </section>
 
@@ -20,68 +20,196 @@
     <div class="container">
         <div class="about-service-flex">
             <div class="about-service-image">
-                <img src="{% static 'images/team.png' %}" alt="Daily Living Skills" class="rounded-image shadow">
+                <img src="{% static 'images/team.png' %}" alt="Life Skill Development" class="rounded-image shadow">
             </div>
             <div class="about-service-content">
-                <h2 class="mb-4">About Daily Living Skills</h2>
-                <p style="font-size: 1.1rem; line-height: 1.8;">We believe in empowering you to achieve your goals. Our life skills development programs are focused on building your independence and capacity to manage daily life. We offer training in areas such as financial management, public transport training, cooking, and personal growth.</p>
+                <h2 class="mb-4">About This Service</h2>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">At CareMax Disability, we believe that developing practical life skills is key to achieving greater independence, confidence, and long-term success. Our Life Skill Development service is designed to support participants in learning and strengthening the skills needed to manage daily life, make informed decisions, and achieve their personal goals.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Through personalized guidance and hands-on support, we help participants build the knowledge, confidence, and abilities required to live more independently and participate actively in their communities.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Life Skill Development focuses on helping participants gain practical skills that support everyday living, personal growth, and increased independence.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 15px;">Our experienced support workers work alongside participants to identify goals, build capabilities, and develop essential skills at a pace that suits individual needs and learning styles.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8;">Whether you're looking to improve daily routines, communication skills, money management, or community participation, our team is here to support your journey toward greater independence.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 3. HOW WE HELP -->
+<!-- 3. HOW WE CAN HELP -->
 <section class="service-features section-padding">
     <div class="container">
-        <h2 class="text-center section-title">How We Help</h2>
+        <h2 class="text-center section-title">How We Can Help</h2>
         <div class="features-grid mt-4">
-            <div class="feature-card shadow bg-white">
-                <div class="icon-wrapper"><i class="fas fa-wallet"></i></div>
-                <h4>Financial Management</h4>
-                <p>Learning to budget, pay bills, and handle money.</p>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-tasks"></i></div>
+                <h4 class="text-center">Daily Living Skills</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Personal organisation and planning</li>
+                    <li>Managing daily routines</li>
+                    <li>Time management</li>
+                    <li>Personal hygiene and self-care</li>
+                    <li>Decision-making skills</li>
+                </ul>
             </div>
-            <div class="feature-card shadow bg-white">
-                <div class="icon-wrapper"><i class="fas fa-utensils"></i></div>
-                <h4>Cooking Skills</h4>
-                <p>Planning meals, shopping, and safe cooking techniques.</p>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-home"></i></div>
+                <h4 class="text-center">Household Management</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Meal planning and cooking</li>
+                    <li>Grocery shopping</li>
+                    <li>Cleaning and household maintenance</li>
+                    <li>Laundry and clothing care</li>
+                    <li>Home organisation</li>
+                </ul>
             </div>
-            <div class="feature-card shadow bg-white">
-                <div class="icon-wrapper"><i class="fas fa-comments"></i></div>
-                <h4>Communication Skills</h4>
-                <p>Building confidence in social and formal communication.</p>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-wallet"></i></div>
+                <h4 class="text-center">Money Management</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Budgeting skills</li>
+                    <li>Understanding expenses</li>
+                    <li>Financial planning basics</li>
+                    <li>Responsible spending habits</li>
+                    <li>Everyday money handling</li>
+                </ul>
             </div>
-            
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-comments"></i></div>
+                <h4 class="text-center">Communication & Social Skills</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Building confidence in conversations</li>
+                    <li>Developing interpersonal skills</li>
+                    <li>Social interaction support</li>
+                    <li>Relationship-building skills</li>
+                    <li>Community engagement</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-map-marked-alt"></i></div>
+                <h4 class="text-center">Travel & Community Skills</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Using public transport</li>
+                    <li>Planning journeys</li>
+                    <li>Community navigation</li>
+                    <li>Attending appointments independently</li>
+                    <li>Accessing local services</li>
+                </ul>
+            </div>
+            <div class="feature-card shadow bg-white" style="text-align: left;">
+                <div class="icon-wrapper" style="margin: 0 auto 20px;"><i class="fas fa-briefcase"></i></div>
+                <h4 class="text-center">Employment & Education Readiness</h4>
+                <ul style="list-style-type: disc; margin-left: 20px; line-height: 1.8;">
+                    <li>Workplace skills development</li>
+                    <li>Study and learning support</li>
+                    <li>Building responsibility and independence</li>
+                    <li>Goal setting and achievement</li>
+                </ul>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- 4. FREQUENTLY ASKED QUESTIONS -->
-<section class="service-faqs section-padding">
+<!-- 4. BENEFITS -->
+<section class="service-benefits section-padding bg-light">
+    <div class="container">
+        <h2 class="text-center section-title">Benefits of Life Skill Development</h2>
+        <div class="benefits-grid mt-4" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-walking" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Increased Independence</h4>
+                <p>Develop practical skills that support everyday living and self-sufficiency.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-star" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Greater Confidence</h4>
+                <p>Build confidence in managing personal responsibilities and making decisions.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-lightbulb" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Improved Problem-Solving</h4>
+                <p>Learn strategies to handle challenges and adapt to different situations.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-hands-helping" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Enhanced Community Participation</h4>
+                <p>Gain the skills needed to engage more actively in social, educational, and community activities.</p>
+            </div>
+            <div class="benefit-card shadow bg-white p-4 text-center rounded-md" style="border-radius: 16px;">
+                <i class="fas fa-chart-line" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                <h4>Better Long-Term Outcomes</h4>
+                <p>Develop abilities that support ongoing personal growth and future opportunities.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. WHY CHOOSE CAREMAX -->
+<section class="service-features section-padding">
+    <div class="container">
+        <h2 class="text-center section-title">Why Choose CareMax Disability?</h2>
+        <div class="features-grid mt-4">
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-user-graduate"></i></div>
+                <h4>Person-Centred Learning</h4>
+                <p>Every skill development program is tailored to individual goals, strengths, and support needs.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-user-tie"></i></div>
+                <h4>Experienced Support Workers</h4>
+                <p>Our team provides patient, encouraging, and practical guidance throughout the learning process.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-bullseye"></i></div>
+                <h4>Goal-Focused Support</h4>
+                <p>We help participants work towards meaningful outcomes that improve everyday life.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-sliders-h"></i></div>
+                <h4>Flexible Learning Approach</h4>
+                <p>Support is adapted to each participant's pace, interests, and preferred learning style.</p>
+            </div>
+            <div class="feature-card shadow bg-white">
+                <div class="icon-wrapper"><i class="fas fa-seedling"></i></div>
+                <h4>Promoting Independence</h4>
+                <p>Our focus is on empowering participants to develop confidence and greater self-reliance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. FREQUENTLY ASKED QUESTIONS -->
+<section class="service-faqs section-padding bg-light">
     <div class="container max-w-700 mx-auto">
         <h2 class="text-center section-title mb-4">Frequently Asked Questions</h2>
         <div class="faq-accordion">
             <div class="faq-item shadow bg-white">
-                <h4 class="faq-question">Is the training one-on-one?</h4>
-                <p class="faq-answer">Yes, we provide individualised training tailored to your learning style and goals.</p>
+                <h4 class="faq-question">What life skills can CareMax help me develop?</h4>
+                <p class="faq-answer">We support a wide range of skills including daily living, household management, budgeting, communication, travel training, and community participation.</p>
             </div>
             <div class="faq-item shadow bg-white">
-                <h4 class="faq-question">How long does skill development take?</h4>
-                <p class="faq-answer">It depends entirely on the skill and the individual. We move at your pace.</p>
+                <h4 class="faq-question">Is the program tailored to individual goals?</h4>
+                <p class="faq-answer">Yes. Every participant receives personalized support based on their unique needs, interests, and NDIS goals.</p>
             </div>
-            
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Can Life Skill Development help prepare me for employment?</h4>
+                <p class="faq-answer">Absolutely. We can assist with workplace readiness, communication skills, responsibility, time management, and confidence building.</p>
+            </div>
+            <div class="faq-item shadow bg-white">
+                <h4 class="faq-question">Is this support funded through the NDIS?</h4>
+                <p class="faq-answer">Many participants can access Life Skill Development through their NDIS funding. Our team can help you understand your available supports.</p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- 5. CONTACT CTA -->
+<!-- 7. CONTACT CTA -->
 <section class="section-padding mb-5">
     <div class="container">
         <div id="contact" class="contact-cta text-center shadow-lg" style="background-color: var(--primary); color: var(--white); padding: 60px 30px; border-radius: 24px;">
-            <h2>Ready to Discuss Your Support Needs?</h2>
-            <p class="mt-3 mb-4 mx-auto max-w-700" style="color: rgba(255,255,255,0.7);">Contact our dedicated intake team today to discuss how we can tailor this service to your unique goals.</p>
+            <h2>Ready to Build Skills for Greater Independence?</h2>
+            <p class="mt-3 mb-4 mx-auto max-w-700" style="color: rgba(255,255,255,0.7);">Learning new skills can open doors to greater confidence, independence, and opportunities in everyday life. At CareMax Disability, we are committed to helping participants develop practical abilities that support personal growth and long-term success. Contact our team today to learn how our Life Skill Development service can help you achieve your goals and build a more independent future.</p>
             <div class="hero-buttons">
                 <a href="{% url 'contact:contact_us' %}" class="btn btn-outline-light btn-large mr-3">Contact Us</a>
-                <a href="{% url 'referrals:referral_create' %}" class="btn bg-white btn-large" style="color: var(--primary);">Get Support Today</a>
+                <a href="{% url 'referrals:referral_create' %}?service=daily-living-skills" class="btn bg-white btn-large" style="color: var(--primary);">Submit a Referral</a>
             </div>
         </div>
     </div>
