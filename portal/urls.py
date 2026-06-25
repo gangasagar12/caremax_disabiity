@@ -4,25 +4,25 @@ from . import views
 app_name = 'portal'
 
 urlpatterns = [
-    path('', views.dashboard, name='index'),
-    path('login/', views.portal_login, name='login'),
-    path('logout/', views.portal_logout, name='logout'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('', views.DashboardView.as_view(), name='index'),
+    path('login/', views.PortalLoginView.as_view(), name='login'),
+    path('logout/', views.PortalLogoutView.as_view(), name='logout'),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     
     # Participant Management
-    path('participants/', views.participant_list, name='participant_list'),
-    path('participants/<int:pk>/', views.participant_detail, name='participant_detail'),
+    path('participants/', views.ParticipantListView.as_view(), name='participant_list'),
+    path('participants/<int:pk>/', views.ParticipantDetailView.as_view(), name='participant_detail'),
     
     # Referral Management
-    path('referrals/', views.referral_list, name='referral_list'),
-    path('referrals/<int:pk>/', views.referral_detail, name='referral_detail'),
+    path('referrals/', views.ReferralListView.as_view(), name='referral_list'),
+    path('referrals/<int:pk>/', views.ReferralDetailView.as_view(), name='referral_detail'),
     
     # Other placeholder routes
-    path('support-plans/', views.support_plans, name='support_plans'),
-    path('case-notes/', views.case_notes, name='case_notes'),
-    path('documents/', views.documents, name='documents'),
-    path('leave/', views.leave_requests, name='leave_requests'),
-    path('announcements/', views.announcements, name='announcements'),
-    path('reports/', views.reports, name='reports'),
-    path('profile/', views.profile, name='profile'),
+    path('support-plans/', views.SupportPlanListView.as_view(), name='support_plans'),
+    path('case-notes/', views.CaseNoteListView.as_view(), name='case_notes'),
+    path('documents/', views.DocumentListView.as_view(), name='documents'),
+    path('leave/', views.LeaveRequestListView.as_view(), name='leave_requests'),
+    path('announcements/', views.AnnouncementListView.as_view(), name='announcements'),
+    path('reports/', views.ReportView.as_view(), name='reports'),
+    path('profile/', views.ProfileView.as_view(), name='profile'),
 ]

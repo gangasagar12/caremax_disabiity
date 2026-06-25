@@ -51,11 +51,14 @@
 
         <div class="portal-nav-section">
             <div class="portal-nav-title">Other</div>
-            <a href="{% url 'portal:announcements' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'announcements' %}active{% endif %}">
-                <i class="fa-solid fa-bullhorn"></i> Announcements
+            <a href="#" class="portal-nav-link">
+                <i class="fa-regular fa-bell"></i> Notifications
             </a>
-            <a href="{% url 'portal:reports' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
-                <i class="fa-solid fa-chart-pie"></i> Reports
+            <a href="{% url 'portal:profile' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                <i class="fa-solid fa-user"></i> My Profile
+            </a>
+            <a href="{% url 'portal:logout' %}" class="portal-nav-link text-danger">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
             </a>
         </div>
     </aside>

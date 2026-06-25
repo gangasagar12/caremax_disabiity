@@ -1,130 +1,165 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout, authenticate
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView
 from django.contrib import messages
-from .models import Participant, SupportPlan, CaseNote, Document, LeaveRequest, Announcement
+from django.urls import reverse_lazy
+
+from .models import Participant, SupportPlan, CaseNote, Document, LeaveRequest, Announcement, Notification
 from referrals.models import Referral
+from .mixins import StaffRequiredMixin, ActivityLogMixin
 
-def portal_login(request):
-    if request.user.is_authenticated:
-        return redirect('portal:dashboard')
+class PortalLoginView(LoginView):
+    template_name = 'portal/login.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('portal:dashboard')
+
+class PortalLogoutView(LogoutView):
+    next_page = reverse_lazy('portal:login')
+    http_method_names = ['get', 'post', 'options']
+
+    def get(self, request, *args, **kwargs):
+        from django.contrib.auth import logout
+        logout(request)
+        return redirect(self.next_page)
+
+class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
         
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if not request.POST.get('remember_me'):
-                request.session.set_expiry(0)
-            return redirect('portal:dashboard')
-        else:
-            messages.error(request, 'Invalid username or password.')
+        # Staff specific statistics
+        assigned_participants = user.assigned_participants.all()
+        assigned_referrals = Referral.objects.filter(assigned_staff=user)
+        
+        context['total_participants'] = assigned_participants.count()
+        context['active_participants'] = assigned_participants.filter(status='Active').count()
+        
+        context['new_referrals'] = assigned_referrals.filter(status='New').count()
+        context['pending_referrals'] = assigned_referrals.filter(status__in=['Contacted', 'Assessment Scheduled', 'In Progress']).count()
+        
+        context['recent_referrals'] = assigned_referrals.order_by('-created_at')[:5]
+        return context
+
+class ParticipantListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
+    template_name = 'portal/participants/list.html'
+    context_object_name = 'participants'
+    
+    def get_queryset(self):
+        user = self.request.user
+        query = self.request.GET.get('q', '')
+        status_filter = self.request.GET.get('status', '')
+        
+        participants = user.assigned_participants.all().order_by('-created_at')
+        
+        if query:
+            participants = participants.filter(first_name__icontains=query) | participants.filter(last_name__icontains=query) | participants.filter(ndis_number__icontains=query)
             
-    return render(request, 'portal/login.html')
-
-def portal_logout(request):
-    logout(request)
-    return redirect('portal:login')
-
-@login_required(login_url='portal:login')
-def dashboard(request):
-    from django.contrib.auth.models import User
-    total_participants = Participant.objects.count()
-    active_participants = Participant.objects.filter(status='Active').count()
-    new_referrals = Referral.objects.filter(status='New').count()
-    pending_referrals = Referral.objects.filter(status__in=['Contacted', 'Assessment Scheduled', 'In Progress']).count()
-    active_staff = User.objects.filter(is_active=True).count()
-    
-    recent_referrals = Referral.objects.all().order_by('-created_at')[:5]
-    
-    context = {
-        'total_participants': total_participants,
-        'active_participants': active_participants,
-        'new_referrals': new_referrals,
-        'pending_referrals': pending_referrals,
-        'active_staff': active_staff,
-        'recent_referrals': recent_referrals,
-    }
-    return render(request, 'portal/dashboard.html', context)
-
-@login_required(login_url='portal:login')
-def participant_list(request):
-    query = request.GET.get('q', '')
-    status_filter = request.GET.get('status', '')
-    
-    participants = Participant.objects.all().order_by('-created_at')
-    
-    if query:
-        participants = participants.filter(first_name__icontains=query) | participants.filter(last_name__icontains=query) | participants.filter(ndis_number__icontains=query)
+        if status_filter:
+            participants = participants.filter(status=status_filter)
+            
+        return participants
         
-    if status_filter:
-        participants = participants.filter(status=status_filter)
-        
-    context = {
-        'participants': participants,
-        'query': query,
-        'status_filter': status_filter,
-    }
-    return render(request, 'portal/participants/list.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['status_filter'] = self.request.GET.get('status', '')
+        return context
 
-@login_required(login_url='portal:login')
-def participant_detail(request, pk):
-    from django.shortcuts import get_object_or_404
-    participant = get_object_or_404(Participant, pk=pk)
-    return render(request, 'portal/participants/detail.html', {'participant': participant})
-
-@login_required(login_url='portal:login')
-def referral_list(request):
-    query = request.GET.get('q', '')
-    status_filter = request.GET.get('status', '')
+class ParticipantDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
+    template_name = 'portal/participants/detail.html'
+    context_object_name = 'participant'
     
-    referrals = Referral.objects.all().order_by('-created_at')
+    def get_queryset(self):
+        return self.request.user.assigned_participants.all()
+
+class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
+    template_name = 'portal/referrals/list.html'
+    context_object_name = 'referrals'
     
-    if query:
-        referrals = referrals.filter(first_name__icontains=query) | referrals.filter(last_name__icontains=query)
+    def get_queryset(self):
+        user = self.request.user
+        query = self.request.GET.get('q', '')
+        status_filter = self.request.GET.get('status', '')
         
-    if status_filter:
-        referrals = referrals.filter(status=status_filter)
+        referrals = Referral.objects.filter(assigned_staff=user).order_by('-created_at')
         
-    context = {
-        'referrals': referrals,
-        'query': query,
-        'status_filter': status_filter,
-    }
-    return render(request, 'portal/referrals/list.html', context)
+        if query:
+            referrals = referrals.filter(first_name__icontains=query) | referrals.filter(last_name__icontains=query)
+            
+        if status_filter:
+            referrals = referrals.filter(status=status_filter)
+            
+        return referrals
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        context['status_filter'] = self.request.GET.get('status', '')
+        return context
 
-@login_required(login_url='portal:login')
-def referral_detail(request, pk):
-    from django.shortcuts import get_object_or_404
-    referral = get_object_or_404(Referral, pk=pk)
-    return render(request, 'portal/referrals/detail.html', {'referral': referral})
+class ReferralDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
+    template_name = 'portal/referrals/detail.html'
+    context_object_name = 'referral'
+    
+    def get_queryset(self):
+        return Referral.objects.filter(assigned_staff=self.request.user)
 
-@login_required(login_url='portal:login')
-def support_plans(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Support Plans'})
+class SupportPlanListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Support Plans'
+        return context
 
-@login_required(login_url='portal:login')
-def case_notes(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Case Notes'})
+class CaseNoteListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Case Notes'
+        return context
 
-@login_required(login_url='portal:login')
-def documents(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Documents'})
+class DocumentListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Documents'
+        return context
 
-@login_required(login_url='portal:login')
-def leave_requests(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Leave Requests'})
+class LeaveRequestListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Leave Requests'
+        return context
 
-@login_required(login_url='portal:login')
-def announcements(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Announcements'})
+class AnnouncementListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Announcements'
+        return context
 
-@login_required(login_url='portal:login')
-def reports(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Reports'})
+class ReportView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Reports'
+        return context
 
-@login_required(login_url='portal:login')
-def profile(request):
-    return render(request, 'portal/placeholder.html', {'title': 'Profile'})
-
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Profile'
+        return context
