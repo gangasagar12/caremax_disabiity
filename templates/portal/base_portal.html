@@ -1,4 +1,4 @@
-{% load static %}
+{% load static auth_extras %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +24,59 @@
             <h2>CareMax Portal</h2>
         </div>
         
+        {% if request.user|has_group:"Admin Group" %}
+        <!-- ADMIN SIDEBAR -->
+        <div class="portal-nav-section">
+            <div class="portal-nav-title">Administration</div>
+            <a href="{% url 'portal:dashboard' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="{% url 'portal:employees' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'employees' %}active{% endif %}">
+                <i class="fa-solid fa-user-tie"></i> Employees
+            </a>
+            <a href="{% url 'portal:participant_list' %}" class="portal-nav-link {% if 'participant' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-users"></i> Participants
+            </a>
+            <a href="{% url 'portal:referral_list' %}" class="portal-nav-link {% if 'referral' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fa-solid fa-file-signature"></i> Referrals
+            </a>
+            <a href="{% url 'portal:support_plans' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'support_plans' %}active{% endif %}">
+                <i class="fa-solid fa-clipboard-list"></i> Support Plans
+            </a>
+            <a href="{% url 'portal:documents' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'documents' %}active{% endif %}">
+                <i class="fa-solid fa-folder-open"></i> Documents
+            </a>
+            <a href="{% url 'portal:case_notes' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'case_notes' %}active{% endif %}">
+                <i class="fa-solid fa-notes-medical"></i> Case Notes
+            </a>
+            <a href="{% url 'portal:leave_requests' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'leave_requests' %}active{% endif %}">
+                <i class="fa-solid fa-calendar-minus"></i> Leave Requests
+            </a>
+            <a href="{% url 'portal:reports' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                <i class="fa-solid fa-chart-pie"></i> Reports
+            </a>
+        </div>
+
+        <div class="portal-nav-section">
+            <div class="portal-nav-title">System Management</div>
+            <a href="{% url 'portal:website_messages' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'website_messages' %}active{% endif %}">
+                <i class="fa-solid fa-envelope"></i> Website Messages
+            </a>
+            <a href="{% url 'portal:announcements' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'announcements' %}active{% endif %}">
+                <i class="fa-solid fa-bullhorn"></i> Announcements
+            </a>
+            <a href="{% url 'portal:users' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'users' %}active{% endif %}">
+                <i class="fa-solid fa-user-shield"></i> Users
+            </a>
+            <a href="{% url 'portal:settings' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <a href="{% url 'portal:logout' %}" class="portal-nav-link text-danger">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+        </div>
+        {% else %}
+        <!-- STAFF SIDEBAR -->
         <div class="portal-nav-section">
             <div class="portal-nav-title">Menu</div>
             <a href="{% url 'portal:dashboard' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
@@ -38,11 +91,11 @@
             <a href="{% url 'portal:support_plans' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'support_plans' %}active{% endif %}">
                 <i class="fa-solid fa-clipboard-list"></i> Support Plans
             </a>
-            <a href="{% url 'portal:case_notes' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'case_notes' %}active{% endif %}">
-                <i class="fa-solid fa-notes-medical"></i> Case Notes
-            </a>
             <a href="{% url 'portal:documents' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'documents' %}active{% endif %}">
                 <i class="fa-solid fa-folder-open"></i> Documents
+            </a>
+            <a href="{% url 'portal:case_notes' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'case_notes' %}active{% endif %}">
+                <i class="fa-solid fa-notes-medical"></i> Case Notes
             </a>
             <a href="{% url 'portal:leave_requests' %}" class="portal-nav-link {% if request.resolver_match.url_name == 'leave_requests' %}active{% endif %}">
                 <i class="fa-solid fa-calendar-minus"></i> Leave Requests
@@ -61,6 +114,7 @@
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
             </a>
         </div>
+        {% endif %}
     </aside>
 
     <!-- Main Content -->

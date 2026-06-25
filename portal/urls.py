@@ -18,11 +18,15 @@ urlpatterns = [
     path('referrals/<int:pk>/', views.ReferralDetailView.as_view(), name='referral_detail'),
     
     # Other placeholder routes
+    path('employees/', views.EmployeeListView.as_view(), name='employees'),
     path('support-plans/', views.SupportPlanListView.as_view(), name='support_plans'),
     path('case-notes/', views.CaseNoteListView.as_view(), name='case_notes'),
     path('documents/', views.DocumentListView.as_view(), name='documents'),
     path('leave/', views.LeaveRequestListView.as_view(), name='leave_requests'),
-    path('announcements/', views.AnnouncementListView.as_view(), name='announcements'),
     path('reports/', views.ReportView.as_view(), name='reports'),
+    path('website-messages/', views.WebsiteMessageListView.as_view(), name='website_messages'),
+    path('announcements/', views.AnnouncementListView.as_view(), name='announcements'),
+    path('users/', views.UserManagementView.as_view(), name='users'),
+    path('settings/', views.SettingsView.as_view(), name='settings'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
 ]

@@ -31,17 +31,23 @@ class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         
-        # Staff specific statistics
-        assigned_participants = user.assigned_participants.all()
-        assigned_referrals = Referral.objects.filter(assigned_staff=user)
+        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        context['is_admin'] = is_admin
+
+        if is_admin:
+            participants = Participant.objects.all()
+            referrals = Referral.objects.all()
+        else:
+            participants = user.assigned_participants.all()
+            referrals = Referral.objects.filter(assigned_staff=user)
         
-        context['total_participants'] = assigned_participants.count()
-        context['active_participants'] = assigned_participants.filter(status='Active').count()
+        context['total_participants'] = participants.count()
+        context['active_participants'] = participants.filter(status='Active').count()
         
-        context['new_referrals'] = assigned_referrals.filter(status='New').count()
-        context['pending_referrals'] = assigned_referrals.filter(status__in=['Contacted', 'Assessment Scheduled', 'In Progress']).count()
+        context['new_referrals'] = referrals.filter(status='New').count()
+        context['pending_referrals'] = referrals.filter(status__in=['Contacted', 'Assessment Scheduled', 'In Progress']).count()
         
-        context['recent_referrals'] = assigned_referrals.order_by('-created_at')[:5]
+        context['recent_referrals'] = referrals.order_by('-created_at')[:5]
         return context
 
 class ParticipantListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
@@ -53,7 +59,11 @@ class ParticipantListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         query = self.request.GET.get('q', '')
         status_filter = self.request.GET.get('status', '')
         
-        participants = user.assigned_participants.all().order_by('-created_at')
+        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        if is_admin:
+            participants = Participant.objects.all().order_by('-created_at')
+        else:
+            participants = user.assigned_participants.all().order_by('-created_at')
         
         if query:
             participants = participants.filter(first_name__icontains=query) | participants.filter(last_name__icontains=query) | participants.filter(ndis_number__icontains=query)
@@ -74,7 +84,11 @@ class ParticipantDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
     context_object_name = 'participant'
     
     def get_queryset(self):
-        return self.request.user.assigned_participants.all()
+        user = self.request.user
+        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        if is_admin:
+            return Participant.objects.all()
+        return user.assigned_participants.all()
 
 class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
     template_name = 'portal/referrals/list.html'
@@ -85,7 +99,11 @@ class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         query = self.request.GET.get('q', '')
         status_filter = self.request.GET.get('status', '')
         
-        referrals = Referral.objects.filter(assigned_staff=user).order_by('-created_at')
+        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        if is_admin:
+            referrals = Referral.objects.all().order_by('-created_at')
+        else:
+            referrals = Referral.objects.filter(assigned_staff=user).order_by('-created_at')
         
         if query:
             referrals = referrals.filter(first_name__icontains=query) | referrals.filter(last_name__icontains=query)
@@ -106,7 +124,11 @@ class ReferralDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
     context_object_name = 'referral'
     
     def get_queryset(self):
-        return Referral.objects.filter(assigned_staff=self.request.user)
+        user = self.request.user
+        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        if is_admin:
+            return Referral.objects.all()
+        return Referral.objects.filter(assigned_staff=user)
 
 class SupportPlanListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
     template_name = 'portal/placeholder.html'
@@ -162,4 +184,32 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Profile'
+        return context
+
+class EmployeeListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Employees'
+        return context
+
+class WebsiteMessageListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Website Messages'
+        return context
+
+class UserManagementView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'User Management'
+        return context
+
+class SettingsView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
+    template_name = 'portal/placeholder.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Settings'
         return context

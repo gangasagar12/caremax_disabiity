@@ -1,4 +1,5 @@
 {% extends "portal/base_portal.html" %}
+{% load auth_extras %}
 
 {% block title %}Referrals{% endblock %}
 
@@ -9,6 +10,9 @@
         <p style="color: var(--text-muted); margin: 0;">Manage incoming and active referrals.</p>
     </div>
     <div class="d-flex gap-2">
+        {% if request.user|has_group:"Admin Group" %}
+        <a href="#" class="btn-portal-primary text-decoration-none"><i class="fa-solid fa-plus"></i> Create Referral</a>
+        {% endif %}
     </div>
 </div>
 
