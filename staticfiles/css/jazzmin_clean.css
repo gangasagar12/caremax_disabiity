@@ -1,0 +1,243 @@
+/* CareMax Clean Admin UI */
+
+/* Global Typography & Colors */
+:root {
+    --primary-green: #10B981;
+    --danger-red: #EF4444;
+    --bg-light: #FFFFFF;
+    --bg-white: #FFFFFF;
+    --text-dark: #000000;
+    --text-muted: #475569;
+    --border-soft: #E2E8F0;
+    --accent: #10B981;
+}
+
+body,
+.wrapper,
+.content-wrapper,
+.main-header,
+.main-sidebar,
+.brand-link {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+}
+
+/* Base Layout Backgrounds */
+body,
+body.dark-mode,
+[data-theme="dark"] body,
+[data-bs-theme="dark"] body {
+    background-color: var(--bg-light) !important;
+    color: var(--text-dark) !important;
+}
+
+.content-wrapper,
+.wrapper,
+body.dark-mode .content-wrapper,
+body.dark-mode .wrapper,
+[data-theme="dark"] .content-wrapper,
+[data-bs-theme="dark"] .content-wrapper {
+    background-color: var(--bg-light) !important;
+    color: var(--text-dark) !important;
+}
+
+/* Top Navbar (Clean White) */
+.main-header.navbar {
+    background-color: var(--bg-white) !important;
+    border-bottom: 1px solid var(--border-soft) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: var(--primary-blue) !important;
+}
+
+/* Sidebar (Light & Clean) */
+.main-sidebar,
+body.dark-mode .main-sidebar,
+.sidebar-dark-primary {
+    background-color: var(--bg-white) !important;
+    border-right: 1px solid var(--border-soft) !important;
+    box-shadow: none !important;
+}
+
+.brand-link,
+body.dark-mode .brand-link {
+    border-bottom: 1px solid var(--border-soft) !important;
+    background-color: var(--bg-white) !important;
+    color: var(--text-dark) !important;
+    font-weight: 700;
+}
+
+.brand-link .brand-text,
+body.dark-mode .brand-link .brand-text {
+    color: var(--text-dark) !important;
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    visibility: visible !important;
+}
+
+body.dark-mode .nav-sidebar .nav-item .nav-link,
+body.dark-mode .nav-sidebar .nav-item .nav-link p {
+    color: var(--text-dark) !important;
+}
+
+.brand-link .brand-image {
+    opacity: 1 !important;
+}
+
+.sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+    background-color: var(--primary-green) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+    border-radius: 8px;
+}
+
+.sidebar-light-primary .nav-sidebar>.nav-item>.nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    border-radius: 8px;
+}
+
+.nav-sidebar .nav-item {
+    margin-bottom: 2px;
+}
+
+/* Dashboard Cards & Widgets */
+.card {
+    background-color: var(--bg-white) !important;
+    border: 1px solid var(--border-soft) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    margin-bottom: 24px;
+}
+
+.card-header {
+    background-color: var(--bg-white) !important;
+    border-bottom: 1px solid var(--border-soft) !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 16px 20px;
+}
+
+.card-title {
+    color: var(--text-dark) !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem;
+}
+
+/* Info Boxes (KPIs) */
+.info-box {
+    background-color: var(--bg-white) !important;
+    border: 1px solid var(--border-soft) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    padding: 15px;
+    min-height: 100px;
+}
+
+.info-box-icon {
+    border-radius: 10px !important;
+}
+
+.info-box-text {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+.info-box-number {
+    color: var(--text-dark) !important;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Buttons (Green & Red) */
+.btn {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.btn-primary,
+.btn-success {
+    background-color: var(--primary-green) !important;
+    border-color: var(--primary-green) !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+    background-color: #059669 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+    background-color: var(--danger-red) !important;
+    border-color: var(--danger-red) !important;
+    color: #fff !important;
+}
+
+.btn-danger:hover {
+    background-color: #DC2626 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+}
+
+.btn-info {
+    background-color: var(--text-muted) !important;
+    border-color: var(--text-muted) !important;
+}
+
+/* Tables */
+.table {
+    color: var(--text-dark) !important;
+}
+
+.table thead th {
+    border-bottom: 2px solid var(--border-soft) !important;
+    color: var(--text-muted) !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.table td,
+.table th {
+    border-top: 1px solid var(--border-soft) !important;
+    vertical-align: middle;
+}
+
+/* Form Inputs */
+.form-control {
+    border-radius: 6px !important;
+    border: 1px solid var(--border-soft) !important;
+    padding: 10px 12px;
+}
+
+.form-control:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Dashboard specific cleanup */
+.custom-dashboard-wrapper {
+    padding: 20px 0;
+}
+
+/* User Profile Image Constraints */
+.user-panel .image img,
+.navbar-nav .user-image {
+    width: 35px !important;
+    height: 35px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    border: 1px solid var(--border-soft);
+}
