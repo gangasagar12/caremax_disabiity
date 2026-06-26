@@ -24,7 +24,7 @@
             <h2>CareMax Portal</h2>
         </div>
         
-        {% if request.user|has_group:"Admin Group" %}
+        {% if perms.auth.view_user %}
         <!-- ADMIN SIDEBAR -->
         <div class="portal-nav-section">
             <div class="portal-nav-title">Administration</div>

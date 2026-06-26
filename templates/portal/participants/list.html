@@ -10,7 +10,7 @@
         <p style="color: var(--text-muted); margin: 0;">Manage your NDIS participants.</p>
     </div>
     <div class="d-flex gap-2">
-        {% if request.user|has_group:"Admin Group" %}
+        {% if perms.portal.add_participant %}
         <a href="#" class="btn-portal-primary text-decoration-none"><i class="fa-solid fa-plus"></i> Add Participant</a>
         {% endif %}
     </div>

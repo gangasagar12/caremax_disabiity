@@ -8,7 +8,7 @@ class StaffRequiredMixin(UserPassesTestMixin):
     """
     def test_func(self):
         return self.request.user.is_authenticated and (
-            self.request.user.groups.filter(name='Staff Group').exists() or 
+            self.request.user.has_perm('portal.view_participant') or
             self.request.user.is_superuser
         )
 

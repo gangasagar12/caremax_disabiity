@@ -36,15 +36,16 @@ class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         
-        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        is_admin = user.is_superuser or user.has_perm('auth.view_user')
         context['is_admin'] = is_admin
 
         if is_admin:
             participants = Participant.objects.all()
             referrals = Referral.objects.all()
         else:
-            participants = user.assigned_participants.all()
-            referrals = Referral.objects.filter(assigned_staff=user)
+            from guardian.shortcuts import get_objects_for_user
+            participants = get_objects_for_user(user, 'portal.view_participant')
+            referrals = get_objects_for_user(user, 'referrals.view_referral')
         
         context['total_participants'] = participants.count()
         context['active_participants'] = participants.filter(status='Active').count()
@@ -64,11 +65,12 @@ class ParticipantListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         query = self.request.GET.get('q', '')
         status_filter = self.request.GET.get('status', '')
         
-        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        is_admin = user.is_superuser or user.has_perm('auth.view_user')
         if is_admin:
             participants = Participant.objects.all().order_by('-created_at')
         else:
-            participants = user.assigned_participants.all().order_by('-created_at')
+            from guardian.shortcuts import get_objects_for_user
+            participants = get_objects_for_user(user, 'portal.view_participant').order_by('-created_at')
         
         if query:
             participants = participants.filter(first_name__icontains=query) | participants.filter(last_name__icontains=query) | participants.filter(ndis_number__icontains=query)
@@ -90,10 +92,11 @@ class ParticipantDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
     
     def get_queryset(self):
         user = self.request.user
-        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        is_admin = user.is_superuser or user.has_perm('auth.view_user')
         if is_admin:
             return Participant.objects.all()
-        return user.assigned_participants.all()
+        from guardian.shortcuts import get_objects_for_user
+        return get_objects_for_user(user, 'portal.view_participant')
 
 class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
     template_name = 'portal/referrals/list.html'
@@ -104,11 +107,12 @@ class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         query = self.request.GET.get('q', '')
         status_filter = self.request.GET.get('status', '')
         
-        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        is_admin = user.is_superuser or user.has_perm('auth.view_user')
         if is_admin:
             referrals = Referral.objects.all().order_by('-created_at')
         else:
-            referrals = Referral.objects.filter(assigned_staff=user).order_by('-created_at')
+            from guardian.shortcuts import get_objects_for_user
+            referrals = get_objects_for_user(user, 'referrals.view_referral').order_by('-created_at')
         
         if query:
             referrals = referrals.filter(first_name__icontains=query) | referrals.filter(last_name__icontains=query)
@@ -130,10 +134,11 @@ class ReferralDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
     
     def get_queryset(self):
         user = self.request.user
-        is_admin = user.is_superuser or user.groups.filter(name='Admin Group').exists()
+        is_admin = user.is_superuser or user.has_perm('auth.view_user')
         if is_admin:
             return Referral.objects.all()
-        return Referral.objects.filter(assigned_staff=user)
+        from guardian.shortcuts import get_objects_for_user
+        return get_objects_for_user(user, 'referrals.view_referral')
 
 class SupportPlanListView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
     template_name = 'portal/placeholder.html'
