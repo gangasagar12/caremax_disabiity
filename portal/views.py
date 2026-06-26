@@ -15,6 +15,11 @@ class PortalLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('portal:dashboard')
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.request.session['portal_logged_in'] = True
+        return response
+
 class PortalLogoutView(LogoutView):
     next_page = reverse_lazy('portal:login')
     http_method_names = ['get', 'post', 'options']
