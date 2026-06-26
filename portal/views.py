@@ -40,12 +40,12 @@ class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
         context['is_admin'] = is_admin
 
         if is_admin:
-            participants = Participant.objects.all()
-            referrals = Referral.objects.all()
+            participants = Participant.objects.all().prefetch_related('assigned_staff')
+            referrals = Referral.objects.all().select_related('assigned_staff').prefetch_related('services_required')
         else:
             from guardian.shortcuts import get_objects_for_user
-            participants = get_objects_for_user(user, 'portal.view_participant')
-            referrals = get_objects_for_user(user, 'referrals.view_referral')
+            participants = get_objects_for_user(user, 'portal.view_participant').prefetch_related('assigned_staff')
+            referrals = get_objects_for_user(user, 'referrals.view_referral').select_related('assigned_staff').prefetch_related('services_required')
         
         context['total_participants'] = participants.count()
         context['active_participants'] = participants.filter(status='Active').count()
@@ -59,6 +59,7 @@ class DashboardView(LoginRequiredMixin, StaffRequiredMixin, TemplateView):
 class ParticipantListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
     template_name = 'portal/participants/list.html'
     context_object_name = 'participants'
+    paginate_by = 20
     
     def get_queryset(self):
         user = self.request.user
@@ -67,10 +68,10 @@ class ParticipantListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         
         is_admin = user.is_superuser or user.has_perm('auth.view_user')
         if is_admin:
-            participants = Participant.objects.all().order_by('-created_at')
+            participants = Participant.objects.all().order_by('-created_at').prefetch_related('assigned_staff')
         else:
             from guardian.shortcuts import get_objects_for_user
-            participants = get_objects_for_user(user, 'portal.view_participant').order_by('-created_at')
+            participants = get_objects_for_user(user, 'portal.view_participant').order_by('-created_at').prefetch_related('assigned_staff')
         
         if query:
             participants = participants.filter(first_name__icontains=query) | participants.filter(last_name__icontains=query) | participants.filter(ndis_number__icontains=query)
@@ -101,6 +102,7 @@ class ParticipantDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
 class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
     template_name = 'portal/referrals/list.html'
     context_object_name = 'referrals'
+    paginate_by = 20
     
     def get_queryset(self):
         user = self.request.user
@@ -109,10 +111,10 @@ class ReferralListView(LoginRequiredMixin, StaffRequiredMixin, ListView):
         
         is_admin = user.is_superuser or user.has_perm('auth.view_user')
         if is_admin:
-            referrals = Referral.objects.all().order_by('-created_at')
+            referrals = Referral.objects.all().order_by('-created_at').select_related('assigned_staff').prefetch_related('services_required')
         else:
             from guardian.shortcuts import get_objects_for_user
-            referrals = get_objects_for_user(user, 'referrals.view_referral').order_by('-created_at')
+            referrals = get_objects_for_user(user, 'referrals.view_referral').order_by('-created_at').select_related('assigned_staff').prefetch_related('services_required')
         
         if query:
             referrals = referrals.filter(first_name__icontains=query) | referrals.filter(last_name__icontains=query)
