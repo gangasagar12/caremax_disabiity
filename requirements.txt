@@ -1,0 +1,12 @@
+Django==5.2.3
+gunicorn==23.0.0
+whitenoise==6.11.0
+psycopg2-binary==2.9.12
+python-decouple==3.8
+python-dotenv==1.1.1
+django-jazzmin==3.0.4
+crispy-bootstrap5
+django-unfold==0.99.0
+django-crispy-forms
+djangorestframework==3.17.1
+phonenumbers==9.0.10
