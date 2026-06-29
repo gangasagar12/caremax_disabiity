@@ -2,107 +2,561 @@
 
 {% load i18n jazzmin %}
 {% get_jazzmin_settings request as jazzmin_settings %}
-{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+{% block extrastyle %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    /* CSS Variables */
+    :root {
+        --primary: #2E8B57;
+        --secondary: #4CAF50;
+        --accent: #198754;
+        --bg: #F5F7FA;
+        --text: #2B2B2B;
+        --border: #EAEAEA;
+        --error: #DC3545;
+    }
+
+    /* Reset Jazzmin/AdminLTE Defaults */
+    body.login-page {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 100vh !important;
+        width: 100vw !important;
+        background: var(--bg) !important;
+        font-family: 'Poppins', sans-serif !important;
+        overflow: hidden;
+    }
+
+    .login-box {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .login-logo {
+        display: none !important;
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        height: 100%;
+        margin: 0;
+    }
+
+    .login-card-body {
+        padding: 0 !important;
+        background: transparent !important;
+        height: 100%;
+    }
+
+    /* Full Page Layout */
+    .enterprise-layout {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    /* Left Side: Branding / Illustration */
+    .split-left {
+        flex: 0 0 45%;
+        position: relative;
+        background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2053&auto=format&fit=crop') center center / cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 3rem;
+        overflow: hidden;
+    }
+
+    .split-left::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(46, 139, 87, 0.85) 0%, rgba(76, 175, 80, 0.7) 100%);
+        backdrop-filter: blur(4px);
+        z-index: 1;
+    }
+
+    .left-content {
+        position: relative;
+        z-index: 2;
+        max-width: 500px;
+        animation: slideUp 1s ease-out;
+    }
+
+    .left-content h1 {
+        font-weight: 700;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .left-content p {
+        font-weight: 300;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .features {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    /* Floating Icons */
+    .floating-icon {
+        position: absolute;
+        font-size: 3rem;
+        color: rgba(255, 255, 255, 0.15);
+        z-index: 1;
+        animation: float 6s ease-in-out infinite;
+    }
+    .icon-1 { top: 20%; left: 15%; animation-delay: 0s; }
+    .icon-2 { top: 60%; right: 20%; animation-delay: 2s; }
+    .icon-3 { bottom: 15%; left: 30%; font-size: 4rem; animation-delay: 4s; }
+
+    /* Right Side: Form Container */
+    .split-right {
+        flex: 1;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: var(--bg);
+        overflow-y: auto;
+    }
+    
+    /* Very subtle particle background for right side */
+    .split-right::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at top right, rgba(76, 175, 80, 0.05), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(46, 139, 87, 0.05), transparent 40%);
+        z-index: 0;
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 24px;
+        padding: 3.5rem 4rem;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.04), 0 5px 15px rgba(0, 0, 0, 0.02);
+        z-index: 10;
+        animation: slideUp 0.8s ease-out;
+    }
+
+    .brand-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .brand-header h2 {
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+        font-size: 2.2rem;
+    }
+
+    .brand-header h3 {
+        color: var(--primary);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .brand-header p {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Form Inputs */
+    .form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        height: 56px !important;
+        border-radius: 16px !important;
+        padding: 1rem 1rem 1rem 3.5rem !important;
+        border: 2px solid var(--border) !important;
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 1rem !important;
+        color: var(--text) !important;
+        transition: all 0.3s ease !important;
+        width: 100%;
+    }
+
+    .form-control:focus {
+        border-color: var(--secondary) !important;
+        box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15) !important;
+        background-color: #fff !important;
+    }
+
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 1.2rem;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+        z-index: 2;
+    }
+
+    .form-control:focus + .input-icon, 
+    .form-group:focus-within .input-icon {
+        color: var(--secondary);
+    }
+
+    /* Password Toggle */
+    .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 1.2rem;
+        transform: translateY(-50%);
+        color: #94A3B8;
+        cursor: pointer;
+        z-index: 2;
+        transition: color 0.3s ease;
+    }
+    
+    .toggle-password:hover {
+        color: var(--primary);
+    }
+
+    /* Errors */
+    .callout-danger {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+        border-left: 4px solid var(--error) !important;
+        color: var(--error) !important;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+    .callout-danger p { margin: 0; }
+
+    /* Login Button */
+    .btn-login {
+        width: 100%;
+        height: 56px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: none;
+        color: white;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(46, 139, 87, 0.25);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 25px rgba(46, 139, 87, 0.35);
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    .btn-login.loading {
+        pointer-events: none;
+        opacity: 0.9;
+    }
+    
+    .btn-login.loading .btn-text {
+        display: none;
+    }
+    
+    .btn-login .spinner {
+        display: none;
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    .btn-login.loading .spinner {
+        display: block;
+    }
+
+    /* Helper Row */
+    .helper-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #475569;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .remember-me input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .forgot-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+    }
+    
+    .forgot-link::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: var(--primary);
+        transform-origin: bottom right;
+        transition: transform 0.3s ease-out;
+    }
+    
+    .forgot-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+
+    /* Security Badge */
+    .security-badges {
+        margin-top: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    .security-badges span {
+        font-size: 0.85rem;
+        color: #64748B;
+        font-weight: 500;
+    }
+    .security-badges i {
+        color: var(--secondary);
+        margin-right: 6px;
+    }
+
+    /* Footer */
+    .login-footer {
+        position: absolute;
+        bottom: 1.5rem;
+        text-align: center;
+        width: 100%;
+        font-size: 0.8rem;
+        color: #94A3B8;
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { 
+        from { opacity: 0; transform: translateY(30px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .split-left { display: none; }
+        .split-right { padding: 2rem; }
+        .glass-card {
+            padding: 2.5rem 2rem;
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-    <p class="login-box-msg">{{ jazzmin_settings.welcome_sign }}</p>
-    <form action="{{ app_path }}" method="post">
-        {% csrf_token %}
-        {% if user.is_authenticated %}
-            <p class="errornote">
-                <div class="callout callout-danger">
-                    <p>
-                        {% blocktrans trimmed %}
-                            You are authenticated as {{ username }}, but are not authorized to
-                            access this page. Would you like to login to a different account?
-                        {% endblocktrans %}
-                    </p>
-                </div>
-            </p>
-        {% endif %}
-        {% if form.errors %}
-            {% if form.username.errors %}
-                <div class="callout callout-danger">
-                    <p>{{ form.username.label }}: {{ form.username.errors|join:', ' }}</p>
-                </div>
-            {% endif %}
-            {% if form.password.errors %}
-                <div class="callout callout-danger">
-                    <p>{{ form.password.label }}: {{ form.password.errors|join:', ' }}</p>
-                </div>
-            {% endif %}
-            {% if form.non_field_errors %}
-                <div class="callout callout-danger">
-                    {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endif %}
-        <div class="input-group mb-3">
-            <input type="text" name="username" class="form-control" placeholder="{{ form.username.label }}" required id="id_username">
-            <span class="input-group-text">
-                <i class="fas fa-user"></i>
-            </span>
-        </div>
-        <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control" placeholder="{{ form.password.label }}" required id="id_password">
-            <span class="input-group-text" id="togglePassword" style="cursor: pointer;" title="Toggle Password Visibility">
-                <i class="fas fa-eye"></i>
-            </span>
-        </div>
+<div class="enterprise-layout">
+    
+    <!-- Left Branding Section -->
+    <div class="split-left">
+        <i class="fas fa-heartbeat floating-icon icon-1"></i>
+        <i class="fas fa-user-md floating-icon icon-2"></i>
+        <i class="fas fa-hospital floating-icon icon-3"></i>
         
-        <div class="row mb-3">
-            <div class="col-8">
-                <div class="icheck-primary" style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="remember" name="remember_me">
-                    <label for="remember" style="margin: 0; cursor: pointer;">
+        <div class="left-content">
+            <h1>Welcome to CareMax</h1>
+            <p>Disability Services Management Platform</p>
+            <div class="features">
+                <span>Secure</span> • <span>Reliable</span> • <span>Professional</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Login Section -->
+    <div class="split-right">
+        <div class="glass-card">
+            
+            <div class="brand-header">
+                <h2>CareMax</h2>
+                <h3>Admin Portal</h3>
+                <p>Secure access for authorized staff only.</p>
+            </div>
+
+            <form action="{{ app_path }}" method="post" id="loginForm">
+                {% csrf_token %}
+                
+                {% if user.is_authenticated %}
+                    <div class="callout callout-danger">
+                        <p>
+                            {% blocktrans trimmed %}
+                                You are authenticated as {{ username }}, but are not authorized to
+                                access this page. Would you like to login to a different account?
+                            {% endblocktrans %}
+                        </p>
+                    </div>
+                {% endif %}
+                
+                {% if form.errors %}
+                    {% if form.username.errors %}
+                        <div class="callout callout-danger">
+                            <p>{{ form.username.label }}: {{ form.username.errors|join:', ' }}</p>
+                        </div>
+                    {% endif %}
+                    {% if form.password.errors %}
+                        <div class="callout callout-danger">
+                            <p>{{ form.password.label }}: {{ form.password.errors|join:', ' }}</p>
+                        </div>
+                    {% endif %}
+                    {% if form.non_field_errors %}
+                        <div class="callout callout-danger">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <div class="form-group">
+                    <input type="text" name="username" class="form-control" placeholder="Enter your username" required id="id_username">
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control" placeholder="Enter your password" required id="id_password">
+                    <i class="fas fa-lock input-icon"></i>
+                    <i class="fas fa-eye toggle-password" id="togglePassword" title="Toggle Password Visibility"></i>
+                </div>
+                
+                <div class="helper-row">
+                    <label class="remember-me" for="remember">
+                        <input type="checkbox" id="remember" name="remember_me">
                         {% trans "Remember Me" %}
                     </label>
+
+                    {% url 'password_reset' as password_reset_url %}
+                    {% if password_reset_url %}
+                        <a href="{{ password_reset_url }}" class="forgot-link">
+                            <i class="fas fa-key me-1"></i> {% trans 'Forgot Password?' %}
+                        </a>
+                    {% else %}
+                        <a href="/admin/password_reset/" class="forgot-link">
+                            <i class="fas fa-key me-1"></i> {% trans 'Forgot Password?' %}
+                        </a>
+                    {% endif %}
                 </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="btn-text">{% trans "Secure Login" %}</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+
+            <div class="security-badges">
+                <span><i class="fas fa-check-circle"></i> Encrypted Connection</span>
+                <span><i class="fas fa-shield-alt"></i> Secure Authentication</span>
+                <span><i class="fas fa-id-badge"></i> Authorized Personnel Only</span>
             </div>
+
         </div>
 
-        {% url 'admin_password_reset' as password_reset_url %}
-        {% if password_reset_url %}
-            <div class="mb-3 text-center">
-                <a href="{{ password_reset_url }}">
-                    {% trans 'Forgotten your password or username?' %}
-                </a>
-            </div>
-        {% else %}
-            <div class="mb-3 text-center">
-                <a href="/admin/password_reset/">
-                    {% trans 'Forgotten your password or username?' %}
-                </a>
-            </div>
-        {% endif %}
-
-        <div class="d-grid">
-            <button type="submit" class="btn {{ jazzmin_ui.button_classes.primary }}">
-                {% trans "Log in" %}
-            </button>
+        <div class="login-footer">
+            © 2026 CareMax Disability Services • Version 2.0<br>
+            Powered by Django + Jazzmin
         </div>
-    </form>
+    </div>
+</div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const togglePassword = document.querySelector('#togglePassword');
-            const password = document.querySelector('#id_password');
-            const icon = togglePassword.querySelector('i');
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Password visibility toggle
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#id_password');
 
+        if(togglePassword && password) {
             togglePassword.addEventListener('click', function () {
                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
                 password.setAttribute('type', type);
                 
                 if (type === 'password') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
+                    this.classList.remove('fa-eye-slash');
+                    this.classList.add('fa-eye');
+                    this.style.color = '#94A3B8';
                 } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
+                    this.classList.remove('fa-eye');
+                    this.classList.add('fa-eye-slash');
+                    this.style.color = 'var(--primary)';
                 }
             });
-        });
-    </script>
+        }
+
+        // Loading spinner on form submit
+        const loginForm = document.querySelector('#loginForm');
+        const loginBtn = document.querySelector('#loginBtn');
+        
+        if(loginForm && loginBtn) {
+            loginForm.addEventListener('submit', function() {
+                loginBtn.classList.add('loading');
+            });
+        }
+    });
+</script>
 {% endblock %}
