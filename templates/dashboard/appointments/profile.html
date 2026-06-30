@@ -1,0 +1,264 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Appointment Details - CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .header-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    
+    .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    .status-Scheduled { background-color: var(--primary-light); color: var(--primary); }
+    .status-Completed { background-color: var(--success-light); color: var(--success); }
+    .status-In { background-color: var(--warning-light); color: var(--warning); }
+    .status-Cancelled { background-color: var(--danger-light); color: var(--danger); }
+    
+    .nav-tabs-custom { border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+    .nav-tabs-custom .nav-link {
+        color: var(--text-muted); font-weight: 500; font-size: 14px; padding: 12px 20px;
+        border: none; border-bottom: 3px solid transparent; transition: all 0.2s;
+    }
+    .nav-tabs-custom .nav-link:hover { color: var(--primary); }
+    .nav-tabs-custom .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
+    
+    .info-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 24px;
+    }
+    
+    .info-label { font-size: 13px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .info-value { font-size: 15px; color: var(--text-main); font-weight: 600; margin-bottom: 20px; }
+    
+    /* Timeline */
+    .timeline { position: relative; padding-left: 30px; }
+    .timeline::before {
+        content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background-color: var(--border-color);
+    }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-item::before {
+        content: ''; position: absolute; left: -30px; top: 4px; width: 16px; height: 16px; border-radius: 50%;
+        background-color: var(--primary); border: 3px solid var(--primary-light); z-index: 1;
+    }
+    .timeline-item.success::before { background-color: var(--success); border-color: var(--success-light); }
+    .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .timeline-content { font-size: 14px; color: var(--text-main); font-weight: 500; }
+</style>
+
+<!-- Header -->
+<div class="header-card shadow-sm">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <h1 class="fw-bold mb-0" style="font-size: 22px;">Appointment APT-{{ appointment.pk|stringformat:"04d" }}</h1>
+                <span class="status-badge status-{{ appointment.status|slice:':2' }}">{{ appointment.status }}</span>
+            </div>
+            <div class="text-muted" style="font-size: 14px;">
+                <i class="fas fa-calendar-alt me-2"></i> Created on {{ appointment.created_at|date:"M d, Y" }}
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" style="border-radius: 10px;">
+                <i class="fas fa-pencil-alt me-2"></i> Edit
+            </button>
+            <button class="btn btn-outline-info" style="border-radius: 10px;">
+                <i class="fas fa-calendar-alt me-2"></i> Reschedule
+            </button>
+            <button class="btn btn-outline-danger" style="border-radius: 10px;">
+                <i class="fas fa-times me-2"></i> Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-tabs-custom" id="appointmentTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="appt-tab" data-bs-toggle="tab" data-bs-target="#appt-panel" type="button" role="tab">Appointment Info</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="participant-tab" data-bs-toggle="tab" data-bs-target="#participant-panel" type="button" role="tab">Participant Info</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes-panel" type="button" role="tab">Care Notes</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline-panel" type="button" role="tab">Activity Timeline</button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content" id="appointmentTabsContent">
+    
+    <!-- Appointment Info -->
+    <div class="tab-pane fade show active" id="appt-panel" role="tabpanel">
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="info-card shadow-sm h-100">
+                    <h6 class="fw-bold mb-4" style="font-size: 16px;">Schedule Details</h6>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="info-label">Date</div>
+                            <div class="info-value"><i class="far fa-calendar text-primary me-2"></i>{{ appointment.date|date:"F d, Y" }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label">Time</div>
+                            <div class="info-value"><i class="far fa-clock text-primary me-2"></i>{{ appointment.start_time|time:"H:i" }} - {{ appointment.end_time|time:"H:i" }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label">Duration</div>
+                            <div class="info-value">{{ appointment.duration_minutes }} minutes</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label">Recurring</div>
+                            <div class="info-value">{{ appointment.recurring }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label">Service Type</div>
+                            <div class="info-value">{{ appointment.service_type }}</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="info-label">Assigned Staff</div>
+                            <div class="info-value">
+                                <a href="{% url 'dashboard:staff_profile_detail' pk=appointment.staff.pk %}" class="text-decoration-none" style="color: var(--primary);">
+                                    <i class="fas fa-user-md me-2"></i>{{ appointment.staff.user.get_full_name }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="info-card shadow-sm h-100">
+                    <h6 class="fw-bold mb-4" style="font-size: 16px;">Pre-Visit Notes</h6>
+                    <div class="mb-3">
+                        <div class="info-label text-danger"><i class="fas fa-exclamation-triangle me-1"></i> Medical Alerts</div>
+                        <div class="text-main" style="font-size: 14px;">{{ appointment.medical_alerts|default:"None specified." }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label text-warning"><i class="fas fa-star me-1"></i> Special Instructions</div>
+                        <div class="text-main" style="font-size: 14px;">{{ appointment.special_instructions|default:"None specified." }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label text-info"><i class="fas fa-clipboard-list me-1"></i> Support Notes</div>
+                        <div class="text-main" style="font-size: 14px;">{{ appointment.support_notes|default:"None specified." }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Participant Info -->
+    <div class="tab-pane fade" id="participant-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h6 class="fw-bold mb-0" style="font-size: 16px;">Participant Profile</h6>
+                <a href="{% url 'dashboard:participant_profile_detail' pk=appointment.participant.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius: 8px;">View Full Profile</a>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">{{ appointment.participant }}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="info-label">NDIS Number</div>
+                    <div class="info-value">{{ appointment.participant.ndis_number|default:"N/A" }}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="info-label">Status</div>
+                    <div class="info-value">{{ appointment.participant.status }}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value">{{ appointment.participant.phone|default:"N/A" }}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ appointment.participant.email|default:"N/A" }}</div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="info-label">Emergency Contact</div>
+                    <div class="info-value">Not specified in MVP</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Care Notes -->
+    <div class="tab-pane fade" id="notes-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 16px;">Post-Visit Care Notes</h6>
+            
+            {% if visit %}
+                {% if visit.care_notes %}
+                <div class="p-4 rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                    <p style="font-size: 14px; line-height: 1.6; white-space: pre-wrap;">{{ visit.care_notes }}</p>
+                    <div class="text-muted mt-3" style="font-size: 12px;">
+                        Submitted by {{ appointment.staff.user.get_full_name }} on {{ visit.check_out_time|date:"M d, Y H:i" }}
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="far fa-clipboard fa-3x mb-3 text-light"></i>
+                    <p>Visit completed, but no care notes were submitted.</p>
+                </div>
+                {% endif %}
+                
+                {% if visit.documents.exists %}
+                <h6 class="fw-bold mt-4 mb-3" style="font-size: 14px;">Attached Documents</h6>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% for doc in visit.documents.all %}
+                    <a href="{{ doc.file_upload.url }}" target="_blank" class="btn btn-outline-secondary" style="border-radius: 10px; font-size: 13px;">
+                        <i class="fas fa-file-download me-2"></i> Download Document
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="far fa-clock fa-3x mb-3 text-light"></i>
+                    <p>This appointment has not been completed yet. Care notes will appear here after the visit.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Timeline -->
+    <div class="tab-pane fade" id="timeline-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 16px;">Activity Timeline</h6>
+            
+            <div class="timeline mt-4">
+                {% if visit and visit.check_out_time %}
+                <div class="timeline-item success">
+                    <div class="timeline-date">{{ visit.check_out_time|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Visit Completed by {{ appointment.staff.user.get_full_name }}</div>
+                </div>
+                {% endif %}
+                
+                {% if visit and visit.check_in_time %}
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ visit.check_in_time|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Visit Started by {{ appointment.staff.user.get_full_name }}</div>
+                </div>
+                {% endif %}
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ appointment.created_at|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Staff Assigned: {{ appointment.staff.user.get_full_name }}</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ appointment.created_at|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Appointment Created</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -446,7 +446,7 @@
               
 
                 <div class="menu-label">Operations</div>
-                <a href="{% url 'dashboard:appointments' %}" class="menu-item">
+                <a href="{% url 'dashboard:appointments' %}" class="menu-item {% if request.resolver_match.url_name == 'appointments' or request.resolver_match.url_name == 'appointment_detail' %}active{% endif %}">
                     <i class="far fa-calendar-alt"></i> <span>Appointments</span>
                 </a>
                 <a href="{% url 'dashboard:roster' %}" class="menu-item">

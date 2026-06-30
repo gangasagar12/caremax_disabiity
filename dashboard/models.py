@@ -44,6 +44,11 @@ class Appointment(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     service_type = models.CharField(max_length=100, default='Core Support')
+    duration_minutes = models.IntegerField(default=60)
+    recurring = models.CharField(max_length=20, choices=[('None', 'None'), ('Daily', 'Daily'), ('Weekly', 'Weekly'), ('Monthly', 'Monthly')], default='None')
+    special_instructions = models.TextField(blank=True, null=True)
+    medical_alerts = models.TextField(blank=True, null=True)
+    support_notes = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Scheduled')
     created_at = models.DateTimeField(auto_now_add=True)
 

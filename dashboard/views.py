@@ -262,3 +262,42 @@ class AdminReviewVisitsView(LoginRequiredMixin, TemplateView):
         completed_visits = VisitRecord.objects.filter(appointment__status='Completed').order_by('-check_out_time')
         context['visits'] = completed_visits
         return context
+
+class AppointmentListView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/appointments/list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        now = timezone.now()
+        today = now.date()
+        
+        appointments = Appointment.objects.all().order_by('date', 'start_time')
+        
+        context['stats'] = {
+            'today': appointments.filter(date=today).count(),
+            'completed_today': appointments.filter(date=today, status='Completed').count(),
+            'upcoming': appointments.filter(date__gte=today, status__in=['Scheduled', 'In Progress']).count(),
+            'cancelled': appointments.filter(status='Cancelled').count(),
+            'staff_working': appointments.filter(date=today).values('staff').distinct().count(),
+        }
+        
+        context['appointments'] = appointments
+        context['participants'] = Participant.objects.filter(status='Active')
+        context['staff_members'] = SupportWorker.objects.filter(status='Active')
+        return context
+
+class AppointmentDetailView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/appointments/profile.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = kwargs.get('pk')
+        appt = get_object_or_404(Appointment, pk=pk)
+        context['appointment'] = appt
+        
+        try:
+            context['visit'] = appt.visit_record
+        except:
+            context['visit'] = None
+            
+        return context

@@ -1,0 +1,339 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Appointment Management - CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-float);
+        border-color: var(--primary-light);
+    }
+    
+    .stat-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 14px;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .filter-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .search-wrapper { position: relative; }
+    .search-wrapper .form-control {
+        padding-left: 40px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 14px;
+    }
+    .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    
+    .form-select-custom { border-radius: 10px; border: 1px solid var(--border-color); font-size: 14px; }
+
+    .table-container {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden;
+    }
+    .table-custom { margin-bottom: 0; color: var(--text-main); font-size: 13px; }
+    .table-custom thead th {
+        background-color: var(--bg-body); color: var(--text-muted); font-weight: 600; font-size: 13px;
+        text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color);
+        padding: 15px 20px; white-space: nowrap;
+    }
+    .table-custom tbody td { padding: 15px 20px; vertical-align: middle; border-bottom: 1px solid var(--border-color); }
+    .table-custom tbody tr:hover { background-color: var(--bg-body); }
+    
+    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; }
+    .status-Scheduled { background-color: var(--primary-light); color: var(--primary); }
+    .status-Completed { background-color: var(--success-light); color: var(--success); }
+    .status-In { background-color: var(--warning-light); color: var(--warning); } /* For In Progress */
+    .status-Cancelled { background-color: var(--danger-light); color: var(--danger); }
+    
+    .action-btn {
+        width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color);
+        background-color: var(--bg-card); color: var(--text-muted); display: flex; align-items: center;
+        justify-content: center; transition: all 0.2s; cursor: pointer; text-decoration: none;
+    }
+    .action-btn:hover { background-color: var(--primary-light); color: var(--primary); border-color: var(--primary-light); }
+    
+    /* Modal Styling */
+    .modal-content { border-radius: 18px; border: none; overflow: hidden; }
+    .modal-header { border-bottom: 1px solid var(--border-color); background-color: var(--bg-card); }
+    .modal-footer { border-top: 1px solid var(--border-color); background-color: var(--bg-body); }
+    .form-label { font-size: 14px; font-weight: 500; color: var(--text-main); }
+</style>
+
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h1 class="fw-bold mb-1" style="font-size: 16px;">Appointment Management</h1>
+        <p class="text-muted mb-0" style="font-size: 14px;">Manage participant appointments and staff schedules.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary shadow-sm" style="font-size: 14px; border-radius: 10px;" data-bs-toggle="modal" data-bs-target="#newAppointmentModal">
+            <i class="fas fa-plus me-2"></i> New Appointment
+        </button>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-4 col-xl">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);">
+                <i class="far fa-calendar-alt"></i>
+            </div>
+            <div class="stat-value">{{ stats.today }}</div>
+            <div class="stat-label">Today's Appointments</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4 col-xl">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--success-light); color: var(--success);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value">{{ stats.completed_today }}</div>
+            <div class="stat-label">Completed Today</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4 col-xl">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--warning-light); color: var(--warning);">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">{{ stats.upcoming }}</div>
+            <div class="stat-label">Upcoming Visits</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--danger-light); color: var(--danger);">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-value">{{ stats.cancelled }}</div>
+            <div class="stat-label">Cancelled Visits</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--info-light); color: var(--info);">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="stat-value">{{ stats.staff_working }}</div>
+            <div class="stat-label">Staff Working Today</div>
+        </div>
+    </div>
+</div>
+
+<div class="filter-card shadow-sm">
+    <div class="row g-3">
+        <div class="col-12 col-lg-4">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" style="font-size: 14px;" placeholder="Search participant, staff, or ID...">
+            </div>
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+            <select class="form-select form-select-custom" style="font-size: 14px;">
+                <option selected>Timeframe</option>
+                <option value="today">Today</option>
+                <option value="this_week">This Week</option>
+                <option value="upcoming">Upcoming</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+            <select class="form-select form-select-custom" style="font-size: 14px;">
+                <option selected>Status</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="table-container shadow-sm mb-4">
+    <div class="table-responsive">
+        <table class="table table-custom table-hover">
+            <thead>
+                <tr>
+                    <th>Appt ID</th>
+                    <th>Participant</th>
+                    <th>Support Worker</th>
+                    <th>Service Type</th>
+                    <th>Date & Time</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td class="fw-medium text-muted">APT-{{ appt.pk|stringformat:"04d" }}</td>
+                    <td>
+                        <div class="fw-bold" style="color: var(--text-main);">{{ appt.participant }}</div>
+                    </td>
+                    <td>{{ appt.staff.user.get_full_name }}</td>
+                    <td>{{ appt.service_type }}</td>
+                    <td>
+                        <div>{{ appt.date|date:"M d, Y" }}</div>
+                        <div class="text-muted" style="font-size: 12px;">{{ appt.start_time|time:"H:i" }} - {{ appt.end_time|time:"H:i" }}</div>
+                    </td>
+                    <td>{{ appt.duration_minutes }} mins</td>
+                    <td>
+                        <span class="status-badge status-{{ appt.status|slice:':2' }}">{{ appt.status }}</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="dropdown d-inline-block">
+                            <button class="action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                                <li><a class="dropdown-item" href="{% url 'dashboard:appointment_detail' pk=appt.pk %}" style="font-size: 14px;"><i class="fas fa-eye me-2 text-primary"></i> View Details</a></li>
+                                <li><a class="dropdown-item" href="#" style="font-size: 14px;"><i class="fas fa-pencil-alt me-2 text-warning"></i> Edit</a></li>
+                                <li><a class="dropdown-item" href="#" style="font-size: 14px;"><i class="fas fa-calendar-alt me-2 text-info"></i> Reschedule</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% if appt.status != 'Completed' and appt.status != 'Cancelled' %}
+                                <li><a class="dropdown-item text-success" href="#" style="font-size: 14px;"><i class="fas fa-check me-2"></i> Mark Completed</a></li>
+                                <li><a class="dropdown-item text-danger" href="#" style="font-size: 14px;"><i class="fas fa-times me-2"></i> Cancel Appointment</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        No appointments found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- New Appointment Modal -->
+<div class="modal fade" id="newAppointmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header px-4 py-3">
+                <h5 class="modal-title fw-bold" style="font-size: 16px;">Create New Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-body">
+                <form>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Participant</label>
+                            <select class="form-select" style="font-size: 14px;">
+                                <option selected disabled>Select Participant...</option>
+                                {% for p in participants %}
+                                <option value="{{ p.pk }}">{{ p }} (ID: {{ p.ndis_number|default:"N/A" }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Assign Support Worker</label>
+                            <select class="form-select" style="font-size: 14px;">
+                                <option selected disabled>Select Staff...</option>
+                                {% for s in staff_members %}
+                                <option value="{{ s.pk }}">{{ s.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Service Type</label>
+                            <select class="form-select" style="font-size: 14px;">
+                                <option>Personal Care</option>
+                                <option>Community Access</option>
+                                <option>Household Tasks</option>
+                                <option>Daily Living</option>
+                                <option>Transport Assistance</option>
+                                <option>Medication Support</option>
+                                <option>Therapy Support</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Recurring</label>
+                            <select class="form-select" style="font-size: 14px;">
+                                <option value="None">None</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 mt-4"><h6 class="fw-bold mb-0" style="font-size: 14px;">Schedule</h6></div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" style="font-size: 14px;">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" class="form-control" style="font-size: 14px;">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Duration (mins)</label>
+                            <input type="number" class="form-control" style="font-size: 14px;" value="60">
+                        </div>
+                        
+                        <div class="col-12 mt-4"><h6 class="fw-bold mb-0" style="font-size: 14px;">Notes</h6></div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Medical Alerts</label>
+                            <textarea class="form-control" rows="2" style="font-size: 14px;" placeholder="Any alerts staff should know..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Special Instructions</label>
+                            <textarea class="form-control" rows="2" style="font-size: 14px;" placeholder="Entry codes, parking, etc..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Support Notes</label>
+                            <textarea class="form-control" rows="2" style="font-size: 14px;" placeholder="Detailed support requirements for this visit..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer px-4 py-3">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 14px; border-radius: 10px;">Cancel</button>
+                <button type="button" class="btn btn-primary shadow-sm" data-bs-dismiss="modal" style="font-size: 14px; border-radius: 10px;">Save Appointment <i class="fas fa-check ms-2"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
