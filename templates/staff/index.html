@@ -1,0 +1,267 @@
+{% extends "staff/base_staff.html" %}
+
+{% block title %}My Dashboard | Support Worker{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-float);
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+
+    .icon-primary { background: var(--primary-light); color: var(--primary); }
+    .icon-success { background: var(--success-light); color: var(--success); }
+    .icon-warning { background: var(--warning-light); color: var(--warning); }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-main);
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    /* Main Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 1200px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Timeline / Schedule */
+    .timeline {
+        position: relative;
+        padding-left: 24px;
+        margin-top: 1rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--border-color);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 2rem;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--bg-card);
+        border: 2px solid var(--primary);
+        z-index: 2;
+    }
+
+    .timeline-item.completed::before { background: var(--success); border-color: var(--success); }
+    .timeline-item.in-progress::before { background: var(--warning); border-color: var(--warning); animation: pulse 2s infinite; }
+
+    .timeline-time {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 4px;
+    }
+
+    .timeline-content {
+        background: var(--bg-app);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+        margin-top: 8px;
+    }
+    
+    .timeline-title { font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 4px;}
+    .timeline-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+    .timeline-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+    .timeline-meta i { color: var(--text-light); }
+
+    /* Participants Grid */
+    .participant-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    
+    .participant-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1rem;
+    }
+
+    .participant-card img {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Grid -->
+<div class="stats-grid" style="animation: fadeIn 0.4s ease-out forwards;">
+    <div class="card stat-card">
+        <div class="stat-icon icon-primary"><i class="far fa-calendar-check"></i></div>
+        <div class="stat-value">{{ stats.today_appointments }}</div>
+        <div class="stat-label">Appointments Today</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-icon icon-success"><i class="fas fa-users"></i></div>
+        <div class="stat-value">{{ stats.active_participants }}</div>
+        <div class="stat-label">My Participants</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-icon icon-warning"><i class="fas fa-clipboard-list"></i></div>
+        <div class="stat-value">{{ stats.pending_notes }}</div>
+        <div class="stat-label">Pending Care Notes</div>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Today's Schedule -->
+    <div class="card" style="animation: fadeIn 0.6s ease-out forwards;">
+        <h3 style="font-size: 18px; margin-bottom: 1rem;">Today's Schedule</h3>
+        
+        <div class="timeline">
+            <!-- Completed -->
+            <div class="timeline-item completed">
+                <div class="timeline-time">08:00 AM - 10:00 AM</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Morning Routine & Transport</div>
+                    <div class="timeline-desc">Participant: <strong>James Wilson</strong></div>
+                    <div class="timeline-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> 123 Smith St</span>
+                        <span><i class="far fa-clock"></i> 2 hrs</span>
+                    </div>
+                    <button class="btn btn-outline" style="font-size: 13px; padding: 6px 12px;" disabled>
+                        <i class="fas fa-check"></i> Completed
+                    </button>
+                </div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="timeline-item in-progress">
+                <div class="timeline-time">11:00 AM - 02:00 PM</div>
+                <div class="timeline-content" style="border-color: var(--warning);">
+                    <div class="timeline-title">Community Access (Shopping)</div>
+                    <div class="timeline-desc">Participant: <strong>Sarah Connor</strong></div>
+                    <div class="timeline-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> Westfield Mall</span>
+                        <span><i class="far fa-clock"></i> 3 hrs</span>
+                    </div>
+                    <button class="btn btn-primary" style="font-size: 13px; padding: 6px 12px;">
+                        <i class="fas fa-pen"></i> Add Care Note
+                    </button>
+                </div>
+            </div>
+
+            <!-- Upcoming -->
+            <div class="timeline-item">
+                <div class="timeline-time">03:30 PM - 05:00 PM</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">In-Home Therapy Support</div>
+                    <div class="timeline-desc">Participant: <strong>David Miller</strong></div>
+                    <div class="timeline-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> 45 Ocean Drive</span>
+                        <span><i class="far fa-clock"></i> 1.5 hrs</span>
+                    </div>
+                    <button class="btn btn-primary" style="font-size: 13px; padding: 6px 12px; width: 100%;">
+                        Start Visit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column (Quick Actions & Participants) -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; animation: fadeIn 0.8s ease-out forwards;">
+        
+        <!-- Quick Action: Care Note -->
+        <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none;">
+            <h3 style="font-size: 18px; margin-bottom: 0.5rem; color: white;">Quick Care Note</h3>
+            <p style="font-size: 13px; margin-bottom: 1rem; opacity: 0.9;">Draft a note quickly while it's fresh.</p>
+            <button class="btn" style="background: white; color: var(--primary); width: 100%;">
+                <i class="fas fa-microphone"></i> Start Voice Note
+            </button>
+        </div>
+
+        <!-- My Participants Grid -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                <h3 style="font-size: 16px;">My Participants</h3>
+                <a href="#" style="color: var(--primary); font-size: 13px; text-decoration: none;">View All</a>
+            </div>
+            
+            <div class="participant-grid">
+                <div class="card participant-card" style="box-shadow: none; background: var(--bg-app);">
+                    <img src="https://ui-avatars.com/api/?name=James+Wilson&background=2563EB&color=fff" alt="JW">
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">James Wilson</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">NDIS: 492 103 402</div>
+                    </div>
+                </div>
+                <div class="card participant-card" style="box-shadow: none; background: var(--bg-app);">
+                    <img src="https://ui-avatars.com/api/?name=Sarah+Connor&background=22C55E&color=fff" alt="SC">
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px;">Sarah Connor</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">NDIS: 994 201 553</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

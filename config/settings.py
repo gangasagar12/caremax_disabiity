@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'resources',
     'contact',
     'dashboard',
+    'staff',
     'crispy_forms',
     'crispy_bootstrap5',
     'guardian',
