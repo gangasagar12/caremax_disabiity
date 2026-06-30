@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views import View
-from .models import Participant, SupportWorker, Appointment, VisitRecord, VisitDocument
+from .models import Participant, SupportWorker, Appointment, VisitRecord, VisitDocument, SupportPlan
 
 class DashboardHomeView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
@@ -300,4 +300,34 @@ class AppointmentDetailView(LoginRequiredMixin, TemplateView):
         except:
             context['visit'] = None
             
+        return context
+
+class SupportPlanListView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/plans/list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        plans = SupportPlan.objects.all().order_by('-updated_at')
+        
+        context['stats'] = {
+            'total': plans.count(),
+            'active': plans.filter(status='Active').count(),
+            'review_due': plans.filter(status='Review Due').count(),
+            'expired': plans.filter(status='Expired').count(),
+        }
+        
+        context['plans'] = plans
+        context['participants'] = Participant.objects.filter(status='Active')
+        context['staff_members'] = SupportWorker.objects.filter(status='Active')
+        return context
+
+class SupportPlanDetailView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/plans/profile.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = kwargs.get('pk')
+        plan = get_object_or_404(SupportPlan, pk=pk)
+        context['plan'] = plan
         return context

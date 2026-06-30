@@ -460,7 +460,7 @@
                 <a href="{% url 'dashboard:agreements' %}" class="menu-item">
                     <i class="fas fa-file-signature"></i> <span>Agreements</span>
                 </a>
-                <a href="{% url 'dashboard:plans' %}" class="menu-item">
+                <a href="{% url 'dashboard:plans' %}" class="menu-item {% if request.resolver_match.url_name == 'plans' or request.resolver_match.url_name == 'plan_detail' %}active{% endif %}">
                     <i class="fas fa-notes-medical"></i> <span>Support Plans</span>
                 </a>
                 <a href="{% url 'dashboard:incidents' %}" class="menu-item">

@@ -1,0 +1,324 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Support Plan Management - CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease; height: 100%; display: flex; flex-direction: column;
+    }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); border-color: var(--primary-light); }
+    .stat-icon-wrapper {
+        width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 20px; margin-bottom: 15px;
+    }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+    .stat-label { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
+
+    .filter-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; margin-bottom: 24px; }
+    .search-wrapper { position: relative; }
+    .search-wrapper .form-control { padding-left: 40px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 14px; }
+    .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .form-select-custom { border-radius: 10px; border: 1px solid var(--border-color); font-size: 14px; }
+
+    .table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; overflow: hidden; }
+    .table-custom { margin-bottom: 0; color: var(--text-main); font-size: 13px; }
+    .table-custom thead th {
+        background-color: var(--bg-body); color: var(--text-muted); font-weight: 600; font-size: 13px;
+        text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding: 15px 20px; white-space: nowrap;
+    }
+    .table-custom tbody td { padding: 15px 20px; vertical-align: middle; border-bottom: 1px solid var(--border-color); }
+    .table-custom tbody tr:hover { background-color: var(--bg-body); }
+    
+    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; }
+    .status-Active { background-color: var(--success-light); color: var(--success); }
+    .status-Review { background-color: var(--warning-light); color: var(--warning); }
+    .status-Expired { background-color: var(--danger-light); color: var(--danger); }
+    
+    .action-btn {
+        width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-card);
+        color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer;
+    }
+    .action-btn:hover { background-color: var(--primary-light); color: var(--primary); border-color: var(--primary-light); }
+
+    /* Wizard Styles */
+    .wizard-steps { display: flex; justify-content: space-between; position: relative; margin-bottom: 30px; }
+    .wizard-steps::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background-color: var(--border-color); z-index: 1; }
+    .wizard-step { position: relative; z-index: 2; text-align: center; flex: 1; }
+    .wizard-step-circle {
+        width: 40px; height: 40px; border-radius: 50%; background-color: var(--bg-card); border: 2px solid var(--border-color);
+        color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 10px; transition: all 0.3s;
+    }
+    .wizard-step.active .wizard-step-circle { border-color: var(--primary); background-color: var(--primary); color: white; }
+    .wizard-step.completed .wizard-step-circle { border-color: var(--success); background-color: var(--success); color: white; }
+    .wizard-step-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    .wizard-step.active .wizard-step-label { color: var(--primary); }
+    .wizard-panel { display: none; }
+    .wizard-panel.active { display: block; animation: fadeIn 0.4s ease forwards; }
+    .modal-content { border-radius: 18px; border: none; overflow: hidden; }
+    .modal-header { border-bottom: 1px solid var(--border-color); background-color: var(--bg-card); }
+    .modal-footer { border-top: 1px solid var(--border-color); background-color: var(--bg-body); }
+</style>
+
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h1 class="fw-bold mb-1" style="font-size: 16px;">Support Plan Management</h1>
+        <p class="text-muted mb-0" style="font-size: 14px;">Manage participant support plans and service requirements.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary shadow-sm" style="font-size: 14px; border-radius: 10px;" data-bs-toggle="modal" data-bs-target="#newPlanModal">
+            <i class="fas fa-plus me-2"></i> Create Support Plan
+        </button>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--primary-light); color: var(--primary);"><i class="fas fa-clipboard-list"></i></div>
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Total Support Plans</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--success-light); color: var(--success);"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-value">{{ stats.active }}</div>
+            <div class="stat-label">Active Plans</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--warning-light); color: var(--warning);"><i class="fas fa-search"></i></div>
+            <div class="stat-value">{{ stats.review_due }}</div>
+            <div class="stat-label">Plans Due for Review</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon-wrapper" style="background-color: var(--danger-light); color: var(--danger);"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-value">{{ stats.expired }}</div>
+            <div class="stat-label">Expired Plans</div>
+        </div>
+    </div>
+</div>
+
+<div class="filter-card shadow-sm">
+    <div class="row g-3">
+        <div class="col-12 col-lg-4">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" style="font-size: 14px;" placeholder="Search Participant, Plan ID, Staff...">
+            </div>
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+            <select class="form-select form-select-custom" style="font-size: 14px;">
+                <option selected>Status</option>
+                <option value="Active">Active</option>
+                <option value="Review Due">Review Due</option>
+                <option value="Expired">Expired</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+            <select class="form-select form-select-custom" style="font-size: 14px;">
+                <option selected>Timeframe</option>
+                <option value="recently_updated">Recently Updated</option>
+                <option value="due_soon">Review Due Soon</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="table-container shadow-sm mb-4">
+    <div class="table-responsive">
+        <table class="table table-custom table-hover">
+            <thead>
+                <tr>
+                    <th>Plan ID</th>
+                    <th>Participant</th>
+                    <th>Assigned Staff</th>
+                    <th>Plan Start Date</th>
+                    <th>Review Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                <tr>
+                    <td class="fw-medium text-muted">PLN-{{ plan.pk|stringformat:"04d" }}</td>
+                    <td><div class="fw-bold" style="color: var(--text-main);">{{ plan.participant }}</div></td>
+                    <td>{{ plan.assigned_staff.user.get_full_name|default:"Unassigned" }}</td>
+                    <td>{{ plan.start_date|date:"M d, Y" }}</td>
+                    <td>{{ plan.review_date|date:"M d, Y" }}</td>
+                    <td><span class="status-badge status-{{ plan.status|slice:':6' }}">{{ plan.status }}</span></td>
+                    <td class="text-end">
+                        <div class="dropdown d-inline-block">
+                            <button class="action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                                <li><a class="dropdown-item" href="{% url 'dashboard:plan_detail' pk=plan.pk %}" style="font-size: 14px;"><i class="fas fa-eye me-2 text-primary"></i> View Details</a></li>
+                                <li><a class="dropdown-item" href="#" style="font-size: 14px;"><i class="fas fa-pencil-alt me-2 text-warning"></i> Edit Plan</a></li>
+                                <li><a class="dropdown-item" href="#" style="font-size: 14px;"><i class="fas fa-clipboard-check me-2 text-success"></i> Review Plan</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" style="font-size: 14px;"><i class="fas fa-archive me-2"></i> Archive</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-5 text-muted">No support plans found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Create Support Plan Wizard Modal -->
+<div class="modal fade" id="newPlanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header px-4 py-3">
+                <h5 class="modal-title fw-bold" style="font-size: 16px;">Create Support Plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 p-md-5 bg-body">
+                <div class="wizard-steps px-lg-5">
+                    <div class="wizard-step active" id="step1-indicator"><div class="wizard-step-circle">1</div><div class="wizard-step-label">Participant</div></div>
+                    <div class="wizard-step" id="step2-indicator"><div class="wizard-step-circle">2</div><div class="wizard-step-label">Services</div></div>
+                    <div class="wizard-step" id="step3-indicator"><div class="wizard-step-circle">3</div><div class="wizard-step-label">Goals</div></div>
+                    <div class="wizard-step" id="step4-indicator"><div class="wizard-step-circle">4</div><div class="wizard-step-label">Schedule</div></div>
+                    <div class="wizard-step" id="step5-indicator"><div class="wizard-step-circle">5</div><div class="wizard-step-label">Medical</div></div>
+                    <div class="wizard-step" id="step6-indicator"><div class="wizard-step-circle">6</div><div class="wizard-step-label">Review</div></div>
+                </div>
+                
+                <form id="planForm">
+                    <div class="wizard-panel active" id="step1-panel">
+                        <h6 class="fw-bold mb-4" style="font-size: 16px;">Step 1: Participant & Staff</h6>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Select Participant</label>
+                                <select class="form-select" style="font-size: 14px;">
+                                    <option selected disabled>Select...</option>
+                                    {% for p in participants %}
+                                    <option value="{{ p.pk }}">{{ p }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Assign Primary Support Worker</label>
+                                <select class="form-select" style="font-size: 14px;">
+                                    <option selected disabled>Select...</option>
+                                    {% for s in staff_members %}
+                                    <option value="{{ s.pk }}">{{ s.user.get_full_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-panel" id="step2-panel">
+                        <h6 class="fw-bold mb-4" style="font-size: 16px;">Step 2: Support Services</h6>
+                        <div class="row g-3">
+                            <div class="col-12"><label class="form-label">Select Required Services (Hold Ctrl/Cmd for multiple)</label>
+                                <select class="form-select" multiple style="font-size: 14px; height: 150px;">
+                                    <option>Personal Care</option>
+                                    <option>Daily Living Assistance</option>
+                                    <option>Community Access</option>
+                                    <option>Household Tasks</option>
+                                    <option>Transport</option>
+                                    <option>Medication Support</option>
+                                    <option>Therapy Support</option>
+                                    <option>Social Participation</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-panel" id="step3-panel">
+                        <h6 class="fw-bold mb-4" style="font-size: 16px;">Step 3: Participant Goals</h6>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label">Define Goals</label>
+                                <textarea class="form-control" rows="5" style="font-size: 14px;" placeholder="e.g. Improve independent living, Increase community participation..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-panel" id="step4-panel">
+                        <h6 class="fw-bold mb-4" style="font-size: 16px;">Step 4: Support Schedule</h6>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Frequency</label>
+                                <select class="form-select" style="font-size: 14px;">
+                                    <option>Daily</option><option>Weekly</option><option>Monthly</option><option>As Required</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Days</label>
+                                <input type="text" class="form-control" style="font-size: 14px;" placeholder="e.g. Mon, Wed, Fri">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Preferred Time</label>
+                                <input type="text" class="form-control" style="font-size: 14px;" placeholder="e.g. Morning (9AM - 12PM)">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Hours Per Visit</label>
+                                <input type="number" step="0.5" class="form-control" style="font-size: 14px;" value="2.0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-panel" id="step5-panel">
+                        <h6 class="fw-bold mb-4" style="font-size: 16px;">Step 5: Medical Information</h6>
+                        <div class="row g-4">
+                            <div class="col-md-6"><label class="form-label">Medical Conditions</label><textarea class="form-control" rows="2" style="font-size: 14px;"></textarea></div>
+                            <div class="col-md-6"><label class="form-label">Allergies</label><textarea class="form-control" rows="2" style="font-size: 14px;"></textarea></div>
+                            <div class="col-md-6"><label class="form-label">Medication Notes</label><textarea class="form-control" rows="2" style="font-size: 14px;"></textarea></div>
+                            <div class="col-md-6"><label class="form-label">Behaviour Alerts</label><textarea class="form-control" rows="2" style="font-size: 14px;"></textarea></div>
+                            <div class="col-12"><label class="form-label">Emergency Instructions</label><textarea class="form-control" rows="2" style="font-size: 14px;"></textarea></div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-panel" id="step6-panel">
+                        <h6 class="fw-bold mb-4" style="font-size: 16px;">Step 6: Plan Review</h6>
+                        <div class="row g-4">
+                            <div class="col-md-4"><label class="form-label">Plan Start Date</label><input type="date" class="form-control" style="font-size: 14px;"></div>
+                            <div class="col-md-4"><label class="form-label">Review Date</label><input type="date" class="form-control" style="font-size: 14px;"></div>
+                            <div class="col-md-4">
+                                <label class="form-label">Plan Status</label>
+                                <select class="form-select" style="font-size: 14px;"><option>Active</option><option>Review Due</option><option>Expired</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer px-4 py-3">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 14px; border-radius: 10px;">Cancel</button>
+                <button type="button" class="btn btn-primary shadow-sm" onclick="nextStep()" id="nextBtn" style="font-size: 14px; border-radius: 10px;">Next Step <i class="fas fa-arrow-right ms-2"></i></button>
+                <button type="button" class="btn btn-success shadow-sm d-none" data-bs-dismiss="modal" id="saveBtn" style="font-size: 14px; border-radius: 10px;">Save Support Plan <i class="fas fa-check ms-2"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let step = 1;
+    function nextStep() {
+        if (step < 6) {
+            document.getElementById(`step${step}-panel`).classList.remove('active');
+            document.getElementById(`step${step}-indicator`).classList.add('completed');
+            document.getElementById(`step${step}-indicator`).classList.remove('active');
+            step++;
+            document.getElementById(`step${step}-panel`).classList.add('active');
+            document.getElementById(`step${step}-indicator`).classList.add('active');
+            if (step === 6) {
+                document.getElementById('nextBtn').classList.add('d-none');
+                document.getElementById('saveBtn').classList.remove('d-none');
+            }
+        }
+    }
+</script>
+{% endblock %}

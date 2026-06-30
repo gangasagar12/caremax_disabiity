@@ -1,0 +1,173 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Support Plan Details - CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .header-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 24px; margin-bottom: 24px; }
+    .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    .status-Active { background-color: var(--success-light); color: var(--success); }
+    .status-Review { background-color: var(--warning-light); color: var(--warning); }
+    .status-Expired { background-color: var(--danger-light); color: var(--danger); }
+    
+    .nav-tabs-custom { border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+    .nav-tabs-custom .nav-link { color: var(--text-muted); font-weight: 500; font-size: 14px; padding: 12px 20px; border: none; border-bottom: 3px solid transparent; }
+    .nav-tabs-custom .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
+    
+    .info-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 24px; }
+    .info-label { font-size: 13px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .info-value { font-size: 15px; color: var(--text-main); font-weight: 600; margin-bottom: 20px; }
+    
+    /* Timeline */
+    .timeline { position: relative; padding-left: 30px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background-color: var(--border-color); }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-item::before { content: ''; position: absolute; left: -30px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background-color: var(--primary); border: 3px solid var(--primary-light); z-index: 1; }
+    .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .timeline-content { font-size: 14px; color: var(--text-main); font-weight: 500; }
+</style>
+
+<!-- Header -->
+<div class="header-card shadow-sm">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <h1 class="fw-bold mb-0" style="font-size: 22px;">Support Plan PLN-{{ plan.pk|stringformat:"04d" }}</h1>
+                <span class="status-badge status-{{ plan.status|slice:':6' }}">{{ plan.status }}</span>
+            </div>
+            <div class="text-muted" style="font-size: 14px;">
+                <i class="fas fa-calendar-alt me-2"></i> Created on {{ plan.created_at|date:"M d, Y" }}
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" style="border-radius: 10px;"><i class="fas fa-pencil-alt me-2"></i> Edit</button>
+            <button class="btn btn-outline-info" style="border-radius: 10px;"><i class="fas fa-clipboard-check me-2"></i> Review</button>
+            <button class="btn btn-outline-danger" style="border-radius: 10px;"><i class="fas fa-archive me-2"></i> Deactivate</button>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-tabs-custom" id="planTabs" role="tablist">
+    <li class="nav-item" role="presentation"><button class="nav-link active" id="participant-tab" data-bs-toggle="tab" data-bs-target="#participant-panel" type="button" role="tab">Participant Info</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services-panel" type="button" role="tab">Services</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="goals-tab" data-bs-toggle="tab" data-bs-target="#goals-panel" type="button" role="tab">Goals</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review-panel" type="button" role="tab">Review History</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline-panel" type="button" role="tab">Activity Timeline</button></li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content">
+    
+    <!-- Participant Info -->
+    <div class="tab-pane fade show active" id="participant-panel" role="tabpanel">
+        <div class="row g-4">
+            <div class="col-md-8">
+                <div class="info-card shadow-sm h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0" style="font-size: 16px;">Participant Profile</h6>
+                        <a href="{% url 'dashboard:participant_profile_detail' pk=plan.participant.pk %}" class="btn btn-sm btn-outline-primary" style="border-radius: 8px;">View Full Profile</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6"><div class="info-label">Full Name</div><div class="info-value">{{ plan.participant }}</div></div>
+                        <div class="col-sm-6"><div class="info-label">NDIS Number</div><div class="info-value">{{ plan.participant.ndis_number|default:"N/A" }}</div></div>
+                        <div class="col-sm-6"><div class="info-label">Phone</div><div class="info-value">{{ plan.participant.phone|default:"N/A" }}</div></div>
+                        <div class="col-sm-6"><div class="info-label">Emergency Contact</div><div class="info-value">Not specified in MVP</div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card shadow-sm h-100">
+                    <h6 class="fw-bold mb-4" style="font-size: 16px;">Medical Alerts</h6>
+                    <div class="mb-3">
+                        <div class="info-label text-danger"><i class="fas fa-heartbeat me-1"></i> Medical Conditions</div>
+                        <div class="text-main" style="font-size: 14px;">{{ plan.medical_conditions|default:"None" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label text-warning"><i class="fas fa-allergies me-1"></i> Allergies</div>
+                        <div class="text-main" style="font-size: 14px;">{{ plan.allergies|default:"None" }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label text-info"><i class="fas fa-pills me-1"></i> Medication Notes</div>
+                        <div class="text-main" style="font-size: 14px;">{{ plan.medication_notes|default:"None" }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label"><i class="fas fa-exclamation-circle me-1 text-muted"></i> Behaviour & Emergency</div>
+                        <div class="text-main" style="font-size: 14px;">{{ plan.behaviour_alerts|default:"No alerts." }}<br>{{ plan.emergency_instructions|default:"No special emergency instructions." }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Services -->
+    <div class="tab-pane fade" id="services-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 16px;">Approved Services & Schedule</h6>
+            <div class="row">
+                <div class="col-sm-4"><div class="info-label">Services Required</div><div class="info-value">{{ plan.services_required|default:"Core Support" }}</div></div>
+                <div class="col-sm-4"><div class="info-label">Frequency</div><div class="info-value">{{ plan.frequency }}</div></div>
+                <div class="col-sm-4"><div class="info-label">Hours Per Visit</div><div class="info-value">{{ plan.hours_per_visit }} Hours</div></div>
+                <div class="col-sm-4"><div class="info-label">Preferred Days</div><div class="info-value">{{ plan.preferred_days|default:"Any" }}</div></div>
+                <div class="col-sm-4"><div class="info-label">Preferred Time</div><div class="info-value">{{ plan.preferred_time|default:"Any" }}</div></div>
+                <div class="col-sm-4">
+                    <div class="info-label">Assigned Staff</div>
+                    <div class="info-value">
+                        {% if plan.assigned_staff %}
+                        <a href="{% url 'dashboard:staff_profile_detail' pk=plan.assigned_staff.pk %}" class="text-decoration-none" style="color: var(--primary);">
+                            <i class="fas fa-user-md me-2"></i>{{ plan.assigned_staff.user.get_full_name }}
+                        </a>
+                        {% else %}
+                        Unassigned
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Goals -->
+    <div class="tab-pane fade" id="goals-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 16px;">Participant Goals</h6>
+            <div class="p-4 rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <p style="font-size: 14px; line-height: 1.6; white-space: pre-wrap;">{{ plan.participant_goals|default:"No specific goals set for this plan." }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Review History -->
+    <div class="tab-pane fade" id="review-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 16px;">Review Schedule</h6>
+            <div class="row">
+                <div class="col-sm-6"><div class="info-label">Plan Start Date</div><div class="info-value">{{ plan.start_date|date:"F d, Y" }}</div></div>
+                <div class="col-sm-6"><div class="info-label">Next Review Due</div><div class="info-value text-danger">{{ plan.review_date|date:"F d, Y" }}</div></div>
+                <div class="col-sm-6"><div class="info-label">Last Updated</div><div class="info-value">{{ plan.updated_at|date:"F d, Y H:i" }}</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Activity Timeline -->
+    <div class="tab-pane fade" id="timeline-panel" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 16px;">Activity Timeline</h6>
+            <div class="timeline mt-4">
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ plan.updated_at|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Plan Updated</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ plan.created_at|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Staff Assigned: {{ plan.assigned_staff.user.get_full_name|default:"None" }}</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ plan.created_at|date:"M d, Y H:i" }}</div>
+                    <div class="timeline-content">Support Plan Created</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

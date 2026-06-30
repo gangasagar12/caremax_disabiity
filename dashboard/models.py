@@ -73,3 +73,42 @@ class VisitDocument(models.Model):
 
     def __str__(self):
         return f"Doc for {self.visit}"
+
+class SupportPlan(models.Model):
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Review Due', 'Review Due'),
+        ('Expired', 'Expired'),
+    ]
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name='support_plans')
+    assigned_staff = models.ForeignKey(SupportWorker, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_plans')
+    
+    # Services
+    services_required = models.TextField(blank=True, null=True)
+    
+    # Goals
+    participant_goals = models.TextField(blank=True, null=True)
+    
+    # Schedule
+    frequency = models.CharField(max_length=50, default='Weekly')
+    preferred_days = models.CharField(max_length=100, blank=True, null=True)
+    preferred_time = models.CharField(max_length=100, blank=True, null=True)
+    hours_per_visit = models.DecimalField(max_digits=4, decimal_places=1, default=1.0)
+    
+    # Medical Info
+    medical_conditions = models.TextField(blank=True, null=True)
+    allergies = models.TextField(blank=True, null=True)
+    medication_notes = models.TextField(blank=True, null=True)
+    behaviour_alerts = models.TextField(blank=True, null=True)
+    emergency_instructions = models.TextField(blank=True, null=True)
+    
+    # Review Lifecycle
+    start_date = models.DateField()
+    review_date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Plan for {self.participant}"
