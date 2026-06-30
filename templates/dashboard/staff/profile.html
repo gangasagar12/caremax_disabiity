@@ -1,0 +1,627 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Staff Profile - {{ staff.name }} | CareMax{% endblock %}
+
+{% block content %}
+<style>
+    /* Profile Custom Styles */
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+        border-radius: 18px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header::after {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+    }
+    
+    .profile-avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        object-fit: cover;
+    }
+    
+    .profile-avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background-color: white;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 36px;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .status-badge-header {
+        background-color: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(4px);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Navigation Tabs */
+    .nav-tabs-custom {
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 24px;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    
+    .nav-tabs-custom::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .nav-tabs-custom .nav-item {
+        margin-right: 5px;
+        white-space: nowrap;
+    }
+    
+    .nav-tabs-custom .nav-link {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 14px;
+        padding: 12px 20px;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+        border-radius: 0;
+        background: transparent;
+    }
+    
+    .nav-tabs-custom .nav-link:hover {
+        color: var(--primary);
+        border-color: var(--primary-light);
+    }
+    
+    .nav-tabs-custom .nav-link.active {
+        color: var(--primary);
+        border-color: var(--primary);
+        background: transparent;
+    }
+    
+    /* Info Cards */
+    .info-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .info-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .info-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+    
+    .info-label {
+        font-size: 13px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    
+    .info-value {
+        font-size: 14px;
+        color: var(--text-main);
+        font-weight: 500;
+    }
+    
+    /* Right Sidebar Widget */
+    .widget-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .widget-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .widget-item:last-child {
+        border-bottom: none;
+    }
+    .widget-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-light);
+        color: var(--primary);
+        margin-right: 15px;
+    }
+    
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+        margin-top: 20px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--border-color);
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    .timeline-icon {
+        position: absolute;
+        left: -39px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: var(--bg-card);
+        border: 2px solid var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    .timeline-date {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    /* Quick Action Buttons */
+    .quick-action-btn {
+        border-radius: 10px;
+        padding: 10px 15px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 10px;
+        transition: all 0.2s;
+    }
+</style>
+
+<!-- Profile Header -->
+<div class="profile-header shadow-sm">
+    <div class="row align-items-center position-relative z-1">
+        <div class="col-12 col-md-auto text-center text-md-start mb-4 mb-md-0">
+            <div class="profile-avatar-placeholder mx-auto mx-md-0">
+                MC
+            </div>
+        </div>
+        <div class="col-12 col-md text-center text-md-start">
+            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
+                <div>
+                    <h1 class="fw-bold mb-1" style="font-size: 24px;">{{ staff.name }}</h1>
+                    <p class="mb-2 text-white-50" style="font-size: 14px;">{{ staff.employee_id }} &bull; {{ staff.position }}</p>
+                    <span class="status-badge-header"><i class="fas fa-circle me-1" style="font-size: 8px; color: #4ade80;"></i> {{ staff.status }}</span>
+                </div>
+                <div class="d-flex gap-2 mt-3 mt-md-0">
+                    <button class="btn btn-light shadow-sm" style="border-radius: 10px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-2 text-primary"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-outline-light" style="border-radius: 10px; font-size: 14px;">
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row mt-4 pt-3 border-top border-light border-opacity-25">
+                <div class="col-sm-6 col-md-3 mb-2 mb-md-0">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-phone-alt me-2 text-white-50"></i>
+                        <span style="font-size: 14px;">{{ staff.phone }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3 mb-2 mb-md-0">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-envelope me-2 text-white-50"></i>
+                        <span style="font-size: 14px;">{{ staff.email }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3 mb-2 mb-md-0">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-building me-2 text-white-50"></i>
+                        <span style="font-size: 14px;">{{ staff.department }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2 text-white-50"></i>
+                        <span style="font-size: 14px;">Joined {{ staff.joining_date }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-xl-9">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs nav-tabs-custom" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">Personal Info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="employment-tab" data-bs-toggle="tab" data-bs-target="#employment" type="button" role="tab">Employment</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="qualifications-tab" data-bs-toggle="tab" data-bs-target="#qualifications" type="button" role="tab">Qualifications</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="participants-tab" data-bs-toggle="tab" data-bs-target="#participants" type="button" role="tab">Assigned Participants</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">Schedule</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">Documents</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">Attendance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button" role="tab">Performance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab">Activity Timeline</button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="profileTabsContent">
+            <!-- Personal Info Tab -->
+            <div class="tab-pane fade show active" id="personal" role="tabpanel" tabindex="0">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h2 class="info-card-title">Basic Details</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="info-label">Gender</div>
+                            <div class="info-value">Male</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Date of Birth</div>
+                            <div class="info-value">14 May 1988 (38 yrs)</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Blood Group</div>
+                            <div class="info-value">O+</div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="info-label">Residential Address</div>
+                            <div class="info-value">123 Example Street, Suburbia, State, 2000</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h2 class="info-card-title">Emergency Contact</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="info-label">Name</div>
+                            <div class="info-value">Sarah Chang (Wife)</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">0499 888 777</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other placeholder tabs -->
+            <div class="tab-pane fade" id="employment" role="tabpanel" tabindex="0">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h2 class="info-card-title">Employment Details</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="info-label">Employment Type</div>
+                            <div class="info-value">{{ staff.employment_type }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Department</div>
+                            <div class="info-value">{{ staff.department }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Manager</div>
+                            <div class="info-value">{{ staff.manager }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Joining Date</div>
+                            <div class="info-value">{{ staff.joining_date }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">Current Salary Rate</div>
+                            <div class="info-value">$42.50 / hr</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-label">System Role</div>
+                            <div class="info-value">Support Worker</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Qualifications -->
+            <div class="tab-pane fade" id="qualifications" role="tabpanel" tabindex="0">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h2 class="info-card-title">Certifications & Checks</h2>
+                    </div>
+                    <table class="table table-hover" style="font-size: 14px;">
+                        <thead>
+                            <tr>
+                                <th>Certificate Name</th>
+                                <th>Issued Date</th>
+                                <th>Expiry Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Police Clearance</td>
+                                <td>10 Jan 2024</td>
+                                <td>10 Jan 2027</td>
+                                <td><span class="badge bg-success">Valid</span></td>
+                            </tr>
+                            <tr>
+                                <td>First Aid & CPR</td>
+                                <td>15 Mar 2024</td>
+                                <td>15 Mar 2025</td>
+                                <td><span class="badge bg-success">Valid</span></td>
+                            </tr>
+                            <tr>
+                                <td>WWVP Card</td>
+                                <td>01 Feb 2021</td>
+                                <td>01 Feb 2026</td>
+                                <td><span class="badge bg-warning text-dark">Expiring Soon</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- More tabs content would go here in a real app, keeping it concise for now -->
+            <div class="tab-pane fade" id="participants" role="tabpanel">
+                <div class="info-card text-center py-5">
+                    <i class="fas fa-users mb-3 text-muted" style="font-size: 48px;"></i>
+                    <h5 style="font-size: 16px;">Assigned Participants</h5>
+                    <p class="text-muted" style="font-size: 14px;">List of participants assigned to this support worker.</p>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="schedule" role="tabpanel">
+                 <div class="info-card text-center py-5">
+                    <p class="text-muted" style="font-size: 14px;">Schedule calendar view will be displayed here.</p>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="documents" role="tabpanel">
+                <div class="info-card text-center py-5">
+                    <p class="text-muted" style="font-size: 14px;">Uploaded staff documents will be displayed here.</p>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="attendance" role="tabpanel">
+                <div class="info-card text-center py-5">
+                    <p class="text-muted" style="font-size: 14px;">Timesheet and attendance records.</p>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="performance" role="tabpanel">
+                <div class="info-card text-center py-5">
+                    <p class="text-muted" style="font-size: 14px;">Performance metrics and reviews.</p>
+                </div>
+            </div>
+            
+            <div class="tab-pane fade" id="timeline" role="tabpanel">
+                <div class="info-card">
+                    <div class="info-card-header">
+                        <h2 class="info-card-title">Activity Timeline</h2>
+                    </div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon"><i class="fas fa-check text-primary" style="font-size: 10px;"></i></div>
+                            <div class="timeline-date">Today, 09:30 AM</div>
+                            <div style="font-size: 14px;">Completed visit for <strong>Sarah Jenkins</strong>.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon"><i class="fas fa-sign-in-alt text-primary" style="font-size: 10px;"></i></div>
+                            <div class="timeline-date">Today, 08:45 AM</div>
+                            <div style="font-size: 14px;">Logged into the system.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon"><i class="fas fa-file-alt text-primary" style="font-size: 10px;"></i></div>
+                            <div class="timeline-date">Yesterday, 15:20 PM</div>
+                            <div style="font-size: 14px;">Uploaded new First Aid Certificate.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Right Sidebar -->
+    <div class="col-lg-4 col-xl-3">
+        <button class="btn btn-primary quick-action-btn shadow-sm" data-bs-toggle="modal" data-bs-target="#assignParticipantModal">
+            <i class="fas fa-user-plus"></i> Assign Participant
+        </button>
+        <button class="btn btn-outline-primary quick-action-btn mb-4" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" style="background-color: var(--bg-card);">
+            <i class="fas fa-key"></i> Reset Password
+        </button>
+        
+        <div class="widget-card shadow-sm">
+            <h3 class="fw-bold mb-3" style="font-size: 16px;">Quick Summary</h3>
+            <div class="widget-item">
+                <div class="d-flex align-items-center">
+                    <div class="widget-icon"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <div class="info-label mb-0">Hours This Week</div>
+                        <div class="fw-bold" style="font-size: 14px;">32 / 40 hrs</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-item">
+                <div class="d-flex align-items-center">
+                    <div class="widget-icon" style="background-color: var(--warning-light); color: var(--warning);"><i class="fas fa-star"></i></div>
+                    <div>
+                        <div class="info-label mb-0">Performance Score</div>
+                        <div class="fw-bold" style="font-size: 14px;">4.8 / 5.0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-item">
+                <div class="d-flex align-items-center">
+                    <div class="widget-icon" style="background-color: var(--success-light); color: var(--success);"><i class="fas fa-users"></i></div>
+                    <div>
+                        <div class="info-label mb-0">Active Participants</div>
+                        <div class="fw-bold" style="font-size: 14px;">4 Assigned</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="widget-card shadow-sm">
+            <h3 class="fw-bold mb-3" style="font-size: 16px;">Today's Schedule</h3>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold" style="font-size: 14px; color: var(--text-main);">Sarah Jenkins</span>
+                    <span class="badge bg-light text-dark border">10:00 AM</span>
+                </div>
+                <div class="text-muted" style="font-size: 13px;">Core Support &bull; 2 hrs</div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold" style="font-size: 14px; color: var(--text-main);">David Miller</span>
+                    <span class="badge bg-light text-dark border">1:30 PM</span>
+                </div>
+                <div class="text-muted" style="font-size: 13px;">Capacity Building &bull; 1.5 hrs</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom px-4 py-3">
+                <h5 class="modal-title fw-bold" style="font-size: 16px;">Reset Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p style="font-size: 14px;">Generate a new temporary password for <strong>{{ staff.name }}</strong>. They will be required to change this upon their next login.</p>
+                <div class="mb-3">
+                    <label class="form-label">Temporary Password</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" style="font-size: 14px;" value="GenP@ss2045!" id="tempPass" readonly>
+                        <button class="btn btn-outline-secondary" type="button" style="font-size: 13px;"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" value="" id="emailNotify" checked>
+                    <label class="form-check-label" for="emailNotify" style="font-size: 14px;">
+                        Email new password to {{ staff.email }}
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer px-4 py-3">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 14px; border-radius: 10px;">Cancel</button>
+                <button type="button" class="btn btn-primary shadow-sm" data-bs-dismiss="modal" onclick="alert('Password reset successfully sent.')" style="font-size: 14px; border-radius: 10px;">Confirm Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Participant Modal -->
+<div class="modal fade" id="assignParticipantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom px-4 py-3">
+                <h5 class="modal-title fw-bold" style="font-size: 16px;">Assign Participant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label">Select Participant</label>
+                    <select class="form-select" style="font-size: 14px;">
+                        <option>Search participants...</option>
+                        <option>Emily Rose (PT-10047)</option>
+                        <option>James Smith (PT-10048)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Service Category</label>
+                    <select class="form-select" style="font-size: 14px;">
+                        <option>Core Support</option>
+                        <option>Capacity Building</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Weekly Hours</label>
+                    <input type="number" class="form-control" style="font-size: 14px;" value="2">
+                </div>
+            </div>
+            <div class="modal-footer px-4 py-3">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="font-size: 14px; border-radius: 10px;">Cancel</button>
+                <button type="button" class="btn btn-primary shadow-sm" data-bs-dismiss="modal" onclick="alert('Participant assigned successfully.')" style="font-size: 14px; border-radius: 10px;">Save Assignment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

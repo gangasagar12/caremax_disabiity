@@ -1,27 +1,37 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
+from django.shortcuts import get_object_or_404, redirect
+from django.http import JsonResponse
+from django.views import View
+from .models import Participant, SupportWorker, Appointment, VisitRecord, VisitDocument
 
 class DashboardHomeView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Placeholder stats for the UI
+        now = timezone.now()
+        
+        total_participants = Participant.objects.count()
+        active_workers = SupportWorker.objects.filter(status='Active').count()
+        today_visits = Appointment.objects.filter(date=now.date()).count()
+        
         context['stats'] = {
-            'total_participants': 142,
-            'participants_trend': '+12%',
-            'active_workers': 38,
-            'workers_trend': '+5%',
-            'today_visits': 86,
-            'visits_trend': '+18%',
-            'pending_referrals': 14,
-            'referrals_trend': '-2%',
-            'upcoming_appointments': 32,
-            'revenue_month': '$124,500',
-            'revenue_trend': '+24%',
-            'claims_pending': '$18,200',
-            'incident_reports': 2,
-            'incident_trend': '-50%'
+            'total_participants': total_participants,
+            'participants_trend': '+0%',
+            'active_workers': active_workers,
+            'workers_trend': '+0%',
+            'today_visits': today_visits,
+            'visits_trend': '+0%',
+            'pending_referrals': 0,
+            'referrals_trend': '0%',
+            'upcoming_appointments': Appointment.objects.filter(date__gte=now.date()).count(),
+            'revenue_month': '$0',
+            'revenue_trend': '0%',
+            'claims_pending': '$0',
+            'incident_reports': 0,
+            'incident_trend': '0%'
         }
         return context
 
@@ -33,75 +43,58 @@ class ParticipantListView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Mock data for list view stats
+        
+        total = Participant.objects.count()
+        active = Participant.objects.filter(status='Active').count()
+        pending = Participant.objects.filter(status='Pending').count()
+        inactive = Participant.objects.filter(status='Inactive').count()
+        
         context['stats'] = {
-            'total': 156,
-            'active': 142,
-            'pending': 12,
-            'inactive': 2
+            'total': total,
+            'active': active,
+            'pending': pending,
+            'inactive': inactive
         }
         
-        # Dynamic filter options
         context['filter_statuses'] = ['Active', 'Pending', 'Inactive']
-        context['filter_staff'] = ['Michael Chang', 'Sarah Connor', 'John Doe']
+        context['filter_staff'] = [s.user.get_full_name() for s in SupportWorker.objects.all()]
         context['filter_services'] = ['Core Support', 'Capacity Building', 'Capital']
         
-        # Dynamic participant list
-        context['participants'] = [
-            {
-                'pk': 10045,
-                'id_str': 'PT-10045',
-                'name': 'Sarah Jenkins',
-                'ndis': '430 998 123',
-                'age': 34,
-                'gender': 'Female',
-                'phone': '0412 345 678',
-                'staff': 'Michael Chang',
-                'staff_initials': 'MC',
-                'staff_color': 'success',
-                'support_level': 'High',
-                'status': 'Active',
-                'status_class': 'status-active',
-                'next_appt': 'Oct 15, 2024',
-                'initials': 'SJ',
-                'has_avatar': False
-            },
-            {
-                'pk': 10046,
-                'id_str': 'PT-10046',
-                'name': 'David Miller',
-                'ndis': '430 887 654',
-                'age': 45,
-                'gender': 'Male',
-                'phone': '0412 987 654',
-                'staff': 'Sarah Connor',
-                'staff_initials': 'SC',
-                'staff_color': 'warning',
+        participants_data = []
+        for p in Participant.objects.all():
+            first_initial = p.first_name[0] if p.first_name else ''
+            last_initial = p.last_name[0] if p.last_name else ''
+            
+            appt = p.appointments.first()
+            staff_name = appt.staff.user.get_full_name() if appt else None
+            staff_initials = (appt.staff.user.first_name[0] + appt.staff.user.last_name[0]) if (appt and appt.staff.user.first_name) else 'N/A'
+            
+            status_class = 'status-active'
+            if p.status == 'Pending':
+                status_class = 'status-pending'
+            elif p.status == 'Inactive':
+                status_class = 'status-inactive'
+                
+            participants_data.append({
+                'pk': p.pk,
+                'id_str': p.ndis_number or f'PT-{10000 + p.pk}',
+                'name': f"{p.first_name} {p.last_name}",
+                'ndis': p.ndis_number,
+                'age': 30,
+                'gender': 'Not specified',
+                'phone': p.phone,
+                'staff': staff_name,
+                'staff_initials': staff_initials,
+                'staff_color': 'success' if staff_name else 'secondary',
                 'support_level': 'Standard',
-                'status': 'Active',
-                'status_class': 'status-active',
-                'next_appt': 'Oct 18, 2024',
-                'avatar_url': 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-                'has_avatar': True
-            },
-            {
-                'pk': 10047,
-                'id_str': 'PT-10047',
-                'name': 'Emily Rose',
-                'ndis': '430 776 543',
-                'age': 28,
-                'gender': 'Female',
-                'phone': '0423 456 789',
-                'staff': None,
-                'support_level': 'Complex',
-                'status': 'Pending',
-                'status_class': 'status-pending',
-                'next_appt': '-',
-                'initials': 'ER',
+                'status': p.status,
+                'status_class': status_class,
+                'next_appt': str(appt.date) if appt else '-',
+                'initials': f"{first_initial}{last_initial}",
                 'has_avatar': False
-            }
-        ]
-        
+            })
+            
+        context['participants'] = participants_data
         return context
 
 class ParticipantProfileView(LoginRequiredMixin, TemplateView):
@@ -109,15 +102,163 @@ class ParticipantProfileView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Mock participant data
-        context['participant'] = {
-            'id': kwargs.get('pk', 'PT-10045'),
-            'name': 'Sarah Jenkins',
-            'status': 'Active',
-            'ndis_number': '430 998 123',
-            'assigned_staff': 'Michael Chang',
-            'emergency_contact': 'David Jenkins (Husband)',
-            'phone': '0412 345 678',
-            'email': 'sarah.j@example.com'
+        pk = kwargs.get('pk')
+        try:
+            p = Participant.objects.get(pk=pk)
+            appt = p.appointments.first()
+            context['participant'] = {
+                'id': p.ndis_number or f'PT-{10000 + p.pk}',
+                'name': f"{p.first_name} {p.last_name}",
+                'status': p.status,
+                'ndis_number': p.ndis_number,
+                'assigned_staff': appt.staff.user.get_full_name() if appt else 'None',
+                'emergency_contact': 'Not specified',
+                'phone': p.phone,
+                'email': p.email
+            }
+        except Participant.DoesNotExist:
+            context['participant'] = {}
+        return context
+
+class StaffListView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/staff/list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        total = SupportWorker.objects.count()
+        active = SupportWorker.objects.filter(status='Active').count()
+        inactive = SupportWorker.objects.filter(status='Inactive').count()
+        on_leave = SupportWorker.objects.filter(status='On Leave').count()
+        
+        context['stats'] = {
+            'total': total,
+            'active': active,
+            'inactive': inactive,
+            'on_leave': on_leave,
+            'working_today': Appointment.objects.filter(date=timezone.now().date()).values('staff').distinct().count(),
+            'cert_expiring': 0
         }
+        
+        context['filter_departments'] = ['Nursing', 'Allied Health', 'Support Services']
+        context['filter_positions'] = ['Support Worker', 'Registered Nurse', 'Coordinator']
+        context['filter_employment'] = ['Full-Time', 'Part-Time', 'Casual']
+        
+        staff_data = []
+        for s in SupportWorker.objects.all():
+            user = s.user
+            first_initial = user.first_name[0] if user.first_name else ''
+            last_initial = user.last_name[0] if user.last_name else ''
+            
+            status_class = 'status-active'
+            color = 'success'
+            if s.status == 'On Leave':
+                status_class = 'status-pending'
+                color = 'warning'
+            elif s.status == 'Inactive':
+                status_class = 'status-inactive'
+                color = 'danger'
+                
+            today_appts = Appointment.objects.filter(staff=s, date=timezone.now().date()).count()
+            assigned_participants = Appointment.objects.filter(staff=s).values('participant').distinct().count()
+            
+            staff_data.append({
+                'pk': s.pk,
+                'employee_id': s.employee_id,
+                'name': user.get_full_name(),
+                'position': 'Support Worker',
+                'phone': s.phone,
+                'email': user.email,
+                'assigned_participants': assigned_participants,
+                'today_appointments': today_appts,
+                'status': s.status,
+                'status_class': status_class,
+                'last_login': user.last_login.strftime('%b %d, %Y') if user.last_login else 'Never',
+                'initials': f"{first_initial}{last_initial}",
+                'color': color,
+                'has_avatar': False
+            })
+            
+        context['staff_list'] = staff_data
+        return context
+
+class StaffProfileView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/staff/profile.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = kwargs.get('pk')
+        try:
+            s = SupportWorker.objects.get(pk=pk)
+            user = s.user
+            context['staff'] = {
+                'pk': s.pk,
+                'employee_id': s.employee_id,
+                'name': user.get_full_name(),
+                'position': 'Support Worker',
+                'status': s.status,
+                'department': 'Support Services',
+                'phone': s.phone,
+                'email': user.email,
+                'manager': 'Admin',
+                'employment_type': 'Full-Time',
+                'joining_date': user.date_joined.strftime('%d %b %Y') if user.date_joined else 'Unknown',
+            }
+        except SupportWorker.DoesNotExist:
+            context['staff'] = {}
+        return context
+
+class StaffMyDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/staff_my_dashboard.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            worker = self.request.user.support_worker_profile
+            today = timezone.now().date()
+            appointments = Appointment.objects.filter(staff=worker, date=today)
+            context['appointments'] = appointments
+            context['worker'] = worker
+        except:
+            context['appointments'] = []
+            context['worker'] = None
+        return context
+
+class VisitCheckInView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        appt = get_object_or_404(Appointment, pk=pk)
+        visit, created = VisitRecord.objects.get_or_create(appointment=appt)
+        if not visit.check_in_time:
+            visit.check_in_time = timezone.now()
+            visit.save()
+            appt.status = 'In Progress'
+            appt.save()
+        return redirect('dashboard:staff_my_dashboard')
+
+class VisitCheckOutView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        appt = get_object_or_404(Appointment, pk=pk)
+        visit = get_object_or_404(VisitRecord, appointment=appt)
+        
+        care_notes = request.POST.get('care_notes', '')
+        
+        visit.check_out_time = timezone.now()
+        visit.care_notes = care_notes
+        visit.save()
+        
+        appt.status = 'Completed'
+        appt.save()
+        
+        if 'document' in request.FILES:
+            VisitDocument.objects.create(visit=visit, file_upload=request.FILES['document'])
+            
+        return redirect('dashboard:staff_my_dashboard')
+
+class AdminReviewVisitsView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/admin_review_visits.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        completed_visits = VisitRecord.objects.filter(appointment__status='Completed').order_by('-check_out_time')
+        context['visits'] = completed_visits
         return context
