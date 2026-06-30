@@ -39,22 +39,21 @@ ALLOWED_HOSTS = os.getenv(
 
 INSTALLED_APPS = [
     'jazzmin',
-    'dashboard.apps.CustomAdminConfig',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dashboard.apps.DashboardConfig',
     'accounts',
     'core',
     'services',
     'careers',
     'blogs',
-    'portal',
     'referrals',
     'resources',
     'contact',
+    'dashboard',
     'crispy_forms',
     'crispy_bootstrap5',
     'guardian',
@@ -77,10 +76,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'dashboard.middleware.AdminRememberMeMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'portal.middleware.PortalSeparationMiddleware',
     'axes.middleware.AxesMiddleware',
 ]
 
@@ -150,6 +147,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+# Authentication Redirects
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

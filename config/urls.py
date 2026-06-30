@@ -11,7 +11,7 @@ urlpatterns = [
     path('referral/', include('referrals.urls')),
     path('resources/', include('resources.urls')),
     path('contact/', include('contact.urls')),
-    path('portal/', include('portal.urls')),
+    path('dashboard/', include('dashboard.urls')),
 ]
 
 if settings.DEBUG:

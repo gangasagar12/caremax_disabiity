@@ -1,418 +1,453 @@
-{% extends "admin/base_site.html" %}
-{% load i18n static %}
+{% extends "dashboard/base_dashboard.html" %}
 
-{% block extrastyle %}
-{{ block.super }}
+{% block title %}Overview | Administration{% endblock %}
+
+{% block extra_css %}
 <style>
-    .dashboard-container {
+    /* Dashboard Specific Styles */
+    .page-header {
+        margin-bottom: 2rem;
         display: flex;
-        flex-direction: column;
-        gap: 30px;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+    
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+    }
+    
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 15px;
+        margin-top: 4px;
     }
 
-    /* Top Section - Overview Cards */
-    .overview-grid {
+    /* Stats Grid */
+    .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
     }
     
     .stat-card {
-        background: var(--bg-white);
-        border-radius: 12px;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        border: 1px solid #E2E8F0;
-        transition: transform 0.2s, box-shadow 0.2s;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
     }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: var(--primary);
+        opacity: 0;
+        transition: var(--transition);
+    }
+    
+    .stat-card:hover::before { opacity: 1; }
     
     .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-float);
     }
-    
-    .stat-card-header {
+
+    .stat-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 15px;
+        margin-bottom: 1rem;
     }
-    
+
+    .stat-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
     .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 18px;
     }
-    
-    .icon-blue { background: #EFF6FF; color: var(--primary-blue); }
-    .icon-teal { background: #F0FDFA; color: var(--secondary-teal); }
-    .icon-indigo { background: #EEF2FF; color: #4F46E5; }
-    .icon-rose { background: #FFF1F2; color: #E11D48; }
-    .icon-amber { background: #FFFBEB; color: #D97706; }
-    
+
+    .icon-primary { background: var(--primary-light); color: var(--primary); }
+    .icon-success { background: var(--success-light); color: var(--success); }
+    .icon-warning { background: var(--warning-light); color: var(--warning); }
+    .icon-danger { background: var(--danger-light); color: var(--danger); }
+
     .stat-value {
-        font-size: 2rem;
+        font-size: 32px;
         font-weight: 700;
-        color: var(--text-dark);
-        line-height: 1;
-    }
-    
-    .stat-label {
-        font-size: 0.875rem;
-        color: #64748B;
-        margin-top: 8px;
-        font-weight: 500;
-    }
-    
-    .stat-action {
-        margin-top: auto;
-        padding-top: 15px;
-        font-size: 0.875rem;
-        color: var(--primary-blue);
-        text-decoration: none;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-    }
-    
-    .stat-action i {
-        margin-left: 5px;
-        font-size: 0.75rem;
-    }
-    
-    .stat-action:hover {
-        text-decoration: underline;
+        color: var(--text-main);
+        margin-bottom: 4px;
     }
 
-    /* Quick Actions */
-    .quick-actions {
-        background: var(--bg-white);
-        padding: 20px 24px;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    .stat-trend {
         display: flex;
         align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-    
-    .quick-actions h3 {
-        margin: 0;
-        font-size: 1rem;
-        color: var(--text-dark);
-        margin-right: 15px;
-    }
-    
-    .btn-action {
-        background: var(--bg-light);
-        border: 1px solid #CBD5E1;
-        padding: 8px 16px;
-        border-radius: 6px;
-        color: #334155;
-        text-decoration: none;
+        gap: 6px;
+        font-size: 13px;
         font-weight: 500;
-        font-size: 0.875rem;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-action:hover {
-        background: var(--primary-blue);
-        color: white;
-        border-color: var(--primary-blue);
-    }
-    
-    .btn-primary {
-        background: var(--primary-blue);
-        color: white;
-        border-color: var(--primary-blue);
     }
 
-    /* Tables / Lists */
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--danger); }
+
+    /* Main Grid */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
     }
-    
-    .dashboard-panel {
-        background: var(--bg-white);
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-    
-    .panel-header {
-        padding: 16px 24px;
-        border-bottom: 1px solid #E2E8F0;
+
+    .card-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #F8FAFC;
+        margin-bottom: 1.5rem;
     }
-    
-    .panel-header h3 {
-        margin: 0;
-        font-size: 1rem;
-        color: var(--text-dark);
-    }
-    
-    .panel-link {
-        font-size: 0.875rem;
-        color: var(--primary-blue);
-        text-decoration: none;
-        font-weight: 500;
-    }
-    
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    
-    .data-table th, .data-table td {
-        padding: 12px 24px;
-        text-align: left;
-        border-bottom: 1px solid #E2E8F0;
-        font-size: 0.875rem;
-    }
-    
-    .data-table th {
-        color: #64748B;
+
+    .card-title {
+        font-size: 18px;
         font-weight: 600;
-        background: #F8FAFC;
+        color: var(--text-main);
     }
     
-    .data-table tr:last-child td {
+    /* Lists */
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .activity-item:last-child {
         border-bottom: none;
+        padding-bottom: 0;
     }
     
-    .status-badge {
-        padding: 4px 10px;
-        border-radius: 9999px;
-        font-size: 0.75rem;
+    .activity-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-app);
+        color: var(--text-muted);
+        flex-shrink: 0;
+    }
+    
+    .activity-content h4 {
+        font-size: 14px;
         font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 2px;
     }
     
-    .status-new { background: #DBEAFE; color: #1E40AF; }
-    .status-progress { background: #FEF3C7; color: #92400E; }
-    .status-approved { background: #D1FAE5; color: #065F46; }
+    .activity-content p {
+        font-size: 13px;
+        color: var(--text-muted);
+    }
     
-    .empty-state {
-        padding: 40px;
-        text-align: center;
-        color: #94A3B8;
-        font-size: 0.875rem;
+    .activity-time {
+        font-size: 12px;
+        color: var(--text-light);
+        margin-left: auto;
+    }
+
+    /* Chart Container */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container">
+<div class="page-header" style="animation: fadeIn 0.4s ease-out forwards;">
+    <div>
+        <h1 class="page-title">Administration Dashboard</h1>
+        <p class="page-subtitle">Welcome back! Here's what's happening today.</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary"><i class="fas fa-plus"></i> New Referral</button>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <!-- Participants -->
+    <div class="card stat-card" style="animation: fadeIn 0.5s ease-out forwards;">
+        <div class="stat-header">
+            <div class="stat-title">Participants</div>
+            <div class="stat-icon icon-primary"><i class="fas fa-users"></i></div>
+        </div>
+        <div class="stat-value">{{ stats.total_participants }}</div>
+        <div class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i> {{ stats.participants_trend }} from last month
+        </div>
+    </div>
+
+    <!-- Active Workers -->
+    <div class="card stat-card" style="animation: fadeIn 0.6s ease-out forwards;">
+        <div class="stat-header">
+            <div class="stat-title">Support Workers</div>
+            <div class="stat-icon icon-success"><i class="fas fa-user-nurse"></i></div>
+        </div>
+        <div class="stat-value">{{ stats.active_workers }}</div>
+        <div class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i> {{ stats.workers_trend }} online today
+        </div>
+    </div>
+
+    <!-- Revenue -->
+    <div class="card stat-card" style="animation: fadeIn 0.7s ease-out forwards;">
+        <div class="stat-header">
+            <div class="stat-title">Monthly Revenue</div>
+            <div class="stat-icon icon-warning"><i class="fas fa-chart-line"></i></div>
+        </div>
+        <div class="stat-value">{{ stats.revenue_month }}</div>
+        <div class="stat-trend trend-up">
+            <i class="fas fa-arrow-up"></i> {{ stats.revenue_trend }} from last month
+        </div>
+    </div>
+
+    <!-- Incident Reports -->
+    <div class="card stat-card" style="animation: fadeIn 0.8s ease-out forwards;">
+        <div class="stat-header">
+            <div class="stat-title">Incident Reports</div>
+            <div class="stat-icon icon-danger"><i class="fas fa-exclamation-triangle"></i></div>
+        </div>
+        <div class="stat-value">{{ stats.incident_reports }}</div>
+        <div class="stat-trend trend-down">
+            <i class="fas fa-arrow-down"></i> {{ stats.incident_trend }} from last week
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div class="dashboard-grid">
     
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-        <h3><i class="fa-solid fa-bolt text-amber-500 mr-2"></i> Quick Actions</h3>
-        <a href="{% url 'admin:referrals_referral_add' %}" class="btn-action btn-primary"><i class="fa-solid fa-plus"></i> Add Participant/Referral</a>
-        <a href="{% url 'admin:resources_blog_add' %}" class="btn-action"><i class="fa-solid fa-plus"></i> Add Blog</a>
-        <a href="{% url 'admin:services_service_add' %}" class="btn-action"><i class="fa-solid fa-plus"></i> Add Service</a>
-        <a href="#" class="btn-action"><i class="fa-solid fa-plus"></i> Add Job</a>
+    <!-- Left Column: Chart & Calendar -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; animation: fadeIn 0.9s ease-out forwards;">
+        
+        <!-- Growth Chart -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Participant Growth</h3>
+                <button class="btn" style="background: var(--bg-app); border: 1px solid var(--border-color); color: var(--text-muted);">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Today's Schedule Placeholder -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Today's Appointments</h3>
+                <a href="#" style="color: var(--primary); font-size: 14px; text-decoration: none; font-weight: 500;">View Full Calendar</a>
+            </div>
+            
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: var(--primary-light); color: var(--primary);">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Community Access - John Smith</h4>
+                        <p>Support Worker: Emily Chen</p>
+                    </div>
+                    <div class="activity-time">09:00 AM</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: var(--success-light); color: var(--success);">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>In-Home Care - Sarah Jones</h4>
+                        <p>Support Worker: Michael Davis</p>
+                    </div>
+                    <div class="activity-time">11:30 AM</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: var(--warning-light); color: var(--warning);">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Therapy Session - Robert Wilson</h4>
+                        <p>Support Worker: Lisa Wong</p>
+                    </div>
+                    <div class="activity-time">02:00 PM</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Overview Cards -->
-    <div class="overview-grid">
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-icon icon-teal">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                <div class="stat-value">{{ total_participants }}</div>
-            </div>
-            <div class="stat-label">Total Participants</div>
-            <a href="{% url 'admin:referrals_referral_changelist' %}" class="stat-action">View All <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-icon icon-blue">
-                    <i class="fa-solid fa-file-medical"></i>
-                </div>
-                <div class="stat-value">{{ new_referrals_count }}</div>
-            </div>
-            <div class="stat-label">New Referrals</div>
-            <a href="{% url 'admin:referrals_referral_changelist' %}?status__exact=New" class="stat-action">Review Referrals <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-icon icon-indigo">
-                    <i class="fa-solid fa-user-doctor"></i>
-                </div>
-                <div class="stat-value">{{ active_staff }}</div>
-            </div>
-            <div class="stat-label">Active Staff</div>
-            <a href="{% url 'admin:auth_user_changelist' %}" class="stat-action">Manage Staff <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-icon icon-rose">
-                    <i class="fa-solid fa-envelope"></i>
-                </div>
-                <div class="stat-value">{{ contact_messages_count }}</div>
-            </div>
-            <div class="stat-label">Unresolved Messages</div>
-            <a href="{% url 'admin:contact_contactmessage_changelist' %}" class="stat-action">Reply Now <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-icon icon-amber">
-                    <i class="fa-solid fa-newspaper"></i>
-                </div>
-                <div class="stat-value">{{ published_blogs_count }}</div>
-            </div>
-            <div class="stat-label">Published Blogs</div>
-            <a href="{% url 'admin:resources_blog_changelist' %}" class="stat-action">Manage Content <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-icon icon-teal">
-                    <i class="fa-solid fa-briefcase"></i>
-                </div>
-                <div class="stat-value">{{ open_jobs_count }}</div>
-            </div>
-            <div class="stat-label">Open Job Positions</div>
-            <a href="#" class="stat-action">Manage Jobs <i class="fa-solid fa-arrow-right"></i></a>
-        </div>
-    </div>
-
-    <!-- Dashboard Grid -->
-    <div class="dashboard-grid">
+    <!-- Right Column: Activity Feeds -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; animation: fadeIn 1s ease-out forwards;">
         
         <!-- Recent Referrals -->
-        <div class="dashboard-panel">
-            <div class="panel-header">
-                <h3>Recent Referrals</h3>
-                <a href="{% url 'admin:referrals_referral_changelist' %}" class="panel-link">View All</a>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Referrals</h3>
             </div>
-            {% if recent_referrals %}
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Participant Name</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for referral in recent_referrals %}
-                    <tr>
-                        <td>{{ referral.first_name }} {{ referral.last_name }}</td>
-                        <td>{{ referral.created_at|date:"M d, Y" }}</td>
-                        <td>
-                            <span class="status-badge {% if referral.status == 'New' %}status-new{% elif referral.status == 'Approved' %}status-approved{% else %}status-progress{% endif %}">
-                                {{ referral.status }}
-                            </span>
-                        </td>
-                        <td style="text-align: right;">
-                            <a href="{% url 'admin:referrals_referral_change' referral.id %}" class="panel-link">View</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div class="empty-state">No recent referrals found.</div>
-            {% endif %}
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="activity-content">
+                        <h4>New Referral: James D.</h4>
+                        <p>Status: Pending Review</p>
+                    </div>
+                    <div class="activity-time">2 hrs ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="activity-content">
+                        <h4>Referral Approved: Amy T.</h4>
+                        <p>Assigned to: Coordination Team</p>
+                    </div>
+                    <div class="activity-time">5 hrs ago</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="activity-content">
+                        <h4>New Referral: Mark S.</h4>
+                        <p>Status: Pending Review</p>
+                    </div>
+                    <div class="activity-time">1 day ago</div>
+                </div>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 1rem; background: var(--bg-app); border: 1px solid var(--border-color); color: var(--text-main);">
+                View All Referrals
+            </button>
         </div>
 
-        <!-- Recent Contact Messages -->
-        <div class="dashboard-panel">
-            <div class="panel-header">
-                <h3>Recent Messages</h3>
-                <a href="{% url 'admin:contact_contactmessage_changelist' %}" class="panel-link">View All</a>
+        <!-- Pending Documents -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Pending Approvals</h3>
             </div>
-            {% if recent_messages %}
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Subject</th>
-                        <th>Date</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for msg in recent_messages %}
-                    <tr>
-                        <td>{{ msg.name }}</td>
-                        <td>{{ msg.subject|truncatechars:30 }}</td>
-                        <td>{{ msg.created_at|date:"M d, Y" }}</td>
-                        <td style="text-align: right;">
-                            <a href="{% url 'admin:contact_contactmessage_change' msg.id %}" class="panel-link">View</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div class="empty-state">No recent messages found.</div>
-            {% endif %}
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: var(--danger-light); color: var(--danger);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Service Agreement - John S.</h4>
+                        <p>Requires coordinator signature</p>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: var(--danger-light); color: var(--danger);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>Incident Report #402</h4>
+                        <p>Requires manager review</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-    </div>
-    
-    <!-- Fourth Section: Full width blogs -->
-    <div class="dashboard-panel" style="margin-top: -6px;">
-        <div class="panel-header">
-            <h3>Recent Blog Posts</h3>
-            <a href="{% url 'admin:resources_blog_changelist' %}" class="panel-link">View All</a>
-        </div>
-        {% if recent_blogs %}
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Author</th>
-                    <th>Publish Date</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for blog in recent_blogs %}
-                <tr>
-                    <td><strong>{{ blog.title }}</strong></td>
-                    <td>{{ blog.author }}</td>
-                    <td>{{ blog.created_at|date:"M d, Y" }}</td>
-                    <td>
-                        <span class="status-badge {% if blog.is_published %}status-approved{% else %}status-progress{% endif %}">
-                            {% if blog.is_published %}Published{% else %}Draft{% endif %}
-                        </span>
-                    </td>
-                    <td style="text-align: right;">
-                        <a href="{% url 'admin:resources_blog_change' blog.id %}" class="panel-link">Edit</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="empty-state">No recent blog posts found.</div>
-        {% endif %}
+
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Chart.js Growth Chart
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        
+        // Define colors based on root CSS variables
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+        const primaryLightColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-light').trim();
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+        const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Total Participants',
+                    data: [85, 92, 105, 118, 125, 134, 142],
+                    borderColor: primaryColor,
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: primaryColor,
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4 // Smooth curves
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1E293B',
+                        padding: 12,
+                        titleFont: { family: 'Inter', size: 13 },
+                        bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
+                        displayColors: false,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: gridColor,
+                            drawBorder: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: { color: textColor, font: { family: 'Inter' } }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { color: textColor, font: { family: 'Inter' } }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+            }
+        });
+    });
+</script>
 {% endblock %}
