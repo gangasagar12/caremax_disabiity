@@ -8,7 +8,10 @@ urlpatterns = [
     path('', views.DashboardHomeView.as_view(), name='home'),
     
     # Placeholder routes for sidebar links
-    path('participants/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='participants'),
+    # Participant Management
+    path('participants/', views.ParticipantListView.as_view(), name='participants'),
+    path('participants/profile/', views.ParticipantProfileView.as_view(), name='participant_profile'),
+    path('participants/<int:pk>/', views.ParticipantProfileView.as_view(), name='participant_profile_detail'),
     path('staff/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='staff'),
     path('coordinators/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='coordinators'),
     path('referrals/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='referrals'),

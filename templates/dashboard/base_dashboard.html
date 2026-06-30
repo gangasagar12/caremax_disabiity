@@ -53,7 +53,7 @@
             --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             
             /* Sidebar Width */
-            --sidebar-width: 260px;
+            --sidebar-width: 220px;
             --sidebar-collapsed: 80px;
             --header-height: 70px;
             
@@ -79,11 +79,17 @@
 
         body {
             font-family: var(--font-main);
+            font-size: 14px;
             background-color: var(--bg-app);
             color: var(--text-main);
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             transition: var(--transition);
+        }
+        
+        h1, h2, h3, h4, h5, h6, .page-title, .card-title {
+            font-size: 16px !important;
+            margin-bottom: 0.5rem;
         }
 
         /* --- App Layout --- */
@@ -123,7 +129,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-main);
             text-decoration: none;
@@ -156,7 +162,7 @@
         .sidebar-menu::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
         .menu-label {
-            font-size: 11px;
+            font-size: 13px;
             text-transform: uppercase;
             font-weight: 600;
             color: var(--text-light);
@@ -346,7 +352,7 @@
 
         .user-info { display: flex; flex-direction: column; }
         .user-name { font-size: 14px; font-weight: 600; color: var(--text-main); }
-        .user-role { font-size: 12px; color: var(--text-muted); }
+        .user-role { font-size: 13px; color: var(--text-muted); }
 
         /* --- Page Content --- */
         .page-content {
@@ -432,11 +438,9 @@
                     <i class="fas fa-users"></i> <span>Participants</span>
                 </a>
                 <a href="{% url 'dashboard:staff' %}" class="menu-item">
-                    <i class="fas fa-user-nurse"></i> <span>Support Workers</span>
+                    <i class="fas fa-user-nurse"></i> <span>Staff</span>
                 </a>
-                <a href="{% url 'dashboard:coordinators' %}" class="menu-item">
-                    <i class="fas fa-user-tie"></i> <span>Coordinators</span>
-                </a>
+              
 
                 <div class="menu-label">Operations</div>
                 <a href="{% url 'dashboard:appointments' %}" class="menu-item">
