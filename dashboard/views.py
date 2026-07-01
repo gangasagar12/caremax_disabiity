@@ -216,12 +216,35 @@ class StaffMyDashboardView(LoginRequiredMixin, TemplateView):
         try:
             worker = self.request.user.support_worker_profile
             today = timezone.now().date()
-            appointments = Appointment.objects.filter(staff=worker, date=today)
+            appointments = Appointment.objects.filter(staff=worker, date=today).order_by('start_time')
+            
+            participant_ids = appointments.values_list('participant_id', flat=True)
+            support_plans = SupportPlan.objects.filter(participant_id__in=participant_ids, status='Active')
+            
+            plans_by_participant = {plan.participant_id: plan for plan in support_plans}
+            for appt in appointments:
+                appt.support_plan = plans_by_participant.get(appt.participant_id)
+            
             context['appointments'] = appointments
             context['worker'] = worker
+            context['today'] = today
+            
+            total = appointments.count()
+            completed = appointments.filter(status='Completed').count()
+            upcoming = appointments.filter(status='Scheduled').count()
+            in_progress = appointments.filter(status='In Progress').count()
+            
+            context['stats'] = {
+                'total': total,
+                'completed': completed,
+                'upcoming': upcoming,
+                'in_progress': in_progress,
+                'remaining': total - completed
+            }
         except:
             context['appointments'] = []
             context['worker'] = None
+            context['stats'] = {'total': 0, 'completed': 0, 'upcoming': 0, 'in_progress': 0, 'remaining': 0}
         return context
 
 class VisitCheckInView(LoginRequiredMixin, View):

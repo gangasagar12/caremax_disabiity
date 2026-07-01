@@ -1,11 +1,12 @@
 from django.urls import path
 from . import views
+from dashboard.views import StaffMyDashboardView
 
 app_name = 'staff'
 
 urlpatterns = [
     path('', views.StaffDashboardView.as_view(), name='home'),
-    path('schedule/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='schedule'),
+    path('schedule/', StaffMyDashboardView.as_view(), name='schedule'),
     path('participants/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='participants'),
     path('tasks/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='tasks'),
     path('care-notes/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='care_notes'),

@@ -1,117 +1,349 @@
-{% extends 'dashboard/base_dashboard.html' %}
+{% extends "staff/base_staff.html" %}
 {% load static %}
 
-{% block title %}My Dashboard | CareMax{% endblock %}
+{% block title %}My Schedule - CareMax{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="page-title">My Dashboard</h1>
-            <p class="page-subtitle">Welcome back, {{ request.user.first_name|default:"Staff" }}! Here are your appointments for today.</p>
+<style>
+    .stat-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px;
+        display: flex; flex-direction: column; transition: transform 0.3s ease; height: 100%;
+    }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); }
+    .stat-icon {
+        width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 20px; margin-bottom: 15px;
+    }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+    .stat-label { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    
+    /* Timeline */
+    .timeline-container { position: relative; padding: 20px 0; }
+    .timeline-container::before {
+        content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 2px; background-color: var(--border-color);
+    }
+    .appt-card-wrapper { position: relative; margin-bottom: 30px; padding-left: 70px; }
+    .timeline-node {
+        position: absolute; left: 22px; top: 20px; width: 18px; height: 18px; border-radius: 50%;
+        background-color: var(--primary); border: 4px solid var(--bg-body); z-index: 1; box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    .timeline-node.status-Scheduled { background-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+    .timeline-node.status-In { background-color: var(--warning); box-shadow: 0 0 0 2px var(--warning-light); }
+    .timeline-node.status-Completed { background-color: var(--success); box-shadow: 0 0 0 2px var(--success-light); }
+    .timeline-node.status-Cancelled { background-color: var(--danger); box-shadow: 0 0 0 2px var(--danger-light); }
+    
+    .appt-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px;
+        padding: 20px; box-shadow: var(--shadow-sm); transition: all 0.2s; position: relative;
+    }
+    .appt-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+    .appt-card.active-visit { border: 2px solid var(--warning); box-shadow: 0 4px 15px rgba(245,158,11,0.15); }
+    
+    .appt-time { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+    .appt-duration { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    
+    .participant-name { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+    .service-badge {
+        display: inline-block; padding: 5px 12px; background-color: var(--bg-body);
+        border: 1px solid var(--border-color); border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text-muted);
+    }
+    
+    .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .status-Scheduled { background-color: var(--primary-light); color: var(--primary); }
+    .status-In { background-color: var(--warning-light); color: var(--warning); }
+    .status-Completed { background-color: var(--success-light); color: var(--success); }
+    .status-Cancelled { background-color: var(--danger-light); color: var(--danger); }
+    
+    .info-list { list-style: none; padding: 0; margin: 0; }
+    .info-list li { margin-bottom: 8px; font-size: 14px; color: var(--text-main); display: flex; align-items: flex-start; gap: 10px; }
+    .info-list i { color: var(--text-muted); width: 16px; text-align: center; margin-top: 3px; }
+    
+    /* Modals */
+    .modal-content { border-radius: 18px; border: none; overflow: hidden; }
+    .modal-header { border-bottom: 1px solid var(--border-color); background-color: var(--bg-card); }
+    .modal-footer { border-top: 1px solid var(--border-color); background-color: var(--bg-body); }
+    .workspace-header { background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%); color: white; padding: 24px; border-radius: 18px 18px 0 0; }
+    .task-list { list-style: none; padding: 0; }
+    .task-list li {
+        padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 10px;
+        margin-bottom: 10px; display: flex; align-items: center; gap: 15px; font-size: 15px; cursor: pointer; transition: background 0.2s;
+    }
+    .task-list li:hover { background-color: var(--bg-body); }
+    .task-checkbox { width: 20px; height: 20px; cursor: pointer; }
+</style>
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+    <div>
+        <h1 class="fw-bold mb-1" style="font-size: 22px;">My Schedule</h1>
+        <p class="text-muted mb-0" style="font-size: 15px;">View today's appointments and manage your daily visits.</p>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <div class="text-end d-none d-sm-block">
+            <div class="fw-bold" style="color: var(--text-main); font-size: 16px;" id="current-time">10:00 AM</div>
+            <div class="text-muted" style="font-size: 13px;">{{ today|date:"l, F d" }}</div>
+        </div>
+        <div class="status-badge" style="background-color: var(--success-light); color: var(--success); font-size: 14px; padding: 8px 16px;">
+            <i class="fas fa-circle me-2" style="font-size: 10px;"></i>On Duty
         </div>
     </div>
+</div>
 
-    <div class="row g-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-header bg-white border-bottom p-4">
-                    <h5 class="mb-0 fw-bold" style="font-size: 16px;">Today's Appointments</h5>
+<div class="row g-4 mb-5">
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);"><i class="far fa-calendar-check"></i></div>
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Today's Visits</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--success-light); color: var(--success);"><i class="fas fa-check"></i></div>
+            <div class="stat-value">{{ stats.completed }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--warning-light); color: var(--warning);"><i class="far fa-clock"></i></div>
+            <div class="stat-value">{{ stats.upcoming }}</div>
+            <div class="stat-label">Upcoming</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--info-light); color: var(--info);"><i class="fas fa-running"></i></div>
+            <div class="stat-value">{{ stats.remaining }}</div>
+            <div class="stat-label">Remaining</div>
+        </div>
+    </div>
+</div>
+
+<h5 class="fw-bold mb-4" style="font-size: 18px;">Today's Timeline</h5>
+
+<div class="timeline-container">
+    {% for appt in appointments %}
+    <div class="appt-card-wrapper">
+        <div class="timeline-node status-{{ appt.status|slice:':2' }}"></div>
+        
+        <div class="appt-card {% if appt.status == 'In Progress' %}active-visit{% endif %}">
+            <div class="row g-4">
+                <div class="col-md-3 col-lg-2 border-md-end border-color">
+                    <div class="appt-time">{{ appt.start_time|time:"h:i A" }}</div>
+                    <div class="appt-duration">{{ appt.duration_minutes }} mins</div>
+                    <div class="mt-3"><span class="status-badge status-{{ appt.status|slice:':2' }}">{{ appt.status }}</span></div>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
-                            <thead class="bg-light text-muted">
-                                <tr>
-                                    <th class="ps-4 py-3 fw-medium">Participant</th>
-                                    <th class="py-3 fw-medium">Time</th>
-                                    <th class="py-3 fw-medium">Service</th>
-                                    <th class="py-3 fw-medium">Status</th>
-                                    <th class="pe-4 py-3 fw-medium text-end">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for appt in appointments %}
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="fw-bold text-dark" style="font-size: 14px;">{{ appt.participant.first_name }} {{ appt.participant.last_name }}</div>
-                                        <small class="text-muted">{{ appt.participant.phone|default:"No phone" }}</small>
-                                    </td>
-                                    <td>
-                                        <span class="d-block text-dark fw-medium">{{ appt.start_time|time:"g:i A" }} - {{ appt.end_time|time:"g:i A" }}</span>
-                                    </td>
-                                    <td>{{ appt.service_type }}</td>
-                                    <td>
-                                        {% if appt.status == 'Scheduled' %}
-                                        <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">{{ appt.status }}</span>
-                                        {% elif appt.status == 'In Progress' %}
-                                        <span class="badge bg-warning-subtle text-warning rounded-pill px-3">{{ appt.status }}</span>
-                                        {% elif appt.status == 'Completed' %}
-                                        <span class="badge bg-success-subtle text-success rounded-pill px-3">{{ appt.status }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="pe-4 text-end">
-                                        {% if appt.status == 'Scheduled' %}
-                                        <form method="post" action="{% url 'dashboard:visit_check_in' appt.pk %}" class="d-inline">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm" style="font-size: 13px;">
-                                                Start Visit
-                                            </button>
-                                        </form>
-                                        {% elif appt.status == 'In Progress' %}
-                                        <button class="btn btn-warning btn-sm rounded-pill px-4 shadow-sm text-white" style="font-size: 13px;" data-bs-toggle="modal" data-bs-target="#checkOutModal-{{ appt.pk }}">
-                                            Complete & Check Out
-                                        </button>
-                                        
-                                        <!-- Check Out Modal -->
-                                        <div class="modal fade text-start" id="checkOutModal-{{ appt.pk }}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content rounded-4 border-0 shadow">
-                                                    <form method="post" action="{% url 'dashboard:visit_check_out' appt.pk %}" enctype="multipart/form-data">
-                                                        {% csrf_token %}
-                                                        <div class="modal-header border-bottom-0 p-4">
-                                                            <h5 class="modal-title fw-bold" style="font-size: 16px;">Check Out - {{ appt.participant }}</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body p-4 pt-0">
-                                                            <div class="mb-3">
-                                                                <label class="form-label text-muted fw-medium" style="font-size: 13px;">Care Notes (Required)</label>
-                                                                <textarea name="care_notes" class="form-control" rows="4" style="font-size: 14px; border-radius: 8px;" required placeholder="Describe the support provided..."></textarea>
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label class="form-label text-muted fw-medium" style="font-size: 13px;">Upload Document (Optional)</label>
-                                                                <input type="file" name="document" class="form-control" style="font-size: 14px; border-radius: 8px;">
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer bg-light border-top-0 p-3 rounded-bottom-4">
-                                                            <button type="button" class="btn btn-light" style="font-size: 14px; border-radius: 8px;" data-bs-dismiss="modal">Cancel</button>
-                                                            <button type="submit" class="btn btn-primary shadow-sm" style="font-size: 14px; border-radius: 8px;">Submit & Check Out</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% else %}
-                                        <button class="btn btn-light btn-sm rounded-pill px-4" style="font-size: 13px;" disabled>
-                                            Completed
-                                        </button>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted" style="font-size: 14px;">
-                                        <i class="fas fa-calendar-check fs-2 mb-3 text-light"></i>
-                                        <p>You have no appointments scheduled for today.</p>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="col-md-5 col-lg-6">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width: 48px; height: 48px; background-color: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">
+                            {{ appt.participant.first_name|first }}{{ appt.participant.last_name|first }}
+                        </div>
+                        <div>
+                            <div class="participant-name">{{ appt.participant }}</div>
+                            <div class="service-badge">{{ appt.service_type }}</div>
+                        </div>
                     </div>
+                    <ul class="info-list">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Smith Street, Suburb (Mocked Address)</li>
+                        {% if appt.special_instructions %}
+                        <li class="text-warning fw-medium"><i class="fas fa-star"></i> {{ appt.special_instructions }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4 col-lg-4 d-flex flex-column justify-content-center gap-2">
+                    <button class="btn btn-outline-secondary w-100" style="border-radius: 10px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#participantModal{{ appt.pk }}">
+                        <i class="far fa-user me-2"></i> View Participant
+                    </button>
+                    
+                    {% if appt.status == 'Scheduled' %}
+                    <button class="btn btn-primary shadow-sm w-100" style="border-radius: 10px; font-size: 14px;" onclick="openStartVisit({{ appt.pk }}, '{{ appt.participant }}')">
+                        <i class="fas fa-play me-2"></i> Start Visit
+                    </button>
+                    {% elif appt.status == 'In Progress' %}
+                    <button class="btn btn-warning text-dark shadow-sm w-100 fw-bold" style="border-radius: 10px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#workspaceModal{{ appt.pk }}">
+                        <i class="fas fa-clipboard-list me-2"></i> Open Workspace
+                    </button>
+                    {% elif appt.status == 'Completed' %}
+                    <button class="btn btn-success shadow-sm w-100" style="border-radius: 10px; font-size: 14px;" disabled>
+                        <i class="fas fa-check-circle me-2"></i> Completed
+                    </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Participant Info Modal -->
+    <div class="modal fade" id="participantModal{{ appt.pk }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header px-4 py-3">
+                    <h5 class="modal-title fw-bold" style="font-size: 16px;">Participant Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-body">
+                    <div class="row g-4">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3 mx-auto" style="width: 100px; height: 100px; background-color: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold;">
+                                {{ appt.participant.first_name|first }}{{ appt.participant.last_name|first }}
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ appt.participant }}</h5>
+                            <p class="text-muted" style="font-size: 14px;">NDIS: {{ appt.participant.ndis_number|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <h6 class="fw-bold mb-3" style="font-size: 15px;">Important Alerts</h6>
+                            <div class="p-3 mb-4 rounded" style="background-color: var(--danger-light); border: 1px solid #fca5a5;">
+                                <div class="text-danger fw-bold" style="font-size: 14px;"><i class="fas fa-exclamation-triangle me-2"></i> Medical Alerts</div>
+                                <div class="mt-1" style="font-size: 13px; color: var(--danger);">
+                                    {{ appt.support_plan.medical_conditions|default:"None" }}<br>
+                                    Allergies: {{ appt.support_plan.allergies|default:"None" }}
+                                </div>
+                            </div>
+                            
+                            <h6 class="fw-bold mb-3" style="font-size: 15px;">Support Plan Instructions</h6>
+                            <div class="p-3 rounded bg-card border">
+                                <ul class="info-list">
+                                    <li><i class="fas fa-bullseye text-primary"></i> <strong>Goals:</strong> {{ appt.support_plan.participant_goals|default:"Not specified" }}</li>
+                                    <li><i class="fas fa-clipboard-list text-primary"></i> <strong>Services:</strong> {{ appt.support_plan.services_required|default:appt.service_type }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer px-4 py-3">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Visit Workspace Modal (In Progress) -->
+    {% if appt.status == 'In Progress' %}
+    <div class="modal fade" id="workspaceModal{{ appt.pk }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="workspace-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-warning text-dark mb-2">Active Visit</span>
+                            <h4 class="fw-bold mb-1">{{ appt.participant }}</h4>
+                            <div style="font-size: 14px; opacity: 0.9;">{{ appt.service_type }} &bull; {{ appt.duration_minutes }} mins</div>
+                        </div>
+                        <div class="text-end">
+                            <div style="font-size: 12px; opacity: 0.9;">Elapsed Time</div>
+                            <div class="fw-bold" style="font-size: 24px; font-family: monospace;">00:45:12</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body p-4 bg-body">
+                    <h6 class="fw-bold mb-3" style="font-size: 16px;">Today's Tasks</h6>
+                    <ul class="task-list mb-4">
+                        <li><input type="checkbox" class="task-checkbox"> <span>Personal Care Assistance</span></li>
+                        <li><input type="checkbox" class="task-checkbox"> <span>Medication Reminder (Check Plan)</span></li>
+                        <li><input type="checkbox" class="task-checkbox"> <span>Daily Living Support</span></li>
+                        <li><input type="checkbox" class="task-checkbox"> <span>Community Participation</span></li>
+                    </ul>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger flex-grow-1" style="border-radius: 10px; font-size: 14px;"><i class="fas fa-exclamation-circle me-2"></i> Report Incident</button>
+                        <button class="btn btn-outline-primary flex-grow-1" style="border-radius: 10px; font-size: 14px;" data-bs-toggle="modal" data-bs-target="#participantModal{{ appt.pk }}"><i class="far fa-file-alt me-2"></i> View Plan</button>
+                    </div>
+                </div>
+                <div class="modal-footer px-4 py-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Minimize Workspace</button>
+                    <button type="button" class="btn btn-success shadow-sm px-4" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#completeVisitModal{{ appt.pk }}"><i class="fas fa-check-circle me-2"></i> Complete Visit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Complete Visit / Care Note Form Modal -->
+    <div class="modal fade" id="completeVisitModal{{ appt.pk }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header px-4 py-3">
+                    <h5 class="modal-title fw-bold" style="font-size: 16px;">Complete Visit & Submit Care Notes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{% url 'dashboard:visit_checkout' appt.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-body p-4 bg-body">
+                        <div class="alert alert-info" style="font-size: 14px;">
+                            <i class="fas fa-info-circle me-2"></i> You are checking out for <strong>{{ appt.participant }}</strong>. Please provide detailed notes about the support provided.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="font-size: 14px;">Visit Summary & Participant Progress</label>
+                            <textarea name="care_notes" class="form-control" rows="5" required placeholder="Describe the support provided, participant's mood, and progress towards goals..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold" style="font-size: 14px;">Follow-up Required (Optional)</label>
+                            <textarea name="follow_up" class="form-control" rows="2" placeholder="Any actions needed by coordinator or next staff member..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer px-4 py-3">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success shadow-sm">Submit Note & Complete <i class="fas fa-check ms-2"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% empty %}
+    <div class="text-center py-5">
+        <div style="width: 80px; height: 80px; background-color: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--text-muted); font-size: 30px;">
+            <i class="far fa-calendar-times"></i>
+        </div>
+        <h5 class="fw-bold">No appointments today</h5>
+        <p class="text-muted">You have no scheduled visits for today.</p>
+    </div>
+    {% endfor %}
 </div>
+
+<!-- Start Visit Confirmation Modal -->
+<div class="modal fade" id="startVisitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div style="width: 70px; height: 70px; background-color: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px;">
+                    <i class="fas fa-play"></i>
+                </div>
+                <h5 class="fw-bold mb-2">Start Visit?</h5>
+                <p class="text-muted mb-4">Are you ready to check in and start the visit for <strong id="startVisitName">Participant</strong>?</p>
+                <form id="startVisitForm" method="POST" action="">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">Start Visit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openStartVisit(apptId, participantName) {
+        document.getElementById('startVisitName').innerText = participantName;
+        // Dynamically build URL for check-in using Django URL structure
+        document.getElementById('startVisitForm').action = `/dashboard/visit/${apptId}/check-in/`;
+        var myModal = new bootstrap.Modal(document.getElementById('startVisitModal'));
+        myModal.show();
+    }
+    
+    // Update live clock
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        const timeEl = document.getElementById('current-time');
+        if(timeEl) timeEl.innerText = timeString;
+    }
+    setInterval(updateTime, 60000);
+    updateTime();
+</script>
+
 {% endblock %}
