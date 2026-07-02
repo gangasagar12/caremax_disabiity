@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from dashboard.views import StaffMyDashboardView, StaffParticipantListView, StaffParticipantDetailView
+from dashboard.views import StaffMyDashboardView, StaffParticipantListView, StaffParticipantDetailView, StaffDailyTasksView
 
 app_name = 'staff'
 
@@ -9,7 +9,7 @@ urlpatterns = [
     path('schedule/', StaffMyDashboardView.as_view(), name='schedule'),
     path('participants/', StaffParticipantListView.as_view(), name='participants'),
     path('participants/<int:pk>/', StaffParticipantDetailView.as_view(), name='participant_profile'),
-    path('tasks/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='tasks'),
+    path('tasks/', StaffDailyTasksView.as_view(), name='tasks'),
     path('care-notes/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='care_notes'),
     path('medications/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='medications'),
     path('incidents/', views.PlaceholderView.as_view(template_name="dashboard/placeholder.html"), name='incidents'),

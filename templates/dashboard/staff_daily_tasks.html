@@ -1,0 +1,237 @@
+{% extends "staff/base_staff.html" %}
+{% load static %}
+
+{% block title %}Today's Tasks - CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; transition: transform 0.3s ease; height: 100%; }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); }
+    .stat-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 15px; }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+    .stat-label { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    
+    .status-badge { padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; }
+    
+    .filter-btn { border-radius: 20px; font-size: 14px; font-weight: 500; padding: 6px 16px; }
+    
+    .task-block { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 24px; margin-bottom: 30px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+    .task-block.in-progress { border-color: var(--warning); box-shadow: 0 4px 15px rgba(245,158,11,0.1); }
+    .task-block.completed { border-color: var(--success); opacity: 0.8; }
+    .task-block::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background-color: var(--border-color); }
+    .task-block.in-progress::before { background-color: var(--warning); }
+    .task-block.completed::before { background-color: var(--success); }
+    
+    .task-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-color); }
+    .task-time { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .task-participant { font-size: 20px; font-weight: 700; color: var(--text-main); }
+    .task-service { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    
+    .task-list { list-style: none; padding: 0; margin: 0 0 20px 0; }
+    .task-item { display: flex; align-items: center; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 10px; background-color: var(--bg-body); transition: background 0.2s; cursor: pointer; }
+    .task-item:hover { background-color: var(--bg-card); border-color: var(--primary-light); }
+    .task-item.done { background-color: var(--success-light); border-color: var(--success); opacity: 0.8; }
+    .task-item.done .task-text { text-decoration: line-through; color: var(--text-muted); }
+    
+    .task-checkbox { width: 22px; height: 22px; margin-right: 15px; cursor: pointer; accent-color: var(--success); }
+    .task-text { font-size: 15px; font-weight: 500; color: var(--text-main); flex-grow: 1; }
+    
+    .progress-bar-container { height: 8px; background-color: var(--border-color); border-radius: 4px; margin-top: 15px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background-color: var(--success); width: 0%; transition: width 0.3s ease; }
+    
+    .quick-note { font-size: 14px; border-radius: 12px; border: 1px solid var(--border-color); background-color: var(--bg-body); }
+    .quick-note:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+</style>
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+    <div>
+        <h1 class="fw-bold mb-1" style="font-size: 22px;">Today's Tasks</h1>
+        <p class="text-muted mb-0" style="font-size: 15px;">Complete your assigned participant tasks for today.</p>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <div class="text-end d-none d-sm-block">
+            <div class="fw-bold" style="color: var(--text-main); font-size: 16px;" id="current-time">10:00 AM</div>
+            <div class="text-muted" style="font-size: 13px;">{{ today|date:"l, F d" }}</div>
+        </div>
+        <div class="status-badge" style="background-color: var(--success-light); color: var(--success);">
+            <i class="fas fa-circle me-2" style="font-size: 10px;"></i>On Duty
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);"><i class="fas fa-clipboard-list"></i></div>
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Total Tasks</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--success-light); color: var(--success);"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-value" id="globalCompletedStat">{{ stats.completed }}</div>
+            <div class="stat-label">Completed Tasks</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--warning-light); color: var(--warning);"><i class="fas fa-hourglass-half"></i></div>
+            <div class="stat-value" id="globalRemainingStat">{{ stats.remaining }}</div>
+            <div class="stat-label">Remaining Tasks</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--danger-light); color: var(--danger);"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="stat-value">{{ stats.high_priority }}</div>
+            <div class="stat-label">High Priority</div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-2 flex-wrap mb-4">
+    <button class="btn btn-primary filter-btn">All Tasks</button>
+    <button class="btn btn-outline-secondary filter-btn">Morning</button>
+    <button class="btn btn-outline-secondary filter-btn">Afternoon</button>
+    <button class="btn btn-outline-secondary filter-btn">Completed</button>
+    <button class="btn btn-outline-secondary filter-btn">Pending</button>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for appt in appointments %}
+    <div class="col-12 col-xl-10 mx-auto">
+        <div class="task-block {% if appt.status == 'In Progress' %}in-progress{% elif appt.is_completed %}completed{% endif %}" data-total="{{ appt.generated_tasks|length }}">
+            <div class="task-header flex-column flex-md-row">
+                <div>
+                    <div class="task-time"><i class="far fa-clock me-2"></i>{{ appt.start_time|time:"h:i A" }} &ndash; {{ appt.end_time|time:"h:i A" }}</div>
+                    <div class="task-participant">{{ appt.participant }}</div>
+                    <div class="task-service">{{ appt.service_type }}</div>
+                </div>
+                <div class="mt-3 mt-md-0 text-md-end">
+                    {% if appt.status == 'Scheduled' %}
+                        <span class="badge bg-primary px-3 py-2" style="font-size: 13px;">Scheduled</span>
+                    {% elif appt.status == 'In Progress' %}
+                        <span class="badge bg-warning text-dark px-3 py-2" style="font-size: 13px;">In Progress</span>
+                    {% else %}
+                        <span class="badge bg-success px-3 py-2" style="font-size: 13px;"><i class="fas fa-check me-1"></i>Completed</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-7 border-md-end border-color pe-md-4">
+                    <h6 class="fw-bold mb-3" style="font-size: 16px;">Required Tasks</h6>
+                    <ul class="task-list" id="taskList{{ appt.pk }}">
+                        {% for task in appt.generated_tasks %}
+                        <li class="task-item {% if appt.is_completed %}done{% endif %}" onclick="toggleTask(this, {{ appt.pk }})">
+                            <input type="checkbox" class="task-checkbox" {% if appt.is_completed %}checked disabled{% endif %} onclick="event.stopPropagation(); toggleTask(this.parentElement, {{ appt.pk }})">
+                            <span class="task-text">{{ task }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-between text-muted" style="font-size: 13px;">
+                        <span>Progress</span>
+                        <span id="progressText{{ appt.pk }}">{% if appt.is_completed %}100%{% else %}0%{% endif %}</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBar{{ appt.pk }}" style="width: {% if appt.is_completed %}100%{% else %}0%{% endif %};"></div>
+                    </div>
+                </div>
+                
+                <div class="col-md-5 ps-md-4 mt-4 mt-md-0 d-flex flex-column">
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-2" style="font-size: 15px;">Quick Notes</h6>
+                        <textarea class="form-control quick-note" rows="3" placeholder="Add a quick note during the visit..." {% if appt.is_completed %}disabled{% endif %}></textarea>
+                    </div>
+                    
+                    <div class="mt-auto d-flex flex-column gap-2">
+                        <a href="{% url 'staff:participant_profile' pk=appt.participant.pk %}" class="btn btn-outline-secondary w-100" style="border-radius: 10px; font-size: 14px;">
+                            <i class="far fa-user me-2"></i> View Participant Profile
+                        </a>
+                        
+                        <div class="d-flex gap-2">
+                            {% if appt.status == 'Scheduled' %}
+                            <a href="{% url 'staff:schedule' %}" class="btn btn-primary flex-grow-1" style="border-radius: 10px; font-size: 14px;">
+                                <i class="fas fa-play me-1"></i> Start Visit
+                            </a>
+                            {% elif appt.status == 'In Progress' %}
+                            <a href="{% url 'staff:schedule' %}" class="btn btn-success flex-grow-1" style="border-radius: 10px; font-size: 14px;">
+                                <i class="fas fa-check-circle me-1"></i> Complete Visit
+                            </a>
+                            {% endif %}
+                            
+                            {% if not appt.is_completed %}
+                            <button class="btn btn-outline-danger" style="border-radius: 10px;" title="Report Incident">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div style="width: 80px; height: 80px; background-color: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--text-muted); font-size: 30px;">
+            <i class="fas fa-glass-cheers"></i>
+        </div>
+        <h5 class="fw-bold">No Tasks Today</h5>
+        <p class="text-muted">You have no tasks assigned for today. Enjoy your day!</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Live clock update
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        const timeEl = document.getElementById('current-time');
+        if(timeEl) timeEl.innerText = timeString;
+    }
+    setInterval(updateTime, 60000);
+    updateTime();
+
+    // Checklist interaction script
+    let globalCompleted = parseInt(document.getElementById('globalCompletedStat').innerText);
+    let globalRemaining = parseInt(document.getElementById('globalRemainingStat').innerText);
+
+    function toggleTask(element, apptId) {
+        if(element.classList.contains('disabled') || element.querySelector('.task-checkbox').disabled) return;
+        
+        const checkbox = element.querySelector('.task-checkbox');
+        
+        // Toggle if not clicked directly on checkbox
+        if (event.target !== checkbox) {
+            checkbox.checked = !checkbox.checked;
+        }
+        
+        let isChecking = checkbox.checked;
+        
+        if (isChecking) {
+            element.classList.add('done');
+            globalCompleted++;
+            globalRemaining--;
+        } else {
+            element.classList.remove('done');
+            globalCompleted--;
+            globalRemaining++;
+        }
+        
+        // Update local progress bar
+        const list = document.getElementById('taskList' + apptId);
+        const total = list.querySelectorAll('.task-item').length;
+        const checked = list.querySelectorAll('.task-checkbox:checked').length;
+        
+        const percentage = Math.round((checked / total) * 100);
+        document.getElementById('progressBar' + apptId).style.width = percentage + '%';
+        document.getElementById('progressText' + apptId).innerText = percentage + '%';
+        
+        // Update global stats
+        document.getElementById('globalCompletedStat').innerText = globalCompleted;
+        document.getElementById('globalRemainingStat').innerText = globalRemaining;
+    }
+</script>
+{% endblock %}

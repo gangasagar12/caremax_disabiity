@@ -414,33 +414,23 @@
             <a href="{% url 'staff:home' %}" class="menu-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
                 <i class="fas fa-home"></i> <span>Dashboard</span>
             </a>
-            <a href="{% url 'staff:schedule' %}" class="menu-item">
+            <a href="{% url 'staff:schedule' %}" class="menu-item {% if request.resolver_match.url_name == 'schedule' %}active{% endif %}">
                 <i class="far fa-calendar-alt"></i> <span>My Schedule</span>
             </a>
-            <a href="{% url 'staff:participants' %}" class="menu-item">
+            <a href="{% url 'staff:participants' %}" class="menu-item {% if request.resolver_match.url_name == 'participants' or request.resolver_match.url_name == 'participant_profile' %}active{% endif %}">
                 <i class="fas fa-user-friends"></i> <span>My Participants</span>
             </a>
-            <a href="{% url 'staff:tasks' %}" class="menu-item">
-                <i class="fas fa-tasks"></i> <span>Daily Tasks</span>
+            <a href="{% url 'staff:tasks' %}" class="menu-item {% if request.resolver_match.url_name == 'tasks' %}active{% endif %}">
+                <i class="fas fa-tasks"></i> <span>Today's Tasks</span>
             </a>
 
-            <div class="menu-label">Care & Reporting</div>
-            <a href="{% url 'staff:care_notes' %}" class="menu-item">
-                <i class="fas fa-clipboard-check"></i> <span>Care Notes</span>
-            </a>
-            <a href="{% url 'staff:medications' %}" class="menu-item">
-                <i class="fas fa-pills"></i> <span>Medications</span>
-            </a>
-            <a href="{% url 'staff:incidents' %}" class="menu-item">
-                <i class="fas fa-exclamation-circle"></i> <span>Incident Reports</span>
-            </a>
-
-            <div class="menu-label">Resources</div>
-            <a href="{% url 'staff:documents' %}" class="menu-item">
-                <i class="far fa-folder-open"></i> <span>Documents</span>
-            </a>
-          
-    
+            <div class="menu-label">Account</div>
+            <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
+                {% csrf_token %}
+                <button type="submit" class="menu-item text-danger w-100 text-start bg-transparent border-0" style="font-family: var(--font-main);">
+                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                </button>
+            </form>
         </nav>
     </aside>
 

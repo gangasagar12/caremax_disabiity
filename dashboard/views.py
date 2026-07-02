@@ -417,3 +417,60 @@ class StaffParticipantDetailView(LoginRequiredMixin, TemplateView):
             context['support_plan'] = None
             
         return context
+
+class StaffDailyTasksView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/staff_daily_tasks.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            worker = self.request.user.support_worker_profile
+            today = timezone.now().date()
+            
+            appointments = Appointment.objects.filter(staff=worker, date=today).order_by('start_time')
+            
+            # Generate dynamic tasks for the frontend
+            total_tasks = 0
+            completed_tasks = 0
+            
+            for appt in appointments:
+                plan = SupportPlan.objects.filter(participant=appt.participant).first()
+                
+                # Base checklist based on service type and plan
+                tasks = []
+                if "Personal Care" in appt.service_type:
+                    tasks.extend(["Assist with Morning Hygiene", "Prepare Meals", "Medication Reminder"])
+                elif "Community" in appt.service_type:
+                    tasks.extend(["Travel Assistance", "Shopping Assistance", "Social Activity Engagement"])
+                else:
+                    tasks.extend(["Check-in with Participant", "Daily Living Support", "Medication Check"])
+                
+                tasks.append("Update Care Note")
+                
+                # We'll attach the mock list to the appointment object for the template to render
+                # In a real system, these would be saved in a Task model
+                appt.generated_tasks = tasks
+                total_tasks += len(tasks)
+                
+                # If appointment is completed, consider all its tasks completed for stats
+                if appt.status == 'Completed':
+                    completed_tasks += len(tasks)
+                    appt.is_completed = True
+                else:
+                    appt.is_completed = False
+            
+            context['appointments'] = appointments
+            context['today'] = today
+            
+            context['stats'] = {
+                'total': total_tasks,
+                'completed': completed_tasks,
+                'remaining': total_tasks - completed_tasks,
+                'high_priority': appointments.filter(status='Scheduled').count() # Mock stat for high priority
+            }
+            
+        except Exception as e:
+            context['appointments'] = []
+            context['stats'] = {'total': 0, 'completed': 0, 'remaining': 0, 'high_priority': 0}
+            
+        return context
