@@ -168,98 +168,118 @@
         <div class="stat-value">{{ stats.pending_notes }}</div>
         <div class="stat-label">Pending Care Notes</div>
     </div>
+    <div class="card stat-card">
+        <div class="stat-icon" style="background: var(--info-light); color: var(--info);"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-value">{{ stats.completed_visits }}</div>
+        <div class="stat-label">Completed Visits</div>
+    </div>
 </div>
 
 <div class="dashboard-grid">
     <!-- Today's Schedule -->
     <div class="card" style="animation: fadeIn 0.6s ease-out forwards;">
-        <h3 style="font-size: 18px; margin-bottom: 1rem;">Today's Schedule</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 18px; margin: 0;">Today's Schedule</h3>
+            <a href="{% url 'staff:schedule' %}" style="color: var(--primary); font-size: 13px; text-decoration: none;">View Schedule</a>
+        </div>
         
         <div class="timeline">
-            <!-- Completed -->
-            <div class="timeline-item completed">
-                <div class="timeline-time">08:00 AM - 10:00 AM</div>
-                <div class="timeline-content">
-                    <div class="timeline-title">Morning Routine & Transport</div>
-                    <div class="timeline-desc">Participant: <strong>James Wilson</strong></div>
-                    <div class="timeline-meta">
-                        <span><i class="fas fa-map-marker-alt"></i> 123 Smith St</span>
-                        <span><i class="far fa-clock"></i> 2 hrs</span>
+            {% for appt in today_appointments %}
+            <div class="timeline-item {% if appt.status == 'Completed' %}completed{% elif appt.status == 'In Progress' %}in-progress{% endif %}">
+                <div class="timeline-time">{{ appt.start_time|time:"h:i A" }} - {{ appt.end_time|time:"h:i A" }}</div>
+                <div class="timeline-content" {% if appt.status == 'In Progress' %}style="border-color: var(--warning);"{% endif %}>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div class="timeline-title">{{ appt.service_type }}</div>
+                            <div class="timeline-desc">Participant: <strong>{{ appt.participant }}</strong></div>
+                            <div class="timeline-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Mock Address St</span>
+                                <span><i class="far fa-clock"></i> {{ appt.duration_minutes }} mins</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge {% if appt.status == 'Scheduled' %}bg-primary{% elif appt.status == 'In Progress' %}bg-warning text-dark{% elif appt.status == 'Completed' %}bg-success{% else %}bg-secondary{% endif %}" style="font-size: 12px; padding: 4px 8px;">
+                                {{ appt.status }}
+                            </span>
+                        </div>
                     </div>
-                    <button class="btn btn-outline" style="font-size: 13px; padding: 6px 12px;" disabled>
-                        <i class="fas fa-check"></i> Completed
-                    </button>
+                    
+                    <div class="mt-2">
+                        {% if appt.status == 'Scheduled' %}
+                        <a href="{% url 'staff:schedule' %}" class="btn btn-primary" style="font-size: 13px; padding: 6px 12px; width: 100%;">Start Visit</a>
+                        {% elif appt.status == 'In Progress' %}
+                        <a href="{% url 'staff:schedule' %}" class="btn btn-warning text-dark" style="font-size: 13px; padding: 6px 12px; width: 100%;"><i class="fas fa-pen"></i> Add Care Note</a>
+                        {% elif appt.status == 'Completed' %}
+                        <button class="btn btn-outline-secondary" style="font-size: 13px; padding: 6px 12px;" disabled><i class="fas fa-check"></i> Completed</button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-
-            <!-- In Progress -->
-            <div class="timeline-item in-progress">
-                <div class="timeline-time">11:00 AM - 02:00 PM</div>
-                <div class="timeline-content" style="border-color: var(--warning);">
-                    <div class="timeline-title">Community Access (Shopping)</div>
-                    <div class="timeline-desc">Participant: <strong>Sarah Connor</strong></div>
-                    <div class="timeline-meta">
-                        <span><i class="fas fa-map-marker-alt"></i> Westfield Mall</span>
-                        <span><i class="far fa-clock"></i> 3 hrs</span>
-                    </div>
-                    <button class="btn btn-primary" style="font-size: 13px; padding: 6px 12px;">
-                        <i class="fas fa-pen"></i> Add Care Note
-                    </button>
+            {% empty %}
+            <div class="text-center py-4">
+                <div style="width: 50px; height: 50px; background-color: var(--bg-app); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: var(--text-muted); font-size: 20px;">
+                    <i class="far fa-calendar-times"></i>
                 </div>
+                <h6 class="fw-bold">No appointments scheduled today.</h6>
+                <p class="text-muted" style="font-size: 13px;">You have no assigned visits for today's date.</p>
             </div>
-
-            <!-- Upcoming -->
-            <div class="timeline-item">
-                <div class="timeline-time">03:30 PM - 05:00 PM</div>
-                <div class="timeline-content">
-                    <div class="timeline-title">In-Home Therapy Support</div>
-                    <div class="timeline-desc">Participant: <strong>David Miller</strong></div>
-                    <div class="timeline-meta">
-                        <span><i class="fas fa-map-marker-alt"></i> 45 Ocean Drive</span>
-                        <span><i class="far fa-clock"></i> 1.5 hrs</span>
-                    </div>
-                    <button class="btn btn-primary" style="font-size: 13px; padding: 6px 12px; width: 100%;">
-                        Start Visit
-                    </button>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 
     <!-- Right Column (Quick Actions & Participants) -->
     <div style="display: flex; flex-direction: column; gap: 1.5rem; animation: fadeIn 0.8s ease-out forwards;">
         
+        <!-- Notifications (Empty State) -->
+        <div class="card">
+            <h3 style="font-size: 16px; margin-bottom: 1rem;">Notifications</h3>
+            <div class="text-center py-3">
+                <i class="far fa-bell-slash" style="font-size: 24px; color: var(--text-muted); margin-bottom: 10px;"></i>
+                <p class="text-muted" style="font-size: 13px; margin: 0;">No notifications available.</p>
+            </div>
+        </div>
+        
         <!-- Quick Action: Care Note -->
         <div class="card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none;">
-            <h3 style="font-size: 18px; margin-bottom: 0.5rem; color: white;">Quick Care Note</h3>
-            <p style="font-size: 13px; margin-bottom: 1rem; opacity: 0.9;">Draft a note quickly while it's fresh.</p>
-            <button class="btn" style="background: white; color: var(--primary); width: 100%;">
-                <i class="fas fa-microphone"></i> Start Voice Note
+            <h3 style="font-size: 18px; margin-bottom: 0.5rem; color: white;">Pending Care Notes</h3>
+            {% if stats.pending_notes > 0 %}
+            <p style="font-size: 13px; margin-bottom: 1rem; opacity: 0.9;">You have {{ stats.pending_notes }} completed visit(s) requiring a care note.</p>
+            <a href="{% url 'staff:schedule' %}" class="btn" style="background: white; color: var(--primary); width: 100%; font-weight: 600;">
+                <i class="fas fa-pen"></i> Draft Care Note
+            </a>
+            {% else %}
+            <p style="font-size: 13px; margin-bottom: 1rem; opacity: 0.9;">You have no pending care notes to submit.</p>
+            <button class="btn" style="background: rgba(255,255,255,0.2); color: white; width: 100%; border: none;" disabled>
+                All Caught Up
             </button>
+            {% endif %}
         </div>
 
         <!-- My Participants Grid -->
         <div class="card">
             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-                <h3 style="font-size: 16px;">My Participants</h3>
-                <a href="#" style="color: var(--primary); font-size: 13px; text-decoration: none;">View All</a>
+                <h3 style="font-size: 16px; margin: 0;">My Participants</h3>
+                <a href="{% url 'staff:participants' %}" style="color: var(--primary); font-size: 13px; text-decoration: none;">View All</a>
             </div>
             
             <div class="participant-grid">
-                <div class="card participant-card" style="box-shadow: none; background: var(--bg-app);">
-                    <img src="https://ui-avatars.com/api/?name=James+Wilson&background=2563EB&color=fff" alt="JW">
+                {% for participant in assigned_participants %}
+                <div class="card participant-card" style="box-shadow: none; background: var(--bg-app); cursor: pointer;" onclick="window.location.href='{% url 'staff:participant_profile' pk=participant.pk %}'">
+                    <img src="https://ui-avatars.com/api/?name={{ participant.first_name }}+{{ participant.last_name }}&background=2563EB&color=fff" alt="{{ participant.first_name|first }}">
                     <div>
-                        <div style="font-weight: 600; font-size: 14px;">James Wilson</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">NDIS: 492 103 402</div>
+                        <div style="font-weight: 600; font-size: 14px;">{{ participant }}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">NDIS: {{ participant.ndis_number|default:"N/A" }}</div>
+                        <div style="font-size: 11px; color: var(--primary); margin-top: 2px;">
+                            {% if participant.next_appt %}Next: {{ participant.next_appt.date|date:"M d" }}{% else %}No upcoming visits{% endif %}
+                        </div>
                     </div>
                 </div>
-                <div class="card participant-card" style="box-shadow: none; background: var(--bg-app);">
-                    <img src="https://ui-avatars.com/api/?name=Sarah+Connor&background=22C55E&color=fff" alt="SC">
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px;">Sarah Connor</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">NDIS: 994 201 553</div>
-                    </div>
+                {% empty %}
+                <div class="text-center py-4 w-100" style="grid-column: 1 / -1;">
+                    <i class="fas fa-user-slash" style="font-size: 24px; color: var(--text-muted); margin-bottom: 10px;"></i>
+                    <p class="text-muted" style="font-size: 13px; margin: 0;">No participants assigned.</p>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </div>

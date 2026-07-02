@@ -425,7 +425,7 @@
             </a>
 
             <div class="menu-label">Account</div>
-            <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
+            <form method="post" action="{% url 'logout' %}" class="m-0 p-0" onsubmit="return confirm('Are you sure you want to log out?');">
                 {% csrf_token %}
                 <button type="submit" class="menu-item text-danger w-100 text-start bg-transparent border-0" style="font-family: var(--font-main);">
                     <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
@@ -437,15 +437,22 @@
     <main class="main-content">
         <!-- Top Navigation -->
         <header class="top-nav">
-            <div class="welcome-msg">
-                Good Morning, {{ request.user.first_name|default:"Sarah" }} 👋
-                <div class="welcome-date" id="currentDate">Mon, 12 Oct 2026</div>
+            <div class="welcome-msg d-flex align-items-center gap-3">
+                <div>
+                    Good Morning, {{ request.user.first_name }} 👋
+                    <div class="welcome-date">{% now "D, d M Y" %}</div>
+                </div>
+                {% if stats %}
+                <div class="status-badge ms-3" style="font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 20px; {% if stats.today_appointments > 0 %}background-color: var(--success-light); color: var(--success);{% else %}background-color: var(--danger-light); color: var(--danger);{% endif %}">
+                    <i class="fas fa-circle me-1" style="font-size: 10px;"></i> {% if stats.today_appointments > 0 %}On Duty{% else %}Off Duty{% endif %}
+                </div>
+                {% endif %}
             </div>
 
             <div class="header-actions">
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search participants...">
+                    <input type="text" placeholder="Search participants, today's appts, notes...">
                 </div>
                 
                 <button class="action-icon" id="themeToggle" title="Toggle Dark Mode">
