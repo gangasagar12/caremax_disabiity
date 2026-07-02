@@ -22,11 +22,8 @@ class ReferralForm(forms.ModelForm):
 
     class Meta:
         model = Referral
-        fields = [
-            'first_name', 'last_name', 'date_of_birth', 'gender', 'phone', 'email', 'address', 'ndis_number', 'plan_management',
-            'support_goals', 'additional_notes',
-            'referrer_name', 'relationship', 'referrer_phone', 'referrer_email'
-        ]
+        fields = '__all__'
+        exclude = ['referral_id', 'status', 'assigned_admin']
         widgets = {
             'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
         }

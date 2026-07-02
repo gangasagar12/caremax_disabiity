@@ -1,10 +1,12 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views import View
 from .models import Participant, SupportWorker, Appointment, VisitRecord, VisitDocument, SupportPlan
+from referrals.models import Referral
+from referrals.forms import ReferralForm
 
 class DashboardHomeView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
@@ -447,30 +449,99 @@ class StaffDailyTasksView(LoginRequiredMixin, TemplateView):
                 
                 tasks.append("Update Care Note")
                 
-                # We'll attach the mock list to the appointment object for the template to render
-                # In a real system, these would be saved in a Task model
-                appt.generated_tasks = tasks
+                appt.tasks = tasks
                 total_tasks += len(tasks)
                 
-                # If appointment is completed, consider all its tasks completed for stats
-                if appt.status == 'Completed':
+                if appt.status == "In Progress":
+                    appt.completed_tasks = 1
+                    completed_tasks += 1
+                elif appt.status == "Completed":
+                    appt.completed_tasks = len(tasks)
                     completed_tasks += len(tasks)
-                    appt.is_completed = True
                 else:
-                    appt.is_completed = False
-            
-            context['appointments'] = appointments
-            context['today'] = today
+                    appt.completed_tasks = 0
+                    
+            context['today_appointments'] = appointments
             
             context['stats'] = {
-                'total': total_tasks,
-                'completed': completed_tasks,
-                'remaining': total_tasks - completed_tasks,
-                'high_priority': appointments.filter(status='Scheduled').count() # Mock stat for high priority
+                'total_tasks': total_tasks,
+                'completed_tasks': completed_tasks,
+                'completion_percent': int((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0)
             }
             
         except Exception as e:
-            context['appointments'] = []
-            context['stats'] = {'total': 0, 'completed': 0, 'remaining': 0, 'high_priority': 0}
+            context['today_appointments'] = []
+            context['stats'] = {'total_tasks': 0, 'completed_tasks': 0, 'completion_percent': 0}
             
         return context
+
+class ReferralListView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/referrals/list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        referrals = Referral.objects.all().order_by('-created_at')
+        
+        context['referrals'] = referrals
+        context['stats'] = {
+            'new': referrals.filter(status='New').count(),
+            'pending': referrals.filter(status='Pending Review').count(),
+            'approved': referrals.filter(status='Approved').count(),
+            'rejected': referrals.filter(status='Rejected').count(),
+        }
+        return context
+
+class ReferralCreateView(LoginRequiredMixin, CreateView):
+    model = Referral
+    form_class = ReferralForm
+    template_name = "dashboard/referrals/form.html"
+    
+    def get_success_url(self):
+        return "/dashboard/referrals/"
+        
+    def form_valid(self, form):
+        form.instance.assigned_admin = self.request.user
+        return super().form_valid(form)
+
+class ReferralDetailView(LoginRequiredMixin, DetailView):
+    model = Referral
+    template_name = "dashboard/referrals/profile.html"
+    context_object_name = "referral"
+    
+    def post(self, request, *args, **kwargs):
+        referral = self.get_object()
+        action = request.POST.get('action')
+        
+        if action == 'approve':
+            referral.status = 'Approved'
+            referral.save()
+        elif action == 'reject':
+            referral.status = 'Rejected'
+            referral.save()
+        elif action == 'convert':
+            if referral.status == 'Approved':
+                # Convert logic
+                from django.utils import timezone
+                p = Participant.objects.create(
+                    first_name=referral.first_name,
+                    last_name=referral.last_name,
+                    date_of_birth=referral.date_of_birth,
+                    gender=referral.gender or '',
+                    phone=referral.phone,
+                    email=referral.email,
+                    address=referral.address,
+                    emergency_contact_name=referral.emergency_contact_name,
+                    emergency_contact_phone=referral.emergency_contact_phone,
+                    primary_disability=referral.primary_disability or '',
+                    medical_conditions=referral.medical_conditions or '',
+                    allergies=referral.allergies or '',
+                    medication_notes=referral.current_medication or '',
+                    behaviour_alerts=referral.behaviour_support_required or '',
+                    emergency_instructions=referral.risk_information or '',
+                    status='Active',
+                    start_date=timezone.now().date(),
+                    review_date=timezone.now().date()
+                )
+                return redirect('dashboard:participant_profile_detail', pk=p.pk)
+                
+        return redirect('dashboard:referral_profile_detail', pk=referral.pk)

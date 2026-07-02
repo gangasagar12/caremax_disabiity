@@ -436,53 +436,28 @@
                     <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
                 </a>
                 
-                <div class="menu-label">People</div>
-                <a href="{% url 'dashboard:participants' %}" class="menu-item">
+                <div class="menu-label">Management</div>
+                <a href="{% url 'dashboard:participants' %}" class="menu-item {% if 'participant' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-users"></i> <span>Participants</span>
                 </a>
-                <a href="{% url 'dashboard:staff' %}" class="menu-item">
+                <a href="{% url 'dashboard:staff' %}" class="menu-item {% if 'staff' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-user-nurse"></i> <span>Staff</span>
                 </a>
-              
-
-                <div class="menu-label">Operations</div>
-                <a href="{% url 'dashboard:appointments' %}" class="menu-item {% if request.resolver_match.url_name == 'appointments' or request.resolver_match.url_name == 'appointment_detail' %}active{% endif %}">
+                <a href="{% url 'dashboard:appointments' %}" class="menu-item {% if 'appointment' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="far fa-calendar-alt"></i> <span>Appointments</span>
                 </a>
-                <a href="{% url 'dashboard:roster' %}" class="menu-item">
-                    <i class="fas fa-clipboard-list"></i> <span>Rostering</span>
-                </a>
-                <a href="{% url 'dashboard:referrals' %}" class="menu-item">
+                <a href="{% url 'dashboard:referrals' %}" class="menu-item {% if 'referral' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-inbox"></i> <span>Referrals</span>
                 </a>
-
-                <div class="menu-label">Compliance & Docs</div>
-                <a href="{% url 'dashboard:agreements' %}" class="menu-item">
-                    <i class="fas fa-file-signature"></i> <span>Agreements</span>
-                </a>
-                <a href="{% url 'dashboard:plans' %}" class="menu-item {% if request.resolver_match.url_name == 'plans' or request.resolver_match.url_name == 'plan_detail' %}active{% endif %}">
+                <a href="{% url 'dashboard:plans' %}" class="menu-item {% if 'plan' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="fas fa-notes-medical"></i> <span>Support Plans</span>
-                </a>
-                <a href="{% url 'dashboard:incidents' %}" class="menu-item">
-                    <i class="fas fa-exclamation-triangle"></i> <span>Incident Reports</span>
-                </a>
-                <a href="{% url 'dashboard:documents' %}" class="menu-item">
-                    <i class="far fa-folder-open"></i> <span>Documents</span>
-                </a>
-
-                <div class="menu-label">Finance & Growth</div>
-                <a href="{% url 'dashboard:billing' %}" class="menu-item">
-                    <i class="fas fa-file-invoice-dollar"></i> <span>Billing</span>
-                </a>
-                <a href="{% url 'dashboard:claims' %}" class="menu-item">
-                    <i class="fas fa-hand-holding-usd"></i> <span>NDIS Claims</span>
-                </a>
-                <a href="{% url 'dashboard:reports' %}" class="menu-item">
-                    <i class="fas fa-chart-line"></i> <span>Analytics</span>
                 </a>
 
                 <div class="menu-label">System</div>
-                <a href="{% url 'dashboard:settings' %}" class="menu-item">
+                <a href="{% url 'dashboard:reports' %}" class="menu-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i> <span>Reports</span>
+                </a>
+                <a href="{% url 'dashboard:settings' %}" class="menu-item {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
                     <i class="fas fa-cog"></i> <span>Settings</span>
                 </a>
             </nav>

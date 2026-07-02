@@ -7,24 +7,8 @@ class ReferralServiceInline(admin.TabularInline):
 
 @admin.register(Referral)
 class ReferralAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'phone', 'plan_management', 'status', 'created_at')
-    list_filter = ('status', 'created_at', 'plan_management')
-    search_fields = ('first_name', 'last_name', 'ndis_number', 'email', 'phone')
+    list_display = ('referral_id', 'first_name', 'last_name', 'referral_source', 'status', 'created_at')
+    list_filter = ('status', 'created_at', 'urgency')
+    search_fields = ('first_name', 'last_name', 'referral_id', 'email', 'phone')
     inlines = [ReferralServiceInline]
     readonly_fields = ('created_at', 'updated_at')
-    
-    fieldsets = (
-        ('Participant Details', {
-            'fields': ('first_name', 'last_name', 'date_of_birth', 'gender', 'phone', 'email', 'address', 'ndis_number', 'plan_management')
-        }),
-        ('Support Information', {
-            'fields': ('support_goals', 'additional_notes')
-        }),
-        ('Referrer Details', {
-            'fields': ('referrer_name', 'relationship', 'referrer_phone', 'referrer_email')
-        }),
-        ('System Info', {
-            'fields': ('status', 'created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )

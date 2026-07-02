@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Referral(models.Model):
     GENDER_CHOICES = (
@@ -34,33 +35,57 @@ class Referral(models.Model):
         ('Closed', 'Closed'),
     )
 
+    # Meta
+    referral_id = models.CharField(max_length=20, unique=True, blank=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='New')
+    assigned_admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_referrals_admin')
+    
+    # Referral Information
+    referral_date = models.DateField(default=timezone.now)
+    referral_source = models.CharField(max_length=255, blank=True)
+    referral_type = models.CharField(max_length=50, blank=True) # E.g., Hospital, Doctor
+    
     # Participant Details
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=50, choices=GENDER_CHOICES, blank=True)
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)
-    address = models.CharField(max_length=255, blank=True, verbose_name="Address / Suburb")
-    ndis_number = models.CharField(max_length=50, blank=True, verbose_name="NDIS Number")
-    plan_management = models.CharField(max_length=50, choices=PLAN_MANAGEMENT_CHOICES, blank=True, verbose_name="Plan Managed By")
+    address = models.TextField(blank=True)
+    emergency_contact_name = models.CharField(max_length=100, blank=True)
+    emergency_contact_phone = models.CharField(max_length=50, blank=True)
+    
+    # Support Requirements
+    primary_disability = models.CharField(max_length=255, blank=True)
+    current_situation = models.TextField(blank=True)
+    requested_services = models.TextField(blank=True)
+    urgency = models.CharField(max_length=20, default='Medium') # Low, Medium, High
+    
+    # Medical Information
+    medical_conditions = models.TextField(blank=True)
+    allergies = models.TextField(blank=True)
+    current_medication = models.TextField(blank=True)
+    behaviour_support_required = models.TextField(blank=True)
+    risk_information = models.TextField(blank=True)
 
-    # Support Information
-    support_goals = models.TextField(blank=True)
-    additional_notes = models.TextField(blank=True)
-
-    # Referrer Information
-    referrer_name = models.CharField(max_length=150, blank=True)
-    relationship = models.CharField(max_length=50, choices=RELATIONSHIP_CHOICES, blank=True)
-    referrer_phone = models.CharField(max_length=20, blank=True)
-    referrer_email = models.EmailField(blank=True)
-
-    # System Fields
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='New')
-    assigned_staff = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_referrals')
-   
+    # Additional Notes
+    referral_notes = models.TextField(blank=True)
+    attachments = models.FileField(upload_to='referrals/', blank=True, null=True)
+    consent_received = models.BooleanField(default=False)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.referral_id:
+            last_ref = Referral.objects.all().order_by('id').last()
+            if not last_ref:
+                self.referral_id = 'REF-0001'
+            else:
+                last_id = int(last_ref.referral_id.split('-')[1])
+                self.referral_id = f'REF-{last_id + 1:04d}'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.created_at.strftime('%Y-%m-%d')}"

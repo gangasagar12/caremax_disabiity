@@ -1,0 +1,384 @@
+{% extends "dashboard/base_dashboard.html" %}
+
+{% block title %}Referral Details | CareMax{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard:referrals' %}" class="text-decoration-none">Referrals</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ referral.referral_id }}</li>
+                </ol>
+            </nav>
+            <h2 class="h3 font-weight-bold text-dark mb-0">{{ referral.first_name }} {{ referral.last_name }}</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="#" class="btn btn-light rounded-pill px-4 shadow-sm border-0"><i class="fas fa-edit me-2"></i> Edit</a>
+            
+            {% if referral.status == 'New' or referral.status == 'Pending Review' %}
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="btn btn-outline-danger rounded-pill px-4 border-2 fw-bold"><i class="fas fa-times me-2"></i> Reject</button>
+                </form>
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold"><i class="fas fa-check me-2"></i> Approve</button>
+                </form>
+            {% elif referral.status == 'Approved' %}
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="convert">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold"><i class="fas fa-user-plus me-2"></i> Convert to Participant</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar Summary -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 text-center border-bottom">
+                    <div class="avatar-circle-lg bg-primary bg-opacity-10 text-primary fw-bold mx-auto mb-3">
+                        {{ referral.first_name|first }}{{ referral.last_name|first }}
+                    </div>
+                    <h4 class="fw-bold mb-1">{{ referral.first_name }} {{ referral.last_name }}</h4>
+                    <p class="text-muted mb-3">{{ referral.referral_id }}</p>
+                    
+                    {% if referral.status == 'New' %}
+                        <span class="badge bg-primary rounded-pill px-3 py-2 w-100"><i class="fas fa-inbox me-1"></i> New</span>
+                    {% elif referral.status == 'Pending Review' %}
+                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2 w-100"><i class="fas fa-hourglass-half me-1"></i> Pending Review</span>
+                    {% elif referral.status == 'Approved' %}
+                        <span class="badge bg-success rounded-pill px-3 py-2 w-100"><i class="fas fa-check-circle me-1"></i> Approved</span>
+                    {% else %}
+                        <span class="badge bg-danger rounded-pill px-3 py-2 w-100"><i class="fas fa-times-circle me-1"></i> Rejected</span>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <small class="text-muted fw-bold d-block mb-1">Referral Source</small>
+                        <p class="mb-0 fw-medium">{{ referral.referral_source|default:"Direct" }} ({{ referral.referral_type }})</p>
+                    </div>
+                    <div class="mb-4">
+                        <small class="text-muted fw-bold d-block mb-1">Referral Date</small>
+                        <p class="mb-0 fw-medium">{{ referral.referral_date|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="mb-4">
+                        <small class="text-muted fw-bold d-block mb-1">Priority</small>
+                        {% if referral.urgency == 'High' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2">High</span>
+                        {% elif referral.urgency == 'Medium' %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2">Medium</span>
+                        {% else %}
+                            <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-2">Low</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <small class="text-muted fw-bold d-block mb-1">Assigned Admin</small>
+                        <p class="mb-0 fw-medium">
+                            {% if referral.assigned_admin %}
+                                <i class="fas fa-user-shield text-primary me-2"></i>{{ referral.assigned_admin.get_full_name }}
+                            {% else %}
+                                <span class="text-muted font-italic">Unassigned</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Details Tabs -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom p-0 rounded-top-4">
+                    <ul class="nav nav-tabs nav-justified border-0" id="referralTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active py-4 fw-bold border-0 bg-transparent text-primary" id="participant-tab" data-bs-toggle="tab" data-bs-target="#participant" type="button" role="tab">
+                                <i class="fas fa-user me-2"></i> Participant
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-4 fw-bold border-0 bg-transparent text-muted" id="referral-tab" data-bs-toggle="tab" data-bs-target="#referral" type="button" role="tab">
+                                <i class="fas fa-info-circle me-2"></i> Referral
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-4 fw-bold border-0 bg-transparent text-muted" id="medical-tab" data-bs-toggle="tab" data-bs-target="#medical" type="button" role="tab">
+                                <i class="fas fa-heartbeat me-2"></i> Medical
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-4 fw-bold border-0 bg-transparent text-muted" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab">
+                                <i class="fas fa-sticky-note me-2"></i> Notes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-4 fw-bold border-0 bg-transparent text-muted" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab">
+                                <i class="fas fa-history me-2"></i> Timeline
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-5">
+                    <div class="tab-content" id="referralTabsContent">
+                        
+                        <!-- Participant Tab -->
+                        <div class="tab-pane fade show active" id="participant" role="tabpanel">
+                            <h5 class="fw-bold mb-4 text-primary">Basic Details</h5>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Full Name</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.first_name }} {{ referral.last_name }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Date of Birth</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.date_of_birth|date:"M d, Y"|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Gender</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.gender|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Phone Number</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.phone|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Email Address</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.email|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-muted fw-bold d-block mb-1">Address</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.address|default:"Not Provided" }}</p>
+                                </div>
+                            </div>
+                            
+                            <h5 class="fw-bold mb-4 text-primary">Emergency Contact</h5>
+                            <div class="row g-4 bg-light p-4 rounded-4">
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Contact Name</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.emergency_contact_name|default:"Not Provided" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Contact Phone</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.emergency_contact_phone|default:"Not Provided" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Referral Tab -->
+                        <div class="tab-pane fade" id="referral" role="tabpanel">
+                            <h5 class="fw-bold mb-4 text-primary">Referral Information</h5>
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Source</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.referral_source|default:"Direct" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted fw-bold d-block mb-1">Type</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.referral_type }}</p>
+                                </div>
+                            </div>
+
+                            <h5 class="fw-bold mb-4 text-primary">Support Requirements</h5>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label class="text-muted fw-bold d-block mb-1">Primary Disability</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.primary_disability|default:"Not Specified" }}</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-muted fw-bold d-block mb-1">Current Situation</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.current_situation|default:"Not Specified"|linebreaks }}</p>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-muted fw-bold d-block mb-1">Requested Services</label>
+                                    <p class="mb-0 fw-medium text-dark">{{ referral.requested_services|default:"Not Specified"|linebreaks }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medical Tab -->
+                        <div class="tab-pane fade" id="medical" role="tabpanel">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-muted mb-2 text-uppercase">Medical Conditions</h6>
+                                    <div class="p-4 bg-light rounded-4">
+                                        <p class="mb-0 text-dark">{{ referral.medical_conditions|default:"None reported"|linebreaks }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-muted mb-2 text-uppercase">Allergies</h6>
+                                    <div class="p-4 bg-danger bg-opacity-10 rounded-4">
+                                        <p class="mb-0 text-danger fw-medium">{{ referral.allergies|default:"No known allergies"|linebreaks }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-muted mb-2 text-uppercase">Current Medication</h6>
+                                    <div class="p-4 bg-light rounded-4">
+                                        <p class="mb-0 text-dark">{{ referral.current_medication|default:"None reported"|linebreaks }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-muted mb-2 text-uppercase">Behaviour Support Required</h6>
+                                    <div class="p-4 bg-warning bg-opacity-10 rounded-4">
+                                        <p class="mb-0 text-warning text-dark fw-medium">{{ referral.behaviour_support_required|default:"No specific support required"|linebreaks }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="fw-bold text-muted mb-2 text-uppercase">Risk Alerts</h6>
+                                    <div class="p-4 bg-light border border-danger border-opacity-25 rounded-4">
+                                        <p class="mb-0 text-dark">{{ referral.risk_information|default:"No known risks reported"|linebreaks }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes Tab -->
+                        <div class="tab-pane fade" id="notes" role="tabpanel">
+                            <h5 class="fw-bold mb-4 text-primary">Administrator Notes</h5>
+                            <div class="p-4 bg-light rounded-4 mb-4">
+                                <p class="mb-0 text-dark">{{ referral.referral_notes|default:"No notes available."|linebreaks }}</p>
+                            </div>
+
+                            {% if referral.attachments %}
+                            <h5 class="fw-bold mb-3 text-primary mt-5">Attachments</h5>
+                            <div class="d-flex align-items-center p-3 border rounded-4">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="fas fa-file-pdf text-primary fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Referral_Document.pdf</h6>
+                                    <small class="text-muted">1.2 MB</small>
+                                </div>
+                                <div class="ms-auto">
+                                    <a href="{{ referral.attachments.url }}" class="btn btn-sm btn-primary rounded-pill px-3" target="_blank">Download</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <h5 class="fw-bold mb-3 text-primary mt-5">Consent</h5>
+                            <div class="d-flex align-items-center p-3 {% if referral.consent_received %}bg-success bg-opacity-10{% else %}bg-warning bg-opacity-10{% endif %} rounded-4">
+                                {% if referral.consent_received %}
+                                    <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="fw-bold text-success mb-0">Consent Received</h6>
+                                        <small class="text-success text-opacity-75">Participant has consented to data storage.</small>
+                                    </div>
+                                {% else %}
+                                    <i class="fas fa-exclamation-triangle text-warning fa-2x me-3"></i>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-0">No Consent Recorded</h6>
+                                        <small class="text-muted">Consent verification is pending.</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Timeline Tab -->
+                        <div class="tab-pane fade" id="timeline" role="tabpanel">
+                            <div class="timeline-container ps-4 py-2 border-start border-2 border-primary border-opacity-25 ms-3">
+                                
+                                <div class="timeline-item position-relative mb-5">
+                                    <div class="timeline-marker position-absolute bg-primary rounded-circle" style="width: 16px; height: 16px; left: -33px; top: 2px;"></div>
+                                    <h6 class="fw-bold text-dark mb-1">Referral Received</h6>
+                                    <p class="text-muted small mb-2">{{ referral.created_at|date:"F d, Y h:i A" }}</p>
+                                    <div class="bg-light p-3 rounded-4 mt-2">
+                                        <p class="mb-0 text-dark small">New referral submitted from {{ referral.referral_source|default:"Direct" }}.</p>
+                                    </div>
+                                </div>
+                                
+                                {% if referral.updated_at > referral.created_at %}
+                                <div class="timeline-item position-relative mb-5">
+                                    <div class="timeline-marker position-absolute bg-info rounded-circle" style="width: 16px; height: 16px; left: -33px; top: 2px;"></div>
+                                    <h6 class="fw-bold text-dark mb-1">Information Updated</h6>
+                                    <p class="text-muted small mb-2">{{ referral.updated_at|date:"F d, Y h:i A" }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if referral.status != 'New' %}
+                                <div class="timeline-item position-relative mb-5">
+                                    <div class="timeline-marker position-absolute bg-warning rounded-circle" style="width: 16px; height: 16px; left: -33px; top: 2px;"></div>
+                                    <h6 class="fw-bold text-dark mb-1">Referral Reviewed</h6>
+                                    <p class="text-muted small mb-2">{{ referral.updated_at|date:"F d, Y h:i A" }}</p>
+                                    <div class="bg-light p-3 rounded-4 mt-2">
+                                        <p class="mb-0 text-dark small">Referral is currently under review by {{ referral.assigned_admin.get_full_name|default:"Administrator" }}.</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if referral.status == 'Approved' %}
+                                <div class="timeline-item position-relative">
+                                    <div class="timeline-marker position-absolute bg-success rounded-circle" style="width: 16px; height: 16px; left: -33px; top: 2px;"></div>
+                                    <h6 class="fw-bold text-success mb-1">Decision Made - Approved</h6>
+                                    <p class="text-muted small mb-2">{{ referral.updated_at|date:"F d, Y h:i A" }}</p>
+                                    <div class="bg-success bg-opacity-10 p-3 rounded-4 mt-2 border border-success border-opacity-25">
+                                        <p class="mb-0 text-success fw-medium small">This referral has been approved and is ready to be converted into a Participant.</p>
+                                    </div>
+                                </div>
+                                {% elif referral.status == 'Rejected' %}
+                                <div class="timeline-item position-relative">
+                                    <div class="timeline-marker position-absolute bg-danger rounded-circle" style="width: 16px; height: 16px; left: -33px; top: 2px;"></div>
+                                    <h6 class="fw-bold text-danger mb-1">Decision Made - Rejected</h6>
+                                    <p class="text-muted small mb-2">{{ referral.updated_at|date:"F d, Y h:i A" }}</p>
+                                    <div class="bg-danger bg-opacity-10 p-3 rounded-4 mt-2 border border-danger border-opacity-25">
+                                        <p class="mb-0 text-danger fw-medium small">This referral has been rejected.</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle-lg {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+    .nav-tabs .nav-link {
+        border-bottom: 3px solid transparent !important;
+        color: #6c757d;
+    }
+    .nav-tabs .nav-link.active {
+        color: #2563EB !important;
+        border-bottom: 3px solid #2563EB !important;
+        background-color: transparent !important;
+    }
+    .nav-tabs .nav-link:hover {
+        border-color: transparent !important;
+        color: #2563EB !important;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const tabs = document.querySelectorAll('.nav-link');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => {
+                    t.classList.remove('text-primary');
+                    t.classList.add('text-muted');
+                });
+                this.classList.remove('text-muted');
+                this.classList.add('text-primary');
+            });
+        });
+    });
+</script>
+{% endblock %}

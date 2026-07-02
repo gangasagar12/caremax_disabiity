@@ -1,0 +1,197 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load widget_tweaks %}
+
+{% block title %}New Referral | CareMax{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 mb-1 font-weight-bold text-dark">New Referral</h2>
+            <p class="text-muted mb-0">Create a new intake referral.</p>
+        </div>
+        <a href="{% url 'dashboard:referrals' %}" class="btn btn-light rounded-pill px-4 py-2 border-0 shadow-sm text-muted">
+            <i class="fas fa-arrow-left me-2"></i> Back to List
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                
+                <!-- Referral Information -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                        <h5 class="mb-0 font-weight-bold text-primary"><i class="fas fa-info-circle me-2"></i>Referral Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Referral Source <span class="text-danger">*</span></label>
+                                {% render_field form.referral_source class="form-control rounded-3 py-2 bg-light border-0" placeholder="e.g. Royal Hospital" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Referral Type <span class="text-danger">*</span></label>
+                                {% render_field form.referral_type class="form-select rounded-3 py-2 bg-light border-0" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participant Information -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                        <h5 class="mb-0 font-weight-bold text-primary"><i class="fas fa-user me-2"></i>Participant Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">First Name <span class="text-danger">*</span></label>
+                                {% render_field form.first_name class="form-control rounded-3 py-2 bg-light border-0" placeholder="First Name" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Last Name <span class="text-danger">*</span></label>
+                                {% render_field form.last_name class="form-control rounded-3 py-2 bg-light border-0" placeholder="Last Name" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Date of Birth</label>
+                                {% render_field form.date_of_birth class="form-control rounded-3 py-2 bg-light border-0" type="date" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Gender</label>
+                                {% render_field form.gender class="form-select rounded-3 py-2 bg-light border-0" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Phone Number</label>
+                                {% render_field form.phone class="form-control rounded-3 py-2 bg-light border-0" placeholder="Phone Number" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Email Address</label>
+                                {% render_field form.email class="form-control rounded-3 py-2 bg-light border-0" placeholder="Email Address" %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted fw-bold">Address</label>
+                                {% render_field form.address class="form-control rounded-3 py-2 bg-light border-0" placeholder="Full Address" rows="2" %}
+                            </div>
+                            
+                            <!-- Emergency Contact -->
+                            <div class="col-12 mt-4">
+                                <h6 class="fw-bold mb-3">Emergency Contact</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Contact Name</label>
+                                {% render_field form.emergency_contact_name class="form-control rounded-3 py-2 bg-light border-0" placeholder="Emergency Contact Name" %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Contact Phone</label>
+                                {% render_field form.emergency_contact_phone class="form-control rounded-3 py-2 bg-light border-0" placeholder="Emergency Contact Phone" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Requirements -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                        <h5 class="mb-0 font-weight-bold text-primary"><i class="fas fa-hands-helping me-2"></i>Support Requirements</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label text-muted fw-bold">Primary Disability</label>
+                                {% render_field form.primary_disability class="form-control rounded-3 py-2 bg-light border-0" placeholder="Primary Disability" %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted fw-bold">Urgency</label>
+                                {% render_field form.urgency class="form-select rounded-3 py-2 bg-light border-0" %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted fw-bold">Current Situation</label>
+                                {% render_field form.current_situation class="form-control rounded-3 py-2 bg-light border-0" rows="3" placeholder="Describe the participant's current living and support situation..." %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted fw-bold">Requested Services</label>
+                                {% render_field form.requested_services class="form-control rounded-3 py-2 bg-light border-0" rows="3" placeholder="Describe the services being requested..." %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Information -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                        <h5 class="mb-0 font-weight-bold text-primary"><i class="fas fa-heartbeat me-2"></i>Medical Information</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Medical Conditions</label>
+                                {% render_field form.medical_conditions class="form-control rounded-3 py-2 bg-light border-0" rows="2" placeholder="List any medical conditions..." %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Allergies</label>
+                                {% render_field form.allergies class="form-control rounded-3 py-2 bg-light border-0" rows="2" placeholder="List any allergies..." %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Current Medication</label>
+                                {% render_field form.current_medication class="form-control rounded-3 py-2 bg-light border-0" rows="2" placeholder="List current medications..." %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted fw-bold">Behaviour Support Required</label>
+                                {% render_field form.behaviour_support_required class="form-control rounded-3 py-2 bg-light border-0" rows="2" placeholder="Any behaviour support requirements?..." %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted fw-bold">Risk Information</label>
+                                {% render_field form.risk_information class="form-control rounded-3 py-2 bg-light border-0" rows="2" placeholder="Are there any known risks?..." %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Additional Notes & Meta -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4 sticky-top" style="top: 20px;">
+                    <div class="card-header bg-white border-bottom p-4 rounded-top-4">
+                        <h5 class="mb-0 font-weight-bold text-primary"><i class="fas fa-file-alt me-2"></i>Additional Details</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-bold">Referral Notes</label>
+                            {% render_field form.referral_notes class="form-control rounded-3 py-2 bg-light border-0" rows="4" placeholder="Any internal notes or comments..." %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-bold">Attachments (Optional)</label>
+                            {% render_field form.attachments class="form-control rounded-3 py-2 bg-light border-0" %}
+                            <small class="text-muted d-block mt-2">Upload any supporting documents (PDF, Word, Images).</small>
+                        </div>
+                        
+                        <div class="mb-4 bg-light p-3 rounded-3">
+                            <div class="form-check form-switch">
+                                {% render_field form.consent_received class="form-check-input" role="switch" id="consentSwitch" %}
+                                <label class="form-check-label fw-bold text-dark ms-2" for="consentSwitch">Consent Received</label>
+                            </div>
+                            <small class="text-muted d-block mt-2">I confirm that consent has been received to store this participant's information.</small>
+                        </div>
+
+                        <hr class="my-4 text-muted">
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
+                                <i class="fas fa-save me-2"></i> Save Referral
+                            </button>
+                            <a href="{% url 'dashboard:referrals' %}" class="btn btn-light rounded-pill py-3 fw-bold border-0 text-muted">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
