@@ -1,0 +1,163 @@
+{% extends "staff/base_staff.html" %}
+{% load static %}
+
+{% block title %}My Participants - CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px;
+        display: flex; flex-direction: column; transition: transform 0.3s ease; height: 100%;
+    }
+    .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-float); }
+    .stat-icon {
+        width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        font-size: 20px; margin-bottom: 15px;
+    }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+    .stat-label { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+    
+    .participant-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px;
+        padding: 24px; box-shadow: var(--shadow-sm); transition: all 0.2s; height: 100%; display: flex; flex-direction: column;
+    }
+    .participant-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary-light); transform: translateY(-3px); }
+    
+    .profile-photo {
+        width: 60px; height: 60px; border-radius: 50%; background-color: var(--primary-light);
+        color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin-bottom: 16px;
+    }
+    .participant-name { font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+    .participant-ndis { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+    .info-label { color: var(--text-muted); }
+    .info-value { color: var(--text-main); font-weight: 500; text-align: right; }
+    
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .status-Active { background-color: var(--success-light); color: var(--success); }
+    .status-Pending { background-color: var(--warning-light); color: var(--warning); }
+    .status-Inactive { background-color: var(--danger-light); color: var(--danger); }
+    
+    .search-filter-card {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 30px;
+    }
+</style>
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+    <div>
+        <h1 class="fw-bold mb-1" style="font-size: 22px;">My Participants</h1>
+        <p class="text-muted mb-0" style="font-size: 15px;">View your assigned participants and their care information.</p>
+    </div>
+    <div class="status-badge" style="background-color: var(--primary-light); color: var(--primary); font-size: 14px; padding: 8px 16px;">
+        <i class="fas fa-users me-2"></i>{{ stats.total_assigned }} Assigned Participants
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--primary-light); color: var(--primary);"><i class="fas fa-user-friends"></i></div>
+            <div class="stat-value">{{ stats.total_assigned }}</div>
+            <div class="stat-label">Total Assigned</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--success-light); color: var(--success);"><i class="far fa-calendar-check"></i></div>
+            <div class="stat-value">{{ stats.visits_today }}</div>
+            <div class="stat-label">Visits Today</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--info-light); color: var(--info);"><i class="fas fa-heartbeat"></i></div>
+            <div class="stat-value">{{ stats.active }}</div>
+            <div class="stat-label">Active Profiles</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card shadow-sm">
+            <div class="stat-icon" style="background-color: var(--warning-light); color: var(--warning);"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-value">{{ stats.attention_needed }}</div>
+            <div class="stat-label">Attention Needed</div>
+        </div>
+    </div>
+</div>
+
+<div class="search-filter-card shadow-sm">
+    <div class="row g-3">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-body border-end-0" style="border-radius: 10px 0 0 10px;"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" class="form-control border-start-0 bg-body" placeholder="Search by name, NDIS number..." style="border-radius: 0 10px 10px 0;">
+            </div>
+        </div>
+        <div class="col-md-7 d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-primary" style="border-radius: 20px; font-size: 14px;">Active</button>
+            <button class="btn btn-outline-secondary" style="border-radius: 20px; font-size: 14px;">Today's Visits</button>
+            <button class="btn btn-outline-secondary" style="border-radius: 20px; font-size: 14px;">Upcoming Visits</button>
+            <button class="btn btn-outline-danger" style="border-radius: 20px; font-size: 14px;">High Priority</button>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for participant in participants %}
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="participant-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="profile-photo">
+                    {{ participant.first_name|first }}{{ participant.last_name|first }}
+                </div>
+                <span class="status-badge status-{{ participant.status }}">{{ participant.status }}</span>
+            </div>
+            
+            <div class="participant-name">{{ participant }}</div>
+            <div class="participant-ndis">NDIS: {{ participant.ndis_number|default:"N/A" }}</div>
+            
+            <div class="mb-4 flex-grow-1">
+                <div class="info-row">
+                    <span class="info-label">Support Level</span>
+                    <span class="info-value">{{ participant.support_plan.services_required|default:"Core"|truncatechars:15 }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Next Visit</span>
+                    <span class="info-value">
+                        {% if participant.next_appt %}
+                            {{ participant.next_appt.date|date:"M d" }} ({{ participant.next_appt.start_time|time:"h:i A" }})
+                        {% else %}
+                            <span class="text-muted">Not Scheduled</span>
+                        {% endif %}
+                    </span>
+                </div>
+                {% if participant.support_plan.medical_conditions or participant.support_plan.allergies %}
+                <div class="mt-2 text-danger" style="font-size: 12px; font-weight: 600;">
+                    <i class="fas fa-exclamation-circle me-1"></i> Medical Alerts Active
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="d-flex flex-column gap-2 mt-auto">
+                <a href="{% url 'staff:participant_profile' pk=participant.pk %}" class="btn btn-outline-secondary w-100" style="border-radius: 10px; font-size: 14px;">
+                    View Profile
+                </a>
+                {% if participant.has_visit_today %}
+                <a href="{% url 'staff:schedule' %}" class="btn btn-primary w-100" style="border-radius: 10px; font-size: 14px;">
+                    <i class="fas fa-play me-1"></i> Start Today's Visit
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <div style="width: 80px; height: 80px; background-color: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--text-muted); font-size: 30px;">
+            <i class="fas fa-user-slash"></i>
+        </div>
+        <h5 class="fw-bold">No Assigned Participants</h5>
+        <p class="text-muted">You have no participants assigned to you at the moment.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

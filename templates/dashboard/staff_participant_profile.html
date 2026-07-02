@@ -1,0 +1,267 @@
+{% extends "staff/base_staff.html" %}
+{% load static %}
+
+{% block title %}Participant Profile - {{ participant }} | CareMax{% endblock %}
+
+{% block content %}
+<style>
+    .header-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 30px; margin-bottom: 24px; position: relative; }
+    
+    .profile-photo-large {
+        width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-light);
+        color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold;
+    }
+    
+    .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-block; }
+    .status-Active { background-color: var(--success-light); color: var(--success); }
+    .status-Pending { background-color: var(--warning-light); color: var(--warning); }
+    .status-Inactive { background-color: var(--danger-light); color: var(--danger); }
+    
+    .alert-banner {
+        background-color: var(--danger-light); border: 1px solid #fca5a5; border-radius: 12px; padding: 15px 20px;
+        display: flex; align-items: flex-start; gap: 15px; margin-bottom: 24px;
+    }
+    .alert-banner i { color: var(--danger); font-size: 24px; margin-top: 2px; }
+    .alert-banner-title { font-size: 16px; font-weight: 700; color: var(--danger); margin-bottom: 4px; }
+    .alert-banner-text { font-size: 14px; color: var(--text-main); margin: 0; }
+    
+    .nav-tabs-custom { border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+    .nav-tabs-custom .nav-link { color: var(--text-muted); font-weight: 500; font-size: 15px; padding: 12px 20px; border: none; border-bottom: 3px solid transparent; }
+    .nav-tabs-custom .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); background: transparent; }
+    
+    .info-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; padding: 24px; margin-bottom: 24px; }
+    .info-label { font-size: 13px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .info-value { font-size: 15px; color: var(--text-main); font-weight: 600; margin-bottom: 20px; }
+    
+    .timeline { position: relative; padding-left: 30px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background-color: var(--border-color); }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-item::before { content: ''; position: absolute; left: -30px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background-color: var(--primary); border: 3px solid var(--primary-light); z-index: 1; }
+    .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .timeline-content { font-size: 14px; color: var(--text-main); font-weight: 500; }
+</style>
+
+<div class="mb-4 d-flex align-items-center gap-3">
+    <a href="{% url 'staff:participants' %}" class="btn btn-sm btn-outline-secondary" style="border-radius: 8px;"><i class="fas fa-arrow-left"></i> Back</a>
+    <h1 class="fw-bold mb-0" style="font-size: 20px;">Participant Profile</h1>
+</div>
+
+{% if support_plan.medical_conditions or support_plan.allergies or support_plan.behaviour_alerts %}
+<div class="alert-banner shadow-sm">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div>
+        <div class="alert-banner-title">Critical Medical Alerts Active</div>
+        <p class="alert-banner-text">
+            {% if support_plan.allergies %}<strong>Allergies:</strong> {{ support_plan.allergies }}<br>{% endif %}
+            {% if support_plan.medical_conditions %}<strong>Conditions:</strong> {{ support_plan.medical_conditions }}<br>{% endif %}
+            {% if support_plan.behaviour_alerts %}<strong>Behaviour:</strong> {{ support_plan.behaviour_alerts }}{% endif %}
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<div class="header-card shadow-sm">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center gap-4">
+                <div class="profile-photo-large">
+                    {{ participant.first_name|first }}{{ participant.last_name|first }}
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-2">{{ participant }}</h2>
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <span class="status-badge status-{{ participant.status }}">{{ participant.status }}</span>
+                        <span class="text-muted" style="font-size: 15px;"><i class="far fa-id-card me-2"></i>NDIS: {{ participant.ndis_number|default:"N/A" }}</span>
+                        <span class="text-muted" style="font-size: 15px;"><i class="far fa-calendar me-2"></i>DOB: {{ participant.date_of_birth|date:"M d, Y"|default:"N/A" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end mt-4 mt-md-0">
+            {% if today_appt %}
+            <a href="{% url 'staff:schedule' %}" class="btn btn-primary shadow-sm" style="border-radius: 12px; font-size: 15px; padding: 10px 24px;">
+                <i class="fas fa-play me-2"></i> Start Today's Visit
+            </a>
+            <div class="mt-2 text-muted" style="font-size: 13px;">Scheduled for {{ today_appt.start_time|time:"h:i A" }}</div>
+            {% else %}
+            <button class="btn btn-outline-secondary" style="border-radius: 12px; font-size: 15px; padding: 10px 24px;" disabled>
+                No Visit Today
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs nav-tabs-custom" id="profileTabs" role="tablist">
+    <li class="nav-item" role="presentation"><button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">Personal Info</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="medical-tab" data-bs-toggle="tab" data-bs-target="#medical" type="button" role="tab">Medical Info</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="plan-tab" data-bs-toggle="tab" data-bs-target="#plan" type="button" role="tab">Support Plan</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="appts-tab" data-bs-toggle="tab" data-bs-target="#appts" type="button" role="tab">Appointments</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab">Care Notes</button></li>
+    <li class="nav-item" role="presentation"><button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timeline" type="button" role="tab">Timeline</button></li>
+</ul>
+
+<div class="tab-content">
+    
+    <!-- Personal Information -->
+    <div class="tab-pane fade show active" id="personal" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 18px;">Personal Information</h6>
+            <div class="row">
+                <div class="col-sm-6 col-md-4"><div class="info-label">Full Name</div><div class="info-value">{{ participant }}</div></div>
+                <div class="col-sm-6 col-md-4"><div class="info-label">NDIS Number</div><div class="info-value">{{ participant.ndis_number|default:"N/A" }}</div></div>
+                <div class="col-sm-6 col-md-4"><div class="info-label">Date of Birth</div><div class="info-value">{{ participant.date_of_birth|date:"F d, Y"|default:"N/A" }}</div></div>
+                <div class="col-sm-6 col-md-4"><div class="info-label">Phone Number</div><div class="info-value">{{ participant.phone|default:"N/A" }}</div></div>
+                <div class="col-sm-6 col-md-4"><div class="info-label">Email Address</div><div class="info-value">{{ participant.email|default:"N/A" }}</div></div>
+                <div class="col-sm-6 col-md-4"><div class="info-label">Address</div><div class="info-value">123 Smith Street, Suburb (Mocked)</div></div>
+                <div class="col-12 mt-3 pt-3 border-top"><div class="info-label text-danger"><i class="fas fa-phone-alt me-1"></i> Emergency Contact</div><div class="info-value">John Wilson (Brother) - 0412 345 678</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Medical Information -->
+    <div class="tab-pane fade" id="medical" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 18px;">Medical & Safety Information</h6>
+            {% if support_plan %}
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="p-4 rounded h-100" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                        <div class="info-label"><i class="fas fa-heartbeat me-1 text-danger"></i> Medical Conditions</div>
+                        <div class="info-value" style="font-weight: 500;">{{ support_plan.medical_conditions|default:"None documented."|linebreaks }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-4 rounded h-100" style="background-color: var(--danger-light); border: 1px solid #fca5a5;">
+                        <div class="info-label text-danger"><i class="fas fa-allergies me-1"></i> Allergies</div>
+                        <div class="info-value text-danger" style="font-weight: 500;">{{ support_plan.allergies|default:"No known allergies."|linebreaks }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-4 rounded h-100" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                        <div class="info-label"><i class="fas fa-pills me-1 text-info"></i> Medication Notes</div>
+                        <div class="info-value" style="font-weight: 500;">{{ support_plan.medication_notes|default:"None documented."|linebreaks }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-4 rounded h-100" style="background-color: var(--warning-light); border: 1px solid #fde68a;">
+                        <div class="info-label text-warning"><i class="fas fa-exclamation-circle me-1"></i> Behaviour & Emergency Alerts</div>
+                        <div class="info-value" style="font-weight: 500;">
+                            <strong>Behaviour:</strong> {{ support_plan.behaviour_alerts|default:"None" }}<br><br>
+                            <strong>Emergency Instructions:</strong> {{ support_plan.emergency_instructions|default:"Standard protocol." }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-muted text-center py-4">No medical information available (No active support plan).</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Support Plan -->
+    <div class="tab-pane fade" id="plan" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h6 class="fw-bold mb-0" style="font-size: 18px;">Active Support Plan</h6>
+                {% if support_plan %}
+                <span class="badge bg-primary rounded-pill px-3 py-2">Plan ID: PLN-{{ support_plan.pk|stringformat:"04d" }}</span>
+                {% endif %}
+            </div>
+            {% if support_plan %}
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <div class="info-label">Assigned Services</div>
+                    <div class="info-value">{{ support_plan.services_required|default:"Core Support" }}</div>
+                </div>
+                <div class="col-md-12">
+                    <div class="info-label">Participant Goals</div>
+                    <div class="p-3 rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color); font-size: 15px; line-height: 1.6; font-weight: 500;">
+                        {{ support_plan.participant_goals|default:"No specific goals set."|linebreaksbr }}
+                    </div>
+                </div>
+                <div class="col-sm-4"><div class="info-label">Frequency</div><div class="info-value">{{ support_plan.frequency }}</div></div>
+                <div class="col-sm-4"><div class="info-label">Hours Per Visit</div><div class="info-value">{{ support_plan.hours_per_visit }} Hrs</div></div>
+                <div class="col-sm-4"><div class="info-label">Next Review</div><div class="info-value text-danger">{{ support_plan.review_date|date:"M d, Y" }}</div></div>
+            </div>
+            {% else %}
+            <div class="text-muted text-center py-4">No active support plan found.</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Appointments -->
+    <div class="tab-pane fade" id="appts" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 18px;">Upcoming Appointments</h6>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Service Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in upcoming_appts %}
+                        <tr>
+                            <td class="fw-medium">{{ appt.date|date:"D, M d, Y" }}</td>
+                            <td>{{ appt.start_time|time:"h:i A" }} ({{ appt.duration_minutes }}m)</td>
+                            <td>{{ appt.service_type }}</td>
+                            <td><span class="badge {% if appt.status == 'Scheduled' %}bg-primary{% elif appt.status == 'In Progress' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">{{ appt.status }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">No upcoming appointments with you.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Care Notes -->
+    <div class="tab-pane fade" id="notes" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 18px;">Previous Care Notes (Your Visits)</h6>
+            {% for note in care_notes %}
+            <div class="p-4 mb-3 rounded" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-bold" style="font-size: 15px;">{{ note.appointment.date|date:"M d, Y" }} - {{ note.appointment.service_type }}</div>
+                    <div class="text-muted" style="font-size: 13px;"><i class="far fa-clock me-1"></i>{{ note.check_out_time|date:"h:i A"|default:"Completed" }}</div>
+                </div>
+                <p class="mb-0" style="font-size: 14px; line-height: 1.6; color: var(--text-main);">
+                    {{ note.care_notes|default:"No notes submitted."|linebreaksbr }}
+                </p>
+            </div>
+            {% empty %}
+            <div class="text-muted text-center py-4">No previous care notes found.</div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Timeline -->
+    <div class="tab-pane fade" id="timeline" role="tabpanel">
+        <div class="info-card shadow-sm">
+            <h6 class="fw-bold mb-4" style="font-size: 18px;">Recent Activity</h6>
+            <div class="timeline mt-4">
+                {% for log in timeline %}
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ log.check_out_time|date:"M d, Y h:i A"|default:log.created_at|date:"M d, Y" }}</div>
+                    <div class="timeline-content">Completed visit for {{ log.appointment.service_type }}</div>
+                </div>
+                {% empty %}
+                <div class="text-muted">No recent activity.</div>
+                {% endfor %}
+                {% if support_plan %}
+                <div class="timeline-item">
+                    <div class="timeline-date">{{ support_plan.created_at|date:"M d, Y" }}</div>
+                    <div class="timeline-content">Support Plan Assigned</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -354,3 +354,66 @@ class SupportPlanDetailView(LoginRequiredMixin, TemplateView):
         plan = get_object_or_404(SupportPlan, pk=pk)
         context['plan'] = plan
         return context
+
+class StaffParticipantListView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/staff_participants_list.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            worker = self.request.user.support_worker_profile
+            today = timezone.now().date()
+            
+            assigned_plans = SupportPlan.objects.filter(assigned_staff=worker).select_related('participant')
+            participants = [plan.participant for plan in assigned_plans]
+            
+            for p in participants:
+                p.next_appt = Appointment.objects.filter(participant=p, staff=worker, date__gte=today).order_by('date', 'start_time').first()
+                p.has_visit_today = p.next_appt and p.next_appt.date == today
+                p.support_plan = assigned_plans.filter(participant=p).first()
+                
+            context['participants'] = participants
+            
+            context['stats'] = {
+                'total_assigned': len(participants),
+                'visits_today': sum(1 for p in participants if p.has_visit_today),
+                'active': sum(1 for p in participants if p.status == 'Active'),
+                'attention_needed': sum(1 for p in participants if p.support_plan and p.support_plan.status == 'Review Due')
+            }
+            
+        except Exception as e:
+            context['participants'] = []
+            context['stats'] = {'total_assigned': 0, 'visits_today': 0, 'active': 0, 'attention_needed': 0}
+            
+        return context
+
+class StaffParticipantDetailView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/staff_participant_profile.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = kwargs.get('pk')
+        participant = get_object_or_404(Participant, pk=pk)
+        
+        try:
+            worker = self.request.user.support_worker_profile
+            today = timezone.now().date()
+            
+            plan = SupportPlan.objects.filter(participant=participant, assigned_staff=worker).first()
+            if not plan:
+                plan = SupportPlan.objects.filter(participant=participant).first()
+                
+            context['participant'] = participant
+            context['support_plan'] = plan
+            context['today_appt'] = Appointment.objects.filter(participant=participant, staff=worker, date=today).first()
+            context['upcoming_appts'] = Appointment.objects.filter(participant=participant, staff=worker, date__gte=today).order_by('date', 'start_time')[:5]
+            
+            visit_records = VisitRecord.objects.filter(appointment__participant=participant, appointment__staff=worker).order_by('-created_at')
+            context['care_notes'] = visit_records[:10]
+            context['timeline'] = visit_records[:5]
+            
+        except:
+            context['participant'] = participant
+            context['support_plan'] = None
+            
+        return context
