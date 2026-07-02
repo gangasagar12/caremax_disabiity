@@ -492,19 +492,31 @@
                         </button>
                     </div>
 
-                    <div class="user-profile">
-                        <div class="avatar">
-                            {% if request.user.is_authenticated %}
-                                {{ request.user.username|make_list|first|upper }}
-                            {% else %}
-                                A
-                            {% endif %}
+                    <div class="dropdown">
+                        <div class="user-profile" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div class="avatar">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username|make_list|first|upper }}
+                                {% else %}
+                                    A
+                                {% endif %}
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name">{{ request.user.get_full_name|default:request.user.username|default:"Admin User" }}</span>
+                                <span class="user-role">Administrator</span>
+                            </div>
+                            <i class="fas fa-chevron-down" style="color: var(--text-light); font-size: 12px; margin-left: 4px;"></i>
                         </div>
-                        <div class="user-info">
-                            <span class="user-name">{{ request.user.get_full_name|default:request.user.username|default:"Admin User" }}</span>
-                            <span class="user-role">Administrator</span>
-                        </div>
-                        <i class="fas fa-chevron-down" style="color: var(--text-light); font-size: 12px; margin-left: 4px;"></i>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-1" style="min-width: 200px; border-radius: 12px;">
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" onsubmit="return confirm('Are you sure you want to log out?');" class="m-0 p-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center py-2 fw-medium rounded-3" style="transition: all 0.2s;">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </header>
